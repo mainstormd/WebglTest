@@ -256,7 +256,10 @@ namespace MainProgram{
       return [a[1] * b[2] - a[2] * b[1],
               a[2] * b[0] - a[0] * b[2],
               a[0] * b[1] - a[1] * b[0]];
-    }
+    },
+    scalarMultiply: function( a: any, b: any){
+      return a[0] * b[0] + a[1] * b[1] + a[2]*b[2];
+    } 
   };
 
   function degToRad(d : any) {
@@ -267,7 +270,7 @@ namespace MainProgram{
         
         private _canvas: HTMLCanvasElement;
         private _shaderProgram: WebGLProgram;
-        public OldCameraPosition: Array<Number> = [0, 0, -30];
+        public OldCameraPosition: Array<Number> = [0, 0, 30];
 
         constructor()
         {
@@ -346,8 +349,8 @@ namespace MainProgram{
           let matrix = m3.perspective(fieldOfViewRadians,aspect,zNear,zFar);
           //matrix = m3.multiply(matrix, m3.myProjection(this._canvas.clientWidth,this._canvas.clientHeight, this._canvas.clientHeight));
           //matrix = m3.multiply(matrix, m3.translation(translation[0],translation[1], translation[2]));
-          
-          matrix = m3.multiply(matrix,new Camera(this.OldCameraPosition).matrix)
+          //new Camera(this.OldCameraPosition)
+          matrix = m3.multiply(matrix,new Camera().matrix)
 
           /*if(currentCameraPosition == null)
             matrix = m3.multiply(matrix, m3.translation(0, 0, 0));
