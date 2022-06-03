@@ -3,7 +3,7 @@ namespace MainProgram{
     export class Camera{
         private _resultMatrix: any;
         
-        constructor(cameraPosition   : any = [0, 0, 30],
+        constructor(cameraPosition   : any = [0, 0, -30],
                     targetCoordinate : any = [0, 0, 0], 
                     up               : any = [0, 1, 0])
         {

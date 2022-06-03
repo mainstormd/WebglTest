@@ -88,6 +88,19 @@ namespace MainProgram{
       ];
     },
 
+    myMultiply: function (a: any, b: any){
+      const dimentionOfMatrix = 4;
+      let resultMatrix = new Array(dimentionOfMatrix * dimentionOfMatrix).fill(0);
+      let step = dimentionOfMatrix - 1;
+      
+      for(let i = 0; i < dimentionOfMatrix; i++)
+        for(let j = 0; j < dimentionOfMatrix; j++)
+          for(let k = 0; k < dimentionOfMatrix; k++)
+            resultMatrix[i + j + step * i] += a[i + k + step * i] * b[k + j + step * k];
+      
+      return resultMatrix;
+    },
+
     multiply: function(a : any, b : any) {
       var b00 = b[0 * 4 + 0];
       var b01 = b[0 * 4 + 1];

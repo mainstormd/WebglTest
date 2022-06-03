@@ -1,6 +1,7 @@
 
 window.onload =  function (){
-    
+    let s = MainProgram.m3.myMultiply([2,3,1,5],[2,3,6,1])
+    console.log(s)
     let engine = new MainProgram.Engine()
     engine.DrawScence(null)
     window.engine = engine; 
