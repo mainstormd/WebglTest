@@ -1,7 +1,5 @@
 
 window.onload =  function (){
-    let s = MainProgram.m3.myMultiply([2,3,1,5],[2,3,6,1])
-    console.log(s)
     let engine = new MainProgram.Engine()
     engine.DrawScence(null)
     window.engine = engine; 
@@ -15,7 +13,7 @@ function KeyPressHandler(event : any)
     let key = event.key
     let engine = window.engine
     let currentCameraPosition = engine.OldCameraPosition
-    let delta = 3; //
+    let delta = 3;
     switch(key)
     {
         case "w":

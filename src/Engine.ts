@@ -88,7 +88,7 @@ namespace MainProgram{
       ];
     },
 
-    myMultiply: function (a: any, b: any){
+    MultiplyMatrix: function (a: any, b: any){
       const dimentionOfMatrix = 4;
       let resultMatrix = new Array(dimentionOfMatrix * dimentionOfMatrix).fill(0);
       let step = dimentionOfMatrix - 1;
@@ -97,6 +97,22 @@ namespace MainProgram{
         for(let j = 0; j < dimentionOfMatrix; j++)
           for(let k = 0; k < dimentionOfMatrix; k++)
             resultMatrix[i + j + step * i] += a[i + k + step * i] * b[k + j + step * k];
+      
+      return resultMatrix;
+    },
+
+    MultiplyMatrixAndVectors: function (a: any, b: any)
+    {
+      const dimentionOfMatrix = 4;
+      const dimentionOfVector = 1; // dimension of vector may be bad name but let it be
+      let resultMatrix = new Array(dimentionOfMatrix * dimentionOfVector).fill(0);
+      let stepVector = dimentionOfVector - 1;
+      let stepMatrix = dimentionOfMatrix - 1;
+      
+      for(let i = 0; i < dimentionOfMatrix; i++)
+        for(let j = 0; j < dimentionOfVector; j++)
+          for(let k = 0; k < dimentionOfMatrix; k++)
+            resultMatrix[i + j + stepVector * i] += a[i + k + stepMatrix * i] * b[k + j + stepVector * k];
       
       return resultMatrix;
     },
