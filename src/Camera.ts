@@ -23,8 +23,9 @@ namespace MainProgram{
                 cameraDirection[0], cameraDirection[1], cameraDirection[2], -positionVector[2],
                 0,                  0,                  0,                  0     
             ]
-
-            console.log('testCameraMatrix', m3.MultiplyMatrixAndVectors([2,2,1,3,3,3,1,2,2,2,2,2,1,1,1,1], [...[0,0,0], 1]))
+            console.log('CameraMatrix', this._resultMatrix)
+            console.log('Test eye of CameraMatrix', m3.MultiplyMatrixAndVectors(this._resultMatrix, [...cameraDirection, 1]))
+            console.log('Test right of CameraMatrix', m3.MultiplyMatrixAndVectors(this._resultMatrix, [...cameraRight, 0]))
         }
     
         public get matrix()

@@ -14,6 +14,16 @@ namespace MainProgram{
       ];
     },    
 
+    BookPerspective: function( left : any, right : any, bott : any, top : any, N : any, F : any ) {
+  
+      return [
+        (2 * N) / (right - left),                      0, (right + left) / (right - left),                       0,
+                               0, (2 * N) / (top - bott),     (top + bott) / (top - bott),                       0,
+                               0,                      0,             - (F + N) / (F - N), - (2 * F * N) / (F - N),
+                               0,                      0,                              -1,                       0
+      ];
+    },
+
     projection: function(width : any, height : any, depth : any) {
       // Note: This matrix flips the Y axis so 0 is at the top.
       return [
@@ -379,8 +389,8 @@ namespace MainProgram{
           //matrix = m3.multiply(matrix, m3.myProjection(this._canvas.clientWidth,this._canvas.clientHeight, this._canvas.clientHeight));
           //matrix = m3.multiply(matrix, m3.translation(translation[0],translation[1], translation[2]));
           //new Camera(this.OldCameraPosition)
+          matrix = m3.BookPerspective(0, this._canvas.width, 0 , this._canvas.height , 1, 2000)
           matrix = m3.multiply(matrix,new Camera().matrix)
-
           /*if(currentCameraPosition == null)
             matrix = m3.multiply(matrix, m3.translation(0, 0, 0));
           else 
