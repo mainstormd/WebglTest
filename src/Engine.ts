@@ -385,12 +385,14 @@ namespace MainProgram{
           let scale = [1, 1];
           let fieldOfViewRadians = degToRad(30);
 
+
+
           let matrix = m3.perspective(fieldOfViewRadians,aspect,zNear,zFar);
           //matrix = m3.multiply(matrix, m3.myProjection(this._canvas.clientWidth,this._canvas.clientHeight, this._canvas.clientHeight));
           //matrix = m3.multiply(matrix, m3.translation(translation[0],translation[1], translation[2]));
           //new Camera(this.OldCameraPosition)
-          matrix = m3.BookPerspective(0, this._canvas.width, 0 , this._canvas.height , 1, 2000)
-          matrix = m3.multiply(matrix,new Camera().matrix)
+         // matrix = m3.BookPerspective(0, this._canvas.width, 0 , this._canvas.height , 1, 2000)
+          matrix = m3.multiply(new Camera().matrix, matrix)
           /*if(currentCameraPosition == null)
             matrix = m3.multiply(matrix, m3.translation(0, 0, 0));
           else 
@@ -424,6 +426,100 @@ namespace MainProgram{
               glContext.bufferData(glContext.ARRAY_BUFFER, new Float32Array(positions), glContext.STATIC_DRAW)
               
           return count;
+        }
+
+        public SetCoubeGeometry() : any
+        {
+          
+          const positionBuffer = glContext.createBuffer();
+
+          // Select the positionBuffer as the one to apply buffer
+          // operations to from here out.
+
+          glContext.bindBuffer(glContext.ARRAY_BUFFER, positionBuffer);
+
+          const positions = [
+            // Front face
+            -1.0, -1.0,  1.0,
+             1.0, -1.0,  1.0,
+             1.0,  1.0,  1.0,
+            -1.0,  1.0,  1.0,
+          
+            // Back face
+            -1.0, -1.0, -1.0,
+            -1.0,  1.0, -1.0,
+             1.0,  1.0, -1.0,
+             1.0, -1.0, -1.0,
+          
+            // Top face
+            -1.0,  1.0, -1.0,
+            -1.0,  1.0,  1.0,
+             1.0,  1.0,  1.0,
+             1.0,  1.0, -1.0,
+          
+            // Bottom face
+            -1.0, -1.0, -1.0,
+             1.0, -1.0, -1.0,
+             1.0, -1.0,  1.0,
+            -1.0, -1.0,  1.0,
+          
+            // Right face
+             1.0, -1.0, -1.0,
+             1.0,  1.0, -1.0,
+             1.0,  1.0,  1.0,
+             1.0, -1.0,  1.0,
+          
+            // Left face
+            -1.0, -1.0, -1.0,
+            -1.0, -1.0,  1.0,
+            -1.0,  1.0,  1.0,
+            -1.0,  1.0, -1.0,
+          ];
+
+          const indexBuffer = glContext.createBuffer();
+          glContext.bindBuffer(glContext.ELEMENT_ARRAY_BUFFER, indexBuffer);
+
+          const faceColors = [
+            [1.0,  1.0,  1.0,  1.0],    // Front face: white
+            [1.0,  0.0,  0.0,  1.0],    // Back face: red
+            [0.0,  1.0,  0.0,  1.0],    // Top face: green
+            [0.0,  0.0,  1.0,  1.0],    // Bottom face: blue
+            [1.0,  1.0,  0.0,  1.0],    // Right face: yellow
+            [1.0,  0.0,  1.0,  1.0],    // Left face: purple
+          ];
+        
+          // Convert the array of colors into a table for all the vertices.
+        
+          let colors : any = [] ;
+        
+          for (var j = 0; j < faceColors.length; ++j) {
+            const c = faceColors[j];
+        
+            // Repeat each color four times for the four vertices of the face
+            colors = colors.concat(c, c, c, c);
+          }
+        
+          const colorBuffer = glContext.createBuffer();
+          glContext.bindBuffer(glContext.ARRAY_BUFFER, colorBuffer);
+          glContext.bufferData(glContext.ARRAY_BUFFER, new Float32Array(colors), glContext.STATIC_DRAW);
+
+          const indices = [
+            0,  1,  2,      0,  2,  3,    // front
+            4,  5,  6,      4,  6,  7,    // back
+            8,  9,  10,     8,  10, 11,   // top
+            12, 13, 14,     12, 14, 15,   // bottom
+            16, 17, 18,     16, 18, 19,   // right
+            20, 21, 22,     20, 22, 23,   // left
+          ];
+
+          glContext.bufferData(glContext.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), glContext.STATIC_DRAW);
+
+          return {
+            position: positionBuffer,
+            color: colorBuffer,
+            indices: indexBuffer,
+          };
+          
         }
         /*
         public DrawPlane(definition : any) : void
