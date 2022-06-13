@@ -1,7 +1,7 @@
 
 window.onload =  function (){
     let engine = new MainProgram.Engine()
-    engine.DrawScence(null)
+    engine.DrawScence(engine.Camera)
     window.engine = engine; 
 }
 
@@ -12,23 +12,24 @@ function KeyPressHandler(event : any)
     //Add drawScence function
     let key = event.key
     let engine = window.engine
-    let currentCameraPosition = engine.OldCameraPosition
-    let delta = 3;
+    let currentCamera = engine.Camera
+    let delta = 0.3;
+  
     switch(key)
     {
         case "w":
-            currentCameraPosition[2] = currentCameraPosition[2] + delta 
+            currentCamera.slide( undefined, undefined, -delta)
             break;
         case "a":
-            currentCameraPosition[0] = currentCameraPosition[0] - delta; 
+            currentCamera.slide(-delta); 
             break;
         case "s":
-            currentCameraPosition[2] = currentCameraPosition[2] - delta
+            currentCamera.slide( undefined, undefined, delta )
             break; 
         case "d":
-            currentCameraPosition[0] = currentCameraPosition[0] + delta;
+            currentCamera.slide(delta);
             break;                    
     }
     
-   engine.DrawScence(currentCameraPosition)
+   engine.DrawScence(currentCamera)
 }

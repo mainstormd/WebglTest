@@ -1,37 +1,52 @@
 namespace MainProgram{
 
     export class Camera{
-        private _resultMatrix: any;
-        
+        private _cameraDirection: any;
+        private _cameraPosition: any;
+        private _cameraRight: any;
+        private _cameraUp: any;
+
         constructor(cameraPosition   : any = [0, 0, -30],
                     targetCoordinate : any = [0, 0, 0], 
                     up               : any = [0, 1, 0])
         {
-            let cameraDirection = m3.subtractVectors(cameraPosition, targetCoordinate);
-            let cameraRight = m3.normalize(m3.cross(cameraDirection, up));
-            let cameraUp = m3.normalize(m3.cross(cameraDirection,cameraRight));
-            
-            let positionVector =[
-                m3.scalarMultiply(cameraPosition,cameraRight),
-                m3.scalarMultiply(cameraPosition,cameraUp),
-                m3.scalarMultiply(cameraPosition,cameraDirection),
-            ]
-            
-            this._resultMatrix = [
-                cameraRight[0],     cameraRight[1],     cameraRight[2],     -positionVector[0],
-                cameraUp[0],        cameraUp[1],        cameraUp[2],        -positionVector[1],
-                cameraDirection[0], cameraDirection[1], cameraDirection[2], -positionVector[2],
-                0,                  0,                  0,                  0     
-            ]
+            if(cameraPosition == null)
+                cameraPosition = [0, 0, -30]
 
-            console.log('CameraMatrix', this._resultMatrix)
-            console.log('Test eye of CameraMatrix', m3.MultiplyMatrixAndVectors(this._resultMatrix, [...cameraDirection, 1]))
-            console.log('Test right of CameraMatrix', m3.MultiplyMatrixAndVectors(this._resultMatrix, [...cameraRight, 0]))
+            this._cameraDirection = m3.subtractVectors(cameraPosition, targetCoordinate)
+            this._cameraRight= m3.normalize(m3.cross(up, this._cameraDirection))
+            this._cameraUp = m3.normalize(m3.cross(this._cameraDirection, this._cameraRight))
+            this._cameraPosition = cameraPosition
+            console.log('CameraPosition', cameraPosition)
+            
         }
     
         public get matrix()
         {
-            return this._resultMatrix;
+           let resultMatrix =  [
+                this._cameraRight[0],     this._cameraRight[1],     this._cameraRight[2],     -m3.scalarMultiply(this._cameraPosition, this._cameraRight),
+                this._cameraUp[0],        this._cameraUp[1],        this._cameraUp[2],        -m3.scalarMultiply(this._cameraPosition, this._cameraUp),
+                this._cameraDirection[0], this._cameraDirection[1], this._cameraDirection[2], -m3.scalarMultiply(this._cameraPosition, this._cameraDirection),
+                0,                                               0,                        0,                                   1     
+            ];
+
+            console.log('CameraMatrix', resultMatrix)
+            console.log('Test eye of CameraMatrix', m3.MultiplyMatrixAndVectors(resultMatrix, [...this._cameraPosition, 1]))
+            console.log('Test right of CameraMatrix', m3.MultiplyMatrixAndVectors(resultMatrix, [...this._cameraRight, 0]))
+           
+            return resultMatrix;
+        }
+
+        public slide(deltaRight:any = 0, deltaUp: any = 0, deltaDirection: any = 0)
+        {
+           // debugger
+            for(let i = 0; i < 3; i++)
+            {
+                this._cameraPosition[i] += deltaRight * this._cameraRight[i] + 
+                                              deltaUp * this._cameraUp[i] +
+                                       deltaDirection * this._cameraDirection[i]
+            } 
+
         }
     }
 }
