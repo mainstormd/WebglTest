@@ -7,7 +7,7 @@ namespace MainProgram{
         uniform mat4 u_matrix;
 
         void main() { 
-            gl_Position = u_matrix  *  a_Position;
+            gl_Position = a_Position  * u_matrix;
         }
     `;
 

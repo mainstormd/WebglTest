@@ -7,19 +7,19 @@ namespace MainProgram{
       var rangeInv = 1.0 / ( near - far );
 
       return [
-        f / aspect,       0,                       0,                         0,
-                 0,       f,                       0,                         0,
-                 0,       0, (near + far) * rangeInv, 2 * near * far * rangeInv,
-                 0,       0,                      -1,                         0
+        f / aspect,       0,                          0,                         0,
+                 0,       f,                          0,                         0,
+                 0,       0,    (near + far) * rangeInv,                        -1,
+                 0,       0, 2 * near * far * rangeInv ,                         0
       ];
     },    
 
     translation: function(tx : any, ty : any, tz : any) {
       return [
-         1,  0,  0,  0,
-         0,  1,  0,  0,
-         0,  0,  1,  0,
-         tx, ty, tz, 1,
+         1,  0,  0,  tx,
+         0,  1,  0,  ty,
+         0,  0,  1,  tz,
+         0,  0,  0, 1,
       ];
     },
    
@@ -217,7 +217,7 @@ namespace MainProgram{
           let aspect = glContext.canvas.width / glContext.canvas.height;
 
           let projectionMatrix = m3.perspective(fieldOfViewRadians, aspect, zNear, zFar);
-          let cameraMatrix = camera.matrix;
+          let cameraMatrix =  m3.translation(-30,30,-100)//camera.matrix;
           let matrix = m3.MultiplyMatrix(projectionMatrix, cameraMatrix);
 
           // Set the matrix.
@@ -245,7 +245,7 @@ namespace MainProgram{
           let positionBuffer = glContext.createBuffer();
               glContext.bindBuffer(glContext.ARRAY_BUFFER, positionBuffer);
               glContext.bufferData(glContext.ARRAY_BUFFER, new Float32Array(positions), glContext.STATIC_DRAW)
-              
+          
           return count;
         }
 

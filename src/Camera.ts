@@ -37,16 +37,15 @@ namespace MainProgram{
             return resultMatrix;
         }
 
-        public slide(deltaRight:any = 0, deltaUp: any = 0, deltaDirection: any = 0)
+        public slide( deltaRight: any = 0, deltaUp: any = 0, deltaDirection: any = 0 )
         {
-           // debugger
+           
             for(let i = 0; i < 3; i++)
             {
                 this._cameraPosition[i] += deltaRight * this._cameraRight[i] + 
                                               deltaUp * this._cameraUp[i] +
                                        deltaDirection * this._cameraDirection[i]
             } 
-
         }
     }
 }

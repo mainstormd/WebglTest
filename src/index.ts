@@ -18,16 +18,16 @@ function KeyPressHandler(event : any)
     switch(key)
     {
         case "w":
-            currentCamera.slide( undefined, undefined, -delta)
+            currentCamera.slide( 0, 0, -delta)
             break;
         case "a":
-            currentCamera.slide(-delta); 
+            currentCamera.slide(delta); 
             break;
         case "s":
-            currentCamera.slide( undefined, undefined, delta )
+            currentCamera.slide( 0, 0, delta )
             break; 
         case "d":
-            currentCamera.slide(delta);
+            currentCamera.slide(-delta);
             break;                    
     }
     
