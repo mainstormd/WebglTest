@@ -6,19 +6,18 @@ namespace MainProgram{
         private _cameraRight: any;
         private _cameraUp: any;
 
-        constructor(cameraPosition   : any = [0, 0, -30],
+        constructor(cameraPosition   : any = [0, 0, -100],
                     targetCoordinate : any = [0, 0, 0], 
                     up               : any = [0, 1, 0])
         {
             if(cameraPosition == null)
                 cameraPosition = [0, 0, -30]
 
-            this._cameraDirection = m3.subtractVectors(cameraPosition, targetCoordinate)
+            this._cameraDirection = m3.normalize(m3.subtractVectors(cameraPosition, targetCoordinate))
             this._cameraRight= m3.normalize(m3.cross(up, this._cameraDirection))
             this._cameraUp = m3.normalize(m3.cross(this._cameraDirection, this._cameraRight))
             this._cameraPosition = cameraPosition
             console.log('CameraPosition', cameraPosition)
-            
         }
     
         public get matrix()

@@ -9,8 +9,8 @@ namespace MainProgram{
       return [
         f / aspect,       0,                          0,                         0,
                  0,       f,                          0,                         0,
-                 0,       0,    (near + far) * rangeInv,                        -1,
-                 0,       0, 2 * near * far * rangeInv ,                         0
+                 0,       0,    (near + far) * rangeInv, 2 * near * far * rangeInv,
+                 0,       0,                         -1,                         0
       ];
     },    
 
@@ -28,10 +28,10 @@ namespace MainProgram{
       var s = Math.sin(angleInRadians);
    
       return [
-        1, 0, 0, 0,
-        0, c, s, 0,
-        0, -s, c, 0,
-        0, 0, 0, 1, 
+        1, 0,  0, 0,
+        0, c, -s, 0,
+        0, s,  c, 0,
+        0, 0,  0, 1, 
       ];
     },
    
@@ -40,11 +40,11 @@ namespace MainProgram{
       var s = Math.sin(angleInRadians);
    
       return [
-        c, 0, -s, 0,
+        c, 0, s, 0,
         0, 1, 0, 0,
-        s, 0, c, 0,
+       -s, 0, c, 0,
         0, 0, 0, 1,
-      ];
+     ];
     },
    
     zRotation: function(angleInRadians : any) {
@@ -52,11 +52,11 @@ namespace MainProgram{
       var s = Math.sin(angleInRadians);
    
       return [
-         c, s, 0, 0,
-        -s, c, 0, 0,
-         0, 0, 1, 0,
-         0, 0, 0, 1,
-      ];
+        c, -s, 0, 0,
+        s,  c,  0, 0,
+        0,  0, 1, 0,
+        0,  0, 0, 1,
+     ];
     },
    
     scaling: function(sx : any, sy : any, sz : any) {
@@ -81,6 +81,7 @@ namespace MainProgram{
       return resultMatrix;
     },
 
+    ///matrix row major
     MultiplyMatrixAndVectors: function (a: any, b: any)
     {
       const dimentionOfMatrix = 4;
@@ -97,21 +98,19 @@ namespace MainProgram{
       return resultMatrix;
     },
 
-    vectorMultiply: function(v : any, m : any) {
-      var dst = [];
-      for (var i = 0; i < 4; ++i) {
-        dst[i] = 0.0;
-        for (var j = 0; j < 4; ++j) {
-          dst[i] += v[j] * m[j * 4 + i];
-        }
-      }
-      return dst;
-    },
-
     subtractVectors: function (a : any, b : any) {
       return [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
     },
-    
+
+    additionVectors: function(a: any, b: any){
+      return  [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+    },
+
+    multiplyScalarOnVector: function(scalar : any, vector : any)
+    {
+      return  [scalar * vector[0], scalar * vector[1], scalar * vector[2]];
+    },
+
     normalize: function normalize(v : any) {
       var length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
       // make sure we don't divide by 0.
@@ -128,15 +127,25 @@ namespace MainProgram{
               a[0] * b[1] - a[1] * b[0]];
     },
 
-    scalarMultiply: function( a: any, b: any){
+    scalarMultiply: function(a: any, b: any){
       return a[0] * b[0] + a[1] * b[1] + a[2]*b[2];
-    } 
+    }
   };
 
   function degToRad(d : any) {
     return d * Math.PI / 180;
   }
+/*
+  function matrixToString( matrix : any )
+  {
+    let stringOfMatrices = ""
 
+    for(let i = 0; i < 4; i++)
+        for(let j = 0; j < 4; j++)
+          stringOfMatrices += matrix[i]
+
+  }
+*/
     export class Engine{
         
         private _canvas: HTMLCanvasElement;
@@ -146,10 +155,9 @@ namespace MainProgram{
         constructor()
         {
             this._canvas = GlUtilities.initialize("glcanvas")
-            console.log(this._canvas)
+
             if (glContext) {
                 glContext.clearColor(0.1, 0.3, 0.1, 1.0); // установить в качестве цвета очистки буфера цвета чёрный, полная непрозрачность
-               // glContext.clearDepth(1);                  
                 glContext.enable(glContext.DEPTH_TEST);                               // включает использование буфера глубины
                 glContext.depthFunc(glContext.LESS);                                // определяет работу буфера глубины: более ближние объекты перекрывают дальние
                 glContext.clear(glContext.COLOR_BUFFER_BIT | glContext.DEPTH_BUFFER_BIT);      // очистить буфер цвета и буфер глубины.
@@ -217,7 +225,7 @@ namespace MainProgram{
           let aspect = glContext.canvas.width / glContext.canvas.height;
 
           let projectionMatrix = m3.perspective(fieldOfViewRadians, aspect, zNear, zFar);
-          let cameraMatrix =  m3.translation(-30,30,-100)//camera.matrix;
+          let cameraMatrix = camera.matrix;
           let matrix = m3.MultiplyMatrix(projectionMatrix, cameraMatrix);
 
           // Set the matrix.
@@ -225,7 +233,7 @@ namespace MainProgram{
 
           // draw
           let offset = 0;
-              glContext.vertexAttribPointer( positionAttributeLocation, 3, glContext.FLOAT, false, 0, offset);
+              glContext.vertexAttribPointer(positionAttributeLocation, 3, glContext.FLOAT, false, 0, offset);
               glContext.drawArrays(glContext.TRIANGLES, offset, count);
         }
 

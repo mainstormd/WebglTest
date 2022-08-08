@@ -1,6 +1,5 @@
-
 window.onload =  function (){
-    let engine = new MainProgram.Engine()
+    let engine = new MainProgram.TestEngine()
     engine.DrawScence(engine.Camera)
     window.engine = engine; 
 }
@@ -13,7 +12,8 @@ function KeyPressHandler(event : any)
     let key = event.key
     let engine = window.engine
     let currentCamera = engine.Camera
-    let delta = 0.3;
+    let position = currentCamera._cameraPosition;
+    let delta = 2;
   
     switch(key)
     {
@@ -21,7 +21,7 @@ function KeyPressHandler(event : any)
             currentCamera.slide( 0, 0, -delta)
             break;
         case "a":
-            currentCamera.slide(delta); 
+            currentCamera.slide(delta) 
             break;
         case "s":
             currentCamera.slide( 0, 0, delta )
