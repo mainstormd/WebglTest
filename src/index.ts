@@ -1,5 +1,5 @@
 window.onload =  function (){
-    let engine = new MainProgram.TestEngine()
+    let engine = new MainProgram.Engine()
     engine.DrawScence(engine.Camera)
     window.engine = engine; 
 }
@@ -12,9 +12,9 @@ function KeyPressHandler(event : any)
     let key = event.key
     let engine = window.engine
     let currentCamera = engine.Camera
-    let position = currentCamera._cameraPosition;
     let delta = 2;
-  
+    let angle = currentCamera._angle;
+
     switch(key)
     {
         case "w":
@@ -28,7 +28,10 @@ function KeyPressHandler(event : any)
             break; 
         case "d":
             currentCamera.slide(-delta);
-            break;                    
+            break;
+        case "f":
+            currentCamera.roll(delta);
+            break;                        
     }
     
    engine.DrawScence(currentCamera)

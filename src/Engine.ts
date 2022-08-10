@@ -132,7 +132,7 @@ namespace MainProgram{
     }
   };
 
-  function degToRad(d : any) {
+  export function degToRad(d : any) {
     return d * Math.PI / 180;
   }
 /*
@@ -215,6 +215,7 @@ namespace MainProgram{
             
           let positionAttributeLocation = glContext.getAttribLocation(this._shaderProgram, "a_Position");
               glContext.enableVertexAttribArray(positionAttributeLocation);
+              glContext.vertexAttribPointer(positionAttributeLocation, 3, glContext.FLOAT, false, 0, 0);
 
           let matrixLocation = glContext.getUniformLocation(this._shaderProgram, "u_matrix");
           
@@ -233,7 +234,6 @@ namespace MainProgram{
 
           // draw
           let offset = 0;
-              glContext.vertexAttribPointer(positionAttributeLocation, 3, glContext.FLOAT, false, 0, offset);
               glContext.drawArrays(glContext.TRIANGLES, offset, count);
         }
 
