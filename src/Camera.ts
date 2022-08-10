@@ -56,18 +56,57 @@ namespace MainProgram{
             let cameraRightOld = this._cameraRight; 
             
             this._cameraRight = [
-                cos * cameraRightOld[0] + sin * cameraRightOld[0],
-                cos * cameraRightOld[1] + sin * cameraRightOld[1],
-                cos * cameraRightOld[2] + sin * cameraRightOld[2],
+                cos * cameraRightOld[0] + sin * this._cameraUp[0],
+                cos * cameraRightOld[1] + sin * this._cameraUp[1],
+                cos * cameraRightOld[2] + sin * this._cameraUp[2],
             ]
 
             this._cameraUp = [
-                -sin * cameraRightOld[0] + cos * cameraRightOld[0],
-                -sin * cameraRightOld[1] + cos * cameraRightOld[1],
-                -sin * cameraRightOld[2] + cos * cameraRightOld[2],
+                -sin * cameraRightOld[0] + cos * this._cameraUp[0],
+                -sin * cameraRightOld[1] + cos * this._cameraUp[1],
+                -sin * cameraRightOld[2] + cos * this._cameraUp[2],
+            ] 
+        }
+/*
+        public pitch( angle : any)
+        {
+            let angleInRadians = degToRad(angle)
+            let cos = Math.cos(angleInRadians);
+            let sin = Math.sin(angleInRadians);
+            let cameraRightOld = this._cameraRight; 
+            
+            this._cameraRight = [
+                cos * cameraRightOld[0] + sin * this._cameraUp[0],
+                cos * cameraRightOld[1] + sin * this._cameraUp[1],
+                cos * cameraRightOld[2] + sin * this._cameraUp[2],
+            ]
+
+            this._cameraUp = [
+                -sin * cameraRightOld[0] + cos * this._cameraUp[0],
+                -sin * cameraRightOld[1] + cos * this._cameraUp[1],
+                -sin * cameraRightOld[2] + cos * this._cameraUp[2],
             ] 
         }
 
+        public yaw ( angle : any)
+        {
+            let angleInRadians = degToRad(angle)
+            let cos = Math.cos(angleInRadians);
+            let sin = Math.sin(angleInRadians);
+            let cameraRightOld = this._cameraRight; 
+            
+            this._cameraRight = [
+                cos * cameraRightOld[0] + sin * this._cameraUp[0],
+                cos * cameraRightOld[1] + sin * this._cameraUp[1],
+                cos * cameraRightOld[2] + sin * this._cameraUp[2],
+            ]
 
+            this._cameraUp = [
+                -sin * cameraRightOld[0] + cos * this._cameraUp[0],
+                -sin * cameraRightOld[1] + cos * this._cameraUp[1],
+                -sin * cameraRightOld[2] + cos * this._cameraUp[2],
+            ] 
+        }
+*/
     }
 }
