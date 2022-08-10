@@ -5,7 +5,6 @@ namespace MainProgram{
         private _cameraPosition: any;
         private _cameraRight: any;
         private _cameraUp: any;
-        public  _angle: any;
 
         constructor(cameraPosition   : any = [0, 0, -100],
                     targetCoordinate : any = [0, 0, 0], 
@@ -67,27 +66,27 @@ namespace MainProgram{
                 -sin * cameraRightOld[2] + cos * this._cameraUp[2],
             ] 
         }
-/*
+
         public pitch( angle : any)
         {
             let angleInRadians = degToRad(angle)
             let cos = Math.cos(angleInRadians);
             let sin = Math.sin(angleInRadians);
-            let cameraRightOld = this._cameraRight; 
+            let cameraDirectionOld = this._cameraDirection; 
             
-            this._cameraRight = [
-                cos * cameraRightOld[0] + sin * this._cameraUp[0],
-                cos * cameraRightOld[1] + sin * this._cameraUp[1],
-                cos * cameraRightOld[2] + sin * this._cameraUp[2],
+            this._cameraDirection = [
+                cos * cameraDirectionOld[0] + sin * this._cameraUp[0],
+                cos * cameraDirectionOld[1] + sin * this._cameraUp[1],
+                cos * cameraDirectionOld[2] + sin * this._cameraUp[2],
             ]
 
             this._cameraUp = [
-                -sin * cameraRightOld[0] + cos * this._cameraUp[0],
-                -sin * cameraRightOld[1] + cos * this._cameraUp[1],
-                -sin * cameraRightOld[2] + cos * this._cameraUp[2],
+                -sin * cameraDirectionOld[0] + cos * this._cameraUp[0],
+                -sin * cameraDirectionOld[1] + cos * this._cameraUp[1],
+                -sin * cameraDirectionOld[2] + cos * this._cameraUp[2],
             ] 
         }
-
+/*
         public yaw ( angle : any)
         {
             let angleInRadians = degToRad(angle)

@@ -13,7 +13,6 @@ function KeyPressHandler(event : any)
     let engine = window.engine
     let currentCamera = engine.Camera
     let delta = 2;
-    let angle = currentCamera._angle;
 
     switch(key)
     {
@@ -31,7 +30,10 @@ function KeyPressHandler(event : any)
             break;
         case "f":
             currentCamera.roll(delta);
-            break;                        
+            break;   
+        case "e":
+            currentCamera.pitch(delta);
+            break;                          
     }
     
    engine.DrawScence(currentCamera)
