@@ -1,6 +1,15 @@
 namespace MainProgram{
 
   export let m3 = {
+    identity :function ()
+    {
+      return [
+        1,  0,  0, 0,
+        0,  1,  0, 0,
+        0,  0,  1, 0,
+        0,  0,  0, 1,
+     ];
+    },
 
     perspective: function(fieldOfViewInRadians : any, aspect : any, near : any, far : any) {
       var f = 1 / Math.tan( 0.5 * fieldOfViewInRadians );
