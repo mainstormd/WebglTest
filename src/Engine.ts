@@ -219,13 +219,7 @@ namespace MainProgram{
           glContext.disable(glContext.CULL_FACE);
           glContext.enable(glContext.DEPTH_TEST);
           glContext.useProgram(this._shaderProgram);
-
-          let count = this.SetPlaneGeometry()
             
-          let positionAttributeLocation = glContext.getAttribLocation(this._shaderProgram, "a_Position");
-              glContext.enableVertexAttribArray(positionAttributeLocation);
-              glContext.vertexAttribPointer(positionAttributeLocation, 3, glContext.FLOAT, false, 0, 0);
-
           let matrixLocation = glContext.getUniformLocation(this._shaderProgram, "u_matrix");
           
           // Compute the matrix
@@ -241,9 +235,27 @@ namespace MainProgram{
           // Set the matrix.
           glContext.uniformMatrix4fv(matrixLocation, false, matrix);
 
+          let { position, countPostions : count, color, indices } = this.SetPlaneGeometry()
+
+          //order important, first use bind, second enable attr pointer 
+          glContext.bindBuffer(glContext.ARRAY_BUFFER, position);
+
+            let positionAttributeLocation = glContext.getAttribLocation(this._shaderProgram, "a_Position");
+            glContext.vertexAttribPointer(positionAttributeLocation, 3, glContext.FLOAT, false, 0, 0);
+            glContext.enableVertexAttribArray(positionAttributeLocation);
+
+          glContext.bindBuffer(glContext.ARRAY_BUFFER, color);
+
+            let vertexColorAttribute = glContext.getAttribLocation(this._shaderProgram, "u_color");
+            glContext.vertexAttribPointer(vertexColorAttribute, 4, glContext.FLOAT, false, 0, 0);
+            glContext.enableVertexAttribArray(vertexColorAttribute);
+
+          if(indices.length > 0)
+            glContext.bindBuffer(glContext.ELEMENT_ARRAY_BUFFER, indices)
+         
           // draw
           let offset = 0;
-              glContext.drawArrays(glContext.TRIANGLES, offset, count);
+             glContext.drawArrays(glContext.TRIANGLES, offset, count);
         }
 
         public SetPlaneGeometry() : any
@@ -252,6 +264,7 @@ namespace MainProgram{
             -70,  50, 0, 
             -70, -50, 0,
              50,  50, 0, 
+             
             -70, -50, 0,
              50,  50, 0,
              50, -50, 0
@@ -262,8 +275,31 @@ namespace MainProgram{
           let positionBuffer = glContext.createBuffer();
               glContext.bindBuffer(glContext.ARRAY_BUFFER, positionBuffer);
               glContext.bufferData(glContext.ARRAY_BUFFER, new Float32Array(positions), glContext.STATIC_DRAW)
+
+          const faceColors = [ 
+            [1.0,  0.0,  0.0,  1.0],  
+            [0.0,  0.0,  1.0,  1.0]   
+          ]   
           
-          return count;
+          let colors : any = [];
+          
+          for (var j = 0; j < faceColors.length; ++j) {
+            const c = faceColors[j];
+        
+            // Repeat each color four times for the four vertices of the face
+            colors = colors.concat(c, c, c);
+          }
+          
+          const colorBuffer = glContext.createBuffer();
+          glContext.bindBuffer(glContext.ARRAY_BUFFER, colorBuffer);
+          glContext.bufferData(glContext.ARRAY_BUFFER, new Float32Array(colors), glContext.STATIC_DRAW);
+
+          return {
+            position: positionBuffer,
+            countPostions: count,
+            color: colorBuffer,
+            indices: [],
+          };
         }
 
         public SetCoubeGeometry() : any
@@ -313,6 +349,8 @@ namespace MainProgram{
             -1.0,  1.0, -1.0,
           ];
 
+          let count = positions.length
+          
           const indexBuffer = glContext.createBuffer();
           glContext.bindBuffer(glContext.ELEMENT_ARRAY_BUFFER, indexBuffer);
 
@@ -353,6 +391,7 @@ namespace MainProgram{
 
           return {
             position: positionBuffer,
+            countPostions: count,
             color: colorBuffer,
             indices: indexBuffer,
           };

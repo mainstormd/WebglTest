@@ -5,6 +5,7 @@ namespace MainProgram{
         public _cameraPosition: any;
         private _cameraRight: any;
         private _cameraUp: any;
+        private _targetCoordinate: any;
 
         constructor(cameraPosition   : any = [0, 0, -100],
                     targetCoordinate : any = [0, 0, 0], 
@@ -13,6 +14,7 @@ namespace MainProgram{
             if(cameraPosition == null)
                 cameraPosition = [0, 0, -30]
 
+            this._targetCoordinate = targetCoordinate
             this._cameraDirection = m3.normalize(m3.subtractVectors(cameraPosition,targetCoordinate))
             this._cameraRight= m3.normalize(m3.cross(up, this._cameraDirection))
             this._cameraUp = m3.normalize(m3.cross(this._cameraDirection, this._cameraRight))

@@ -3,11 +3,11 @@ window.onload =  function (){
     
     let currentCamera = engine.Camera
     
-    //currentCamera.yaw(-20);
+   // currentCamera.yaw(-20);
     //currentCamera.pitch(20);
 
-    //currentCamera.yaw(20);
-    //currentCamera.pitch(-20);
+   // currentCamera.yaw(20);
+   // currentCamera.pitch(-20);
 
     engine.DrawScence(currentCamera)
     window.engine = engine; 
@@ -38,7 +38,11 @@ function KeyPressHandler(event : any)
             currentCamera.slide(delta);
             break;   
         case "q":
-        currentCamera.pitch(-delta);
+       { 
+           let target = currentCamera._targetCoordinate; 
+           target[0] += 1; 
+           currentCamera = new MainProgram.Camera(currentCamera._cameraPosition, target)
+       }
         break;                       
     }
     
@@ -73,7 +77,7 @@ function mouseHandler( event : any)
     let yoffset = lastY - ypos; 
     lastX = xpos;
     lastY = ypos;
-    //console.log('x=%s, y=%s',xoffset,yoffset)
+
     let sensitivity = 0.1;
     xoffset *= sensitivity;
     yoffset *= sensitivity;
@@ -90,7 +94,7 @@ function mouseHandler( event : any)
     currentCamera.yaw(-yaw);
     currentCamera.pitch(pitch);
    
-   /* my idea
+  /* my idea
     let degToRad = (d : any ) => d * Math.PI / 180;
 
     let normalize = function normalize(v : any) {
@@ -103,13 +107,37 @@ function mouseHandler( event : any)
         }
     }  
 
-    let newDirection = [
+    let additionVectors = function(a: any, b: any)
+    {
+        return  [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+    }  
+
+    let multiply = function(a: any, b: any)
+    {
+        return  [a[0] * b[0], a[1] * b[1], a[2] * b[2]];
+    }  
+
+    let newDirection = normalize([
             Math.cos(degToRad(yaw)) * Math.cos(degToRad(pitch)),
             Math.sin(degToRad(pitch)),
             Math.sin(degToRad(yaw)) * Math.cos(degToRad(pitch))
-    ]
+    ])
+ 
+    let newTarget = additionVectors(currentCamera._targetCoordinate, newDirection)
+  
+    console.log('site: cameraTarget old', currentCamera._targetCoordinate)   
+    console.log('site: deltaDirection', newDirection)
+    console.log('site: new target', newTarget)  
 
-    let newTarget = normalize(newDirection)
-    let camera = new MainProgram.Camera(currentCamera._cameraPosition, newTarget)
-   */ engine.DrawScence(currentCamera)
+    //let target = currentCamera._targetCoordinate; 
+    //target[1] += 0.1; 
+
+    ///Странный баг
+    engine.Camera  = new MainProgram.Camera(currentCamera._cameraPosition, newDirection)
+    currentCamera = engine.Camera
+    console.log('site: camera', currentCamera)
+    console.log('site: camera Engine', engine.Camera)
+    //debugger
+    */
+   engine.DrawScence(currentCamera)
 }
