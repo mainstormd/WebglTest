@@ -135,17 +135,6 @@ namespace MainProgram{
   export function degToRad(d : any) {
     return d * Math.PI / 180;
   }
-/*
-  function matrixToString( matrix : any )
-  {
-    let stringOfMatrices = ""
-
-    for(let i = 0; i < 4; i++)
-        for(let j = 0; j < 4; j++)
-          stringOfMatrices += matrix[i]
-
-  }
-*/
     export class Engine{
         
         private _canvas: HTMLCanvasElement;
