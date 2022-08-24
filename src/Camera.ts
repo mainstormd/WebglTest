@@ -7,7 +7,7 @@ namespace MainProgram{
         private _cameraUp: any;
         private _targetCoordinate: any;
 
-        constructor(cameraPosition   : any = [0, 0, -100],
+        constructor(cameraPosition   : any = [0, 0, -10],
                     targetCoordinate : any = [0, 0, 0], 
                     up               : any = [0, 1, 0])
         {

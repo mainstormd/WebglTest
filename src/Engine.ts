@@ -235,7 +235,7 @@ namespace MainProgram{
           // Set the matrix.
           glContext.uniformMatrix4fv(matrixLocation, false, matrix);
 
-          let { position, countPostions : count, color, indices } = this.SetPlaneGeometry()
+          let { position, countVertex : count, color, indices } = this.SetPlaneGeometry()
 
           //order important, first use bind, second enable attr pointer 
           glContext.bindBuffer(glContext.ARRAY_BUFFER, position);
@@ -249,13 +249,14 @@ namespace MainProgram{
             let vertexColorAttribute = glContext.getAttribLocation(this._shaderProgram, "u_color");
             glContext.vertexAttribPointer(vertexColorAttribute, 4, glContext.FLOAT, false, 0, 0);
             glContext.enableVertexAttribArray(vertexColorAttribute);
-
-          if(indices.length > 0)
+            
+          if(indices != null)
             glContext.bindBuffer(glContext.ELEMENT_ARRAY_BUFFER, indices)
          
           // draw
           let offset = 0;
-             glContext.drawArrays(glContext.TRIANGLES, offset, count);
+            // glContext.drawArrays(glContext.TRIANGLES, offset, count);
+             glContext.drawElements(glContext.TRIANGLES, count, glContext.UNSIGNED_SHORT, offset);
         }
 
         public SetPlaneGeometry() : any
@@ -269,8 +270,6 @@ namespace MainProgram{
              50,  50, 0,
              50, -50, 0
           ]
-
-          let count = positions.length;
 
           let positionBuffer = glContext.createBuffer();
               glContext.bindBuffer(glContext.ARRAY_BUFFER, positionBuffer);
@@ -294,11 +293,19 @@ namespace MainProgram{
           glContext.bindBuffer(glContext.ARRAY_BUFFER, colorBuffer);
           glContext.bufferData(glContext.ARRAY_BUFFER, new Float32Array(colors), glContext.STATIC_DRAW);
 
+          const indexBuffer = glContext.createBuffer();
+          glContext.bindBuffer(glContext.ELEMENT_ARRAY_BUFFER, indexBuffer);
+          
+          const indices = [0,1,2,3,4,5]
+          glContext.bufferData(glContext.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), glContext.STATIC_DRAW);
+          
+          let count = indices.length
+
           return {
             position: positionBuffer,
-            countPostions: count,
+            countVertex: count,
             color: colorBuffer,
-            indices: [],
+            indices: null,
           };
         }
 
@@ -349,11 +356,8 @@ namespace MainProgram{
             -1.0,  1.0, -1.0,
           ];
 
-          let count = positions.length
+          glContext.bufferData(glContext.ARRAY_BUFFER, new Float32Array(positions), glContext.STATIC_DRAW);
           
-          const indexBuffer = glContext.createBuffer();
-          glContext.bindBuffer(glContext.ELEMENT_ARRAY_BUFFER, indexBuffer);
-
           const faceColors = [
             [1.0,  1.0,  1.0,  1.0],    // Front face: white
             [1.0,  0.0,  0.0,  1.0],    // Back face: red
@@ -378,6 +382,10 @@ namespace MainProgram{
           glContext.bindBuffer(glContext.ARRAY_BUFFER, colorBuffer);
           glContext.bufferData(glContext.ARRAY_BUFFER, new Float32Array(colors), glContext.STATIC_DRAW);
 
+
+          const indexBuffer = glContext.createBuffer();
+          glContext.bindBuffer(glContext.ELEMENT_ARRAY_BUFFER, indexBuffer);
+
           const indices = [
             0,  1,  2,      0,  2,  3,    // front
             4,  5,  6,      4,  6,  7,    // back
@@ -388,10 +396,12 @@ namespace MainProgram{
           ];
 
           glContext.bufferData(glContext.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), glContext.STATIC_DRAW);
+          
+          let count = indices.length
 
           return {
             position: positionBuffer,
-            countPostions: count,
+            countVertex: count,
             color: colorBuffer,
             indices: indexBuffer,
           };

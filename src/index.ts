@@ -78,7 +78,7 @@ function mouseHandler( event : any)
     lastX = xpos;
     lastY = ypos;
 
-    let sensitivity = 0.1;
+    let sensitivity = 0.5;
     xoffset *= sensitivity;
     yoffset *= sensitivity;
 
