@@ -1,14 +1,7 @@
 window.onload =  function (){
     let engine = new MainProgram.Engine()
-    
     let currentCamera = engine.Camera
     
-   // currentCamera.yaw(-20);
-    //currentCamera.pitch(20);
-
-   // currentCamera.yaw(20);
-   // currentCamera.pitch(-20);
-
     engine.DrawScence(currentCamera)
     window.engine = engine; 
 }
