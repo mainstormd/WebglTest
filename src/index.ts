@@ -14,10 +14,6 @@ let normalize = function normalize(v : any) {
     }
 }
 
-let subtractVectors = function (a : any, b : any) {
-    return [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
-}
-
 window.onload =  function (){
     let engine = new MainProgram.Engine()
 
@@ -30,7 +26,7 @@ window.onload =  function (){
 }
 
 document.addEventListener("keypress", KeyPressHandler)
-let degree = 0
+
 function KeyPressHandler(event : any)
 {
     //Add drawScence function
@@ -59,40 +55,6 @@ function KeyPressHandler(event : any)
         case "r":
             currentCamera.yaw(delta);
         break; 
-        case "q":
-        { 
-            let degToRad = (d : any ) => d * Math.PI / 180;
-
-            let length = function(v: any) : number
-            {
-                let l = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-                if (l > 0.00001) {
-                    return l;
-                } else {
-                    return 0;
-                }
-            }  
-
-            let subtractVectors = function (a : any, b : any) {
-                return [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
-            }
-
-            let r = length(currentCamera._cameraPosition)
-            degree += 1
-            let yaw = 270;
-            let pitch = degree;
-
-            let directionInCoordinateCamera = ([
-                r * Math.sin(degToRad(pitch)) * Math.cos(degToRad(yaw)),
-                r * Math.sin(degToRad(pitch)) * Math.sin(degToRad(yaw)), 
-                r * Math.cos(degToRad(pitch))
-            ])
-
-            let direction = subtractVectors(directionInCoordinateCamera, currentCamera._cameraPosition)
-            console.log('mouse test', directionInCoordinateCamera)
-            currentCamera = new MainProgram.Camera(directionInCoordinateCamera)
-        }
-        break;                       
     }
     
    engine.DrawScence(currentCamera)
@@ -121,12 +83,11 @@ function mouseHandler( event : any)
     {
         lastX = xpos;
         lastY = ypos;
+
         firstMouse = false;
 
-         //yaw = 270;
-         //pitch = 30;
-         yaw = 270;
-         pitch = 70;
+        yaw = 270;
+        pitch = 70;
     }
   
     let xoffset = xpos - lastX;
@@ -146,26 +107,6 @@ function mouseHandler( event : any)
     if(pitch < -89.0)
         pitch = -89.0;
     
-/*
-    let r = length(currentCamera._cameraPosition)
-
-    let newDirectionSpherical = ([
-        r * Math.sin(degToRad(pitch)) * Math.cos(degToRad(yaw)),
-        r * Math.sin(degToRad(pitch)) * Math.sin(degToRad(yaw)), 
-        r * Math.cos(degToRad(pitch))
-    ])
-
-    let direction = subtractVectors(newDirectionSpherical, currentCamera._cameraPosition)
-*/
-    let length = function(v: any) : number
-    {
-        let l = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-        if (l > 0.00001) {
-            return l;
-        } else {
-            return 0;
-        }
-    }
     let newDirection = normalize([
         Math.cos(degToRad(yaw)) * Math.cos(degToRad(pitch)),
         Math.sin(degToRad(pitch)),
