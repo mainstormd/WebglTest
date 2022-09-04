@@ -7,7 +7,7 @@ namespace MainProgram{
         private _cameraUp: any;
         private _targetCoordinate: any;
 
-        constructor(cameraPosition   : any = [0, 0, -100],
+        constructor(cameraPosition   : any = [0, 0, 170],
                     targetCoordinate : any = [0, 0, 0], 
                     up               : any = [0, 1, 0])
         {
@@ -15,11 +15,12 @@ namespace MainProgram{
                 cameraPosition = [0, 0, -30]
 
             this._targetCoordinate = targetCoordinate
-            this._cameraDirection = m3.normalize(m3.subtractVectors(cameraPosition,targetCoordinate))
+            this._cameraDirection = m3.normalize(m3.subtractVectors(cameraPosition, targetCoordinate))
             this._cameraRight= m3.normalize(m3.cross(up, this._cameraDirection))
             this._cameraUp = m3.normalize(m3.cross(this._cameraDirection, this._cameraRight))
             this._cameraPosition = cameraPosition
             console.log('CameraPosition', cameraPosition)
+            console.log('cameraDirection',this._cameraDirection)
         }
     
         public get matrix()
