@@ -131,7 +131,18 @@ export let m3 = {
 
   scalarMultiply: function(a: any, b: any){
     return a[0] * b[0] + a[1] * b[1] + a[2]*b[2];
-  }
+  },
+
+  length: function(v: any) : number
+  {
+      let l = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+      if (l > 0.00001) {
+          return l;
+      } else {
+          return 0;
+      }
+  } 
+
 };
 
 export function degToRad(d : any) {

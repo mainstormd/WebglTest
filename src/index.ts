@@ -142,18 +142,8 @@ function mouseHandlerOrbitCamera( event : any)
         pitch = 89.0;
     if(pitch < -89.0)
         pitch = -89.0;
-
-    let length = function(v: any) : number
-    {
-        let l = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-        if (l > 0.00001) {
-            return l;
-        } else {
-            return 0;
-        }
-    } 
-
-    let r = length(currentCamera._cameraPosition)
+  
+    let r = m3.length(currentCamera._cameraPosition)
 
     let newPosition = ([
         r * Math.sin(degToRad(pitch)) * Math.cos(degToRad(yaw)),
