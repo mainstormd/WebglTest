@@ -4,9 +4,10 @@
     "outDir": "dist",
     "target": "ES6",
     "strict": true,
-    "outFile": "dist/bundle.js",
+    //"outFile": "dist/bundle.js",
     "allowJs": true,
-    "typeRoots":["./src/types"]
+    "typeRoots":["./src/types"],
+    "module": "CommonJS"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]

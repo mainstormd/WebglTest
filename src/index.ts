@@ -1,24 +1,11 @@
-let additionVectors = function(a: any, b: any){
-    return  [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
-}
-
-let degToRad = (d : any ) => d * Math.PI / 180;
-
-let normalize = function normalize(v : any) {
-    var length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-    // make sure we don't divide by 0.
-    if (length > 0.00001) {
-      return [v[0] / length, v[1] / length, v[2] / length];
-    } else {
-      return [0, 0, 0];
-    }
-}
+import { Camera } from "./Camera";
+import { degToRad, Engine, m3 } from "./Engine";
 
 window.onload =  function (){
-    let engine = new MainProgram.Engine()
+    let engine = new Engine()
 
     //engine.Camera = new MainProgram.Camera([-1.5, -86, 122])
-    engine.Camera = new MainProgram.Camera([0, 95, 10])
+    engine.Camera = new Camera([0, 95, 10])
     let currentCamera = engine.Camera
     
     engine.DrawScence(currentCamera)
@@ -35,7 +22,7 @@ function KeyPressHandler(event : any)
     let currentCamera = engine.Camera
     let delta = 2;
 
-    switch(key)
+    switch( key )
     {
         case "w":
             currentCamera.slide( 0, 0, -delta)
@@ -51,10 +38,10 @@ function KeyPressHandler(event : any)
             break;   
         case "e":
             currentCamera.pitch(delta);
-        break; 
+            break; 
         case "r":
             currentCamera.yaw(delta);
-        break; 
+            break; 
     }
     
    engine.DrawScence(currentCamera)
@@ -107,16 +94,16 @@ function mouseHandler( event : any)
     if(pitch < -89.0)
         pitch = -89.0;
     
-    let newDirection = normalize([
+    let newDirection = m3.normalize([
         Math.cos(degToRad(yaw)) * Math.cos(degToRad(pitch)),
         Math.sin(degToRad(pitch)),
         Math.sin(degToRad(yaw)) * Math.cos(degToRad(pitch))
     ])
     
-    let direction = additionVectors(currentCamera._cameraPosition, newDirection)
+    let direction = m3.additionVectors(currentCamera._cameraPosition, newDirection)
     console.log('pitch=%s, yaw=%s', pitch, yaw)
     ///Странный баг
-    currentCamera = new MainProgram.Camera(currentCamera._cameraPosition, direction)
+    currentCamera = new Camera(currentCamera._cameraPosition, direction)
     engine.Camera = currentCamera
 
    engine.DrawScence(currentCamera)
@@ -175,7 +162,7 @@ function mouseHandlerOrbitCamera( event : any)
     ])
 
     ///Странный баг
-    currentCamera = new MainProgram.Camera(newPosition)
+    currentCamera = new Camera(newPosition)
     engine.Camera = currentCamera
     
    engine.DrawScence(currentCamera)
