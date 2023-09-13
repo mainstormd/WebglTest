@@ -1,11 +1,11 @@
 import { degToRad, m3 } from "./Engine";
 
 export class Camera{
+
     private _cameraDirection: any;
-    public _cameraPosition: any;
+    public  _cameraPosition: any;
     private _cameraRight: any;
     private _cameraUp: any;
-    private _targetCoordinate: any;
 
     constructor(cameraPosition   : any = [0, 0, 170],
                 targetCoordinate : any = [0, 0, 0], 
@@ -14,11 +14,11 @@ export class Camera{
         if(cameraPosition == null)
             cameraPosition = [0, 0, -30]
 
-        this._targetCoordinate = targetCoordinate
         this._cameraDirection = m3.normalize(m3.subtractVectors(cameraPosition, targetCoordinate))
         this._cameraRight= m3.normalize(m3.cross(up, this._cameraDirection))
         this._cameraUp = m3.normalize(m3.cross(this._cameraDirection, this._cameraRight))
         this._cameraPosition = cameraPosition
+        
         console.log('CameraPosition', cameraPosition)
         console.log('cameraDirection',this._cameraDirection)
     }
@@ -39,7 +39,7 @@ export class Camera{
         return resultMatrix;
     }
 
-    public slide( deltaRight: any = 0, deltaUp: any = 0, deltaDirection: any = 0 )
+    public slide( deltaRight: number = 0, deltaUp: number = 0, deltaDirection: number = 0 )
     {
         
         for(let i = 0; i < 3; i++)
@@ -50,7 +50,7 @@ export class Camera{
         } 
     }
 
-    public roll( angle : any)
+    public Roll( angle : number)
     {
         let angleInRadians = degToRad(angle)
         let cos = Math.cos(angleInRadians);
@@ -70,7 +70,7 @@ export class Camera{
         ] 
     }
 
-    public pitch( angle : any)
+    public Pitch( angle : number)
     {
         let angleInRadians = degToRad(angle)
         let cos = Math.cos(angleInRadians);
@@ -90,7 +90,7 @@ export class Camera{
         ]
     }
 
-    public yaw( angle : any)
+    public Yaw( angle : number)
     {
         let angleInRadians = degToRad(angle)
         let cos = Math.cos(angleInRadians);
@@ -110,4 +110,55 @@ export class Camera{
         ] 
     }
 
+
+    ///Matrix trabformation by Tait Bryan Angles
+
+    public matrixYaw( angle : number)
+    {
+        let angleInRadians = degToRad(angle)
+        let cameraMatrix = this.matrix;
+        let rotateMatrix = m3.yRotation(angleInRadians);
+        this.DecomposeCameraMatrixToVectors(m3.MultiplyMatrix(cameraMatrix,rotateMatrix))
+    }
+
+    public matrixPitch( angle : number)
+    {
+        let angleInRadians = degToRad(angle)
+        let cameraMatrix = this.matrix;
+        let rotateMatrix = m3.xRotation(angleInRadians);
+        this.DecomposeCameraMatrixToVectors(m3.MultiplyMatrix(cameraMatrix,rotateMatrix))
+    }
+
+    public TaitBryanAngles(pitch:number, yaw: number)
+    {
+        let pitchInRadians = degToRad(pitch)
+        let yawInRadians = degToRad(yaw)
+        let cosP = Math.cos(pitchInRadians);
+        let sinP = Math.sin(pitchInRadians);
+        let cosY = Math.cos(yawInRadians);
+        let sinY = Math.sin(yawInRadians);
+
+        let rotateMatrix = [
+            cosY,          0,         sinY, 0,
+            sinP*sinY,  cosP, -cosY * sinP, 0,
+           -cosP*sinY,  sinP,  cosY * cosP, 0,
+                    0,     0,            0, 1  
+        ]
+        
+        let cameraMatrix = this.matrix;
+        this.DecomposeCameraMatrixToVectors(m3.MultiplyMatrix(cameraMatrix,rotateMatrix))
+    }
+
+    private DecomposeCameraMatrixToVectors( matrix : number[] )
+    {
+        this._cameraRight[0] = matrix[0]
+        this._cameraRight[1] = matrix[1]
+        this._cameraRight[2] = matrix[2]
+        this._cameraUp[0] = matrix[4]
+        this._cameraUp[1] = matrix[5]
+        this._cameraUp[2] = matrix[6]
+        this._cameraDirection[0] = matrix[8]
+        this._cameraDirection[1] = matrix[9]
+        this._cameraDirection[2] = matrix[10]
+    }
 }

@@ -1,31 +1,42 @@
 import { Camera } from "./Camera";
+import { Coub } from "./Coub";
 import { glContext, GlUtilities } from "./GLUtilities";
+import InputSystem from "./InputSystem";
 import { FRAGMENT_SHADER_SOURCE, VERTEX_SHADER_SOURCE } from "./Shaders";
 
 export let m3 = {
 
-  perspective: function(fieldOfViewInRadians : any, aspect : any, near : any, far : any) {
-    var f = 1 / Math.tan( 0.5 * fieldOfViewInRadians );
+  perspective: function(fieldOfViewInRadians : number, aspect : number, near : number, far : number) {
+    var f = 1 / Math.tan( 0.5 * fieldOfViewInRadians ); // tan that not divide by zero
     var rangeInv = 1.0 / ( near - far );
 
     return [
-      f / aspect,       0,                          0,                         0,
+       f / aspect,       0,                          0,                         0,
                 0,       f,                          0,                         0,
                 0,       0,    (near + far) * rangeInv, 2 * near * far * rangeInv,
                 0,       0,                         -1,                         0
     ];
   },    
 
-  translation: function(tx : any, ty : any, tz : any) {
+  IdentityMatrix : function() : number[] {
+    return [
+      1,  0,  0,   0,
+      0,  1,  0,   0,
+      0,  0,  1,   0,
+      0,  0,  0,   1,
+    ]
+  },
+
+  translation: function(tx : number, ty : number, tz : number) {
     return [
         1,  0,  0,  tx,
         0,  1,  0,  ty,
         0,  0,  1,  tz,
-        0,  0,  0, 1,
+        0,  0,  0,   1,
     ];
   },
   
-  xRotation: function(angleInRadians : any) {
+  xRotation: function(angleInRadians : number) {
     var c = Math.cos(angleInRadians);
     var s = Math.sin(angleInRadians);
   
@@ -37,19 +48,19 @@ export let m3 = {
     ];
   },
   
-  yRotation: function(angleInRadians : any) {
+  yRotation: function(angleInRadians : number) {
     var c = Math.cos(angleInRadians);
     var s = Math.sin(angleInRadians);
   
     return [
-      c, 0, s, 0,
-      0, 1, 0, 0,
+       c, 0, s, 0,
+       0, 1, 0, 0,
       -s, 0, c, 0,
-      0, 0, 0, 1,
+       0, 0, 0, 1,
     ];
   },
   
-  zRotation: function(angleInRadians : any) {
+  zRotation: function(angleInRadians : number) {
     var c = Math.cos(angleInRadians);
     var s = Math.sin(angleInRadians);
   
@@ -61,7 +72,7 @@ export let m3 = {
     ];
   },
   
-  scaling: function(sx : any, sy : any, sz : any) {
+  scaling: function(sx : number, sy : number, sz : number) {
     return [
       sx, 0,  0,  0,
       0, sy,  0,  0,
@@ -70,7 +81,7 @@ export let m3 = {
     ];
   },
 
-  MultiplyMatrix: function (a: any, b: any){
+  MultiplyMatrix: function (a: any, b: any) : number [] {
     const dimentionOfMatrix = 4;
     let resultMatrix = new Array(dimentionOfMatrix * dimentionOfMatrix).fill(0);
     let step = dimentionOfMatrix - 1;
@@ -108,8 +119,7 @@ export let m3 = {
     return  [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
   },
 
-  multiplyScalarOnVector: function(scalar : any, vector : any)
-  {
+  multiplyScalarOnVector: function(scalar : any, vector : any){
     return  [scalar * vector[0], scalar * vector[1], scalar * vector[2]];
   },
 
@@ -153,9 +163,9 @@ export class Engine{
     
     private _canvas: HTMLCanvasElement;
     private _shaderProgram: WebGLProgram;
-    public Camera: Camera = new Camera();
+    public InputSystem: InputSystem;
 
-    constructor()
+    constructor(InputSystem: InputSystem)
     {
         this._canvas = GlUtilities.initialize("glcanvas")
 
@@ -169,6 +179,7 @@ export class Engine{
         }
 
         this._shaderProgram = this.InitShadersAndGetProgram();
+        this.InputSystem = InputSystem
     }
     
     private InitShadersAndGetProgram()
@@ -206,12 +217,13 @@ export class Engine{
         return shaderProgram
     }
 
-    public DrawScence (camera : Camera) : void
+    public DrawScence (camera : Camera, renderObjects: any = null) : void
     {
       glContext.viewport(0, 0, glContext.canvas.width, glContext.canvas.height);
       glContext.clear(glContext.COLOR_BUFFER_BIT | glContext.DEPTH_BUFFER_BIT);
-      glContext.disable(glContext.CULL_FACE);
-      glContext.enable(glContext.DEPTH_TEST);
+      glContext.enable(glContext.CULL_FACE);
+      
+      glContext.depthFunc(glContext.LESS);   
       glContext.useProgram(this._shaderProgram);
         
       let matrixLocation = glContext.getUniformLocation(this._shaderProgram, "u_matrix");
@@ -224,19 +236,30 @@ export class Engine{
 
       let projectionMatrix = m3.perspective(fieldOfViewRadians, aspect, zNear, zFar);
       let cameraMatrix = camera.matrix;
-      let matrix = m3.MultiplyMatrix(projectionMatrix, cameraMatrix);
-
-      // Set the matrix.
-      glContext.uniformMatrix4fv(matrixLocation, false, matrix);
-      
+      let viewMatrix = m3.MultiplyMatrix(projectionMatrix, cameraMatrix);
+ 
       let sceneObjects = [
+        this.SetCoubeGeometry(null,true),
         this.SetPlaneGeometry(),
-        this.SetCoubeGeometry()
       ];
+      
+  
+       if(renderObjects != null)
+       {
+        sceneObjects = sceneObjects.concat(renderObjects)
+       }
 
       for(let sceneObject of sceneObjects)
       {
-        let { position, countVertex : count, color, indices } = sceneObject;
+        let { position, countVertex : count, color, indices, modelMatrix } = sceneObject;
+
+        let resultMatrix = viewMatrix 
+        
+        if(modelMatrix != null)
+         resultMatrix = m3.MultiplyMatrix(viewMatrix, modelMatrix) 
+
+         // Set the matrix.
+        glContext.uniformMatrix4fv(matrixLocation, false, resultMatrix);
 
         //order important, first use bind, second enable attr pointer 
         glContext.bindBuffer(glContext.ARRAY_BUFFER, position);
@@ -252,7 +275,9 @@ export class Engine{
           glContext.enableVertexAttribArray(vertexColorAttribute);
           
         if(indices != null)
+        {
           glContext.bindBuffer(glContext.ELEMENT_ARRAY_BUFFER, indices)
+        }  
       
         // draw
         let offset = 0;
@@ -261,7 +286,7 @@ export class Engine{
       }
     }
 
-    public SetPlaneGeometry() : any
+    public SetPlaneGeometry(modelMatrix : number[] | null = null)
     {
       const positions = [
           70,  0, -50, 
@@ -302,6 +327,7 @@ export class Engine{
       let count = indices.length
 
       return {
+        modelMatrix: modelMatrix,
         position: positionBuffer,
         countVertex: count,
         color: colorBuffer,
@@ -309,7 +335,17 @@ export class Engine{
       };
     }
 
-    public SetCoubeGeometry() : any
+    /*
+         1 o--------o 2
+          /|       /|
+         / |      / |
+      3 o--------o 4|
+        |5 o-----|--o 6
+        | /      | /
+        |/       |/
+      7 o--------o 8
+    */
+    public SetCoubeGeometry(modelMatrix : number[] | null = null, isGradientColor: boolean = false)
     {    
       const positionBuffer = glContext.createBuffer();
 
@@ -320,28 +356,28 @@ export class Engine{
 
       const positions = [
         // Front face
-        -1.0,    0,  1.0,
+         -1.0,    0,  1.0,
           1.0,    0,  1.0,
           1.0,  2.0,  1.0,
-        -1.0,  2.0,  1.0,
+         -1.0,  2.0,  1.0,
       
         // Back face
-        -1.0,    0, -1.0,
-        -1.0,  2.0, -1.0,
+         -1.0,    0, -1.0,
+         -1.0,  2.0, -1.0,
           1.0,  2.0, -1.0,
           1.0,    0, -1.0,
       
         // Top face
-        -1.0,  2.0, -1.0,
-        -1.0,  2.0,  1.0,
+         -1.0,  2.0, -1.0,
+         -1.0,  2.0,  1.0,
           1.0,  2.0,  1.0,
           1.0,  2.0, -1.0,
       
         // Bottom face
-        -1.0,    0, -1.0,
+         -1.0,    0, -1.0,
           1.0,    0, -1.0,
           1.0,    0,  1.0,
-        -1.0,    0,  1.0,
+         -1.0,    0,  1.0,
       
         // Right face
           1.0,    0, -1.0,
@@ -350,18 +386,18 @@ export class Engine{
           1.0,    0,  1.0,
       
         // Left face
-        -1.0,    0, -1.0,
-        -1.0,    0,  1.0,
-        -1.0,  2.0,  1.0,
-        -1.0,  2.0, -1.0,
+         -1.0,    0, -1.0,
+         -1.0,    0,  1.0,
+         -1.0,  2.0,  1.0,
+         -1.0,  2.0, -1.0,
       ];
 
       glContext.bufferData(glContext.ARRAY_BUFFER, new Float32Array(positions), glContext.STATIC_DRAW);
       
       const faceColors = [
         [1.0,  1.0,  1.0,  1.0],    // Front face: white
-        [1.0,  0.0,  0.0,  1.0],    // Back face: red
-        [0.0,  1.0,  0.0,  1.0],    // Top face: green
+        [1.0,  0.0,  0.0,  1.0],    // Back face: red /
+        [0.0,  1.0,  0.0,  1.0],    // Top face: green /
         [0.0,  0.0,  1.0,  1.0],    // Bottom face: blue
         [1.0,  1.0,  0.0,  1.0],    // Right face: yellow
         [1.0,  0.0,  1.0,  1.0],    // Left face: purple
@@ -377,7 +413,13 @@ export class Engine{
         // Repeat each color four times for the four vertices of the face
         colors = colors.concat(c, c, c, c);
       }
-    
+     
+      //let it be, change to function
+      if(isGradientColor)
+      { 
+         colors = GetCoubGradient()
+      }
+
       const colorBuffer = glContext.createBuffer();
       glContext.bindBuffer(glContext.ARRAY_BUFFER, colorBuffer);
       glContext.bufferData(glContext.ARRAY_BUFFER, new Float32Array(colors), glContext.STATIC_DRAW);
@@ -400,10 +442,52 @@ export class Engine{
       let count = indices.length
 
       return {
+        modelMatrix: modelMatrix,
         position: positionBuffer,
         countVertex: count,
         color: colorBuffer,
         indices: indexBuffer
       };
     }
+}
+
+export function GetCoubGradient()  
+{ 
+  return [
+        // Front face
+        1.0,  0.0,  0.0,  1.0, 
+        1.0,  0.0,  0.0,  1.0, 
+        1.0,  1.0,  0.0,  1.0,
+        1.0,  1.0,  0.0,  1.0,
+      
+        // Back face
+        0.0,  1.0,  0.0,  1.0,
+        0.0,  1.0,  1.0,  1.0,
+        0.0,  1.0,  1.0,  1.0,
+        0.0,  1.0,  0.0,  1.0,
+      
+        // Top face
+        0.0,  1.0,  1.0,  1.0,
+        1.0,  1.0,  0.0,  1.0,
+        1.0,  1.0,  0.0,  1.0,
+        0.0,  1.0,  1.0,  1.0,
+      
+        // Bottom face
+        0.0,  1.0,  0.0,  1.0,
+        0.0,  1.0,  0.0,  1.0,
+        1.0,  0.0,  0.0,  1.0, 
+        1.0,  0.0,  0.0,  1.0, 
+      
+        // Right face
+        0.0,  1.0,  0.0,  1.0,
+        0.0,  1.0,  1.0,  1.0,
+        1.0,  1.0,  0.0,  1.0,
+        1.0,  0.0,  0.0,  1.0, 
+      
+        // Left face
+        0.0,  1.0,  0.0,  1.0,
+        1.0,  0.0,  0.0,  1.0, 
+        1.0,  1.0,  0.0,  1.0,
+        0.0,  1.0,  1.0,  1.0,
+  ]
 }

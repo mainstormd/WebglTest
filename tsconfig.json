@@ -7,7 +7,8 @@
     //"outFile": "dist/bundle.js",
     "allowJs": true,
     "typeRoots":["./src/types"],
-    "module": "CommonJS"
+    "module": "CommonJS",
+    "noImplicitAny": false
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
