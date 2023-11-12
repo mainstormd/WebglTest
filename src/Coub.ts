@@ -5,6 +5,16 @@ export class Coub{
     private _isGradientColor :boolean = false
     private _transformations :TransfomationsManager = new TransfomationsManager()
 
+     /*
+         1 o--------o 2
+          /|       /|
+         / |      / |
+      3 o--------o 4|
+        |5 o-----|--o 6
+        | /      | /
+        |/       |/
+      7 o--------o 8
+    */
     get RenderAssets()
     {
         const positionBuffer = glContext.createBuffer();

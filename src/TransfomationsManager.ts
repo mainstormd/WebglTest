@@ -1,4 +1,4 @@
-import { degToRad, m3 } from "./Engine";
+import { m3 } from "./Math/math"
 
 
 export class TransfomationsManager{

@@ -1,11 +1,16 @@
-import { degToRad, m3 } from "./Engine";
+import { degToRad, m3 } from "./Math/math";
 
 export class Camera{
 
-    private _cameraDirection: any;
-    public  _cameraPosition: any;
-    private _cameraRight: any;
-    private _cameraUp: any;
+    private _cameraMatrix: number[] = []
+    
+    //position 
+    private  _cameraPosition: any = [];
+    
+    //vectors
+    private _cameraDirection: number[] = [];
+    private _cameraRight: number[] = [];
+    private _cameraUp: number[] = [];
 
     constructor(cameraPosition   : any = [0, 0, 170],
                 targetCoordinate : any = [0, 0, 0], 
@@ -14,32 +19,65 @@ export class Camera{
         if(cameraPosition == null)
             cameraPosition = [0, 0, -30]
 
+        this.InitCameraVectors(cameraPosition,targetCoordinate,up)
+        this.CalculateCameraMatrix()
+    }
+
+    public get matrix() : number []
+    {
+        return this._cameraMatrix;
+    }
+
+    private CalculateCameraMatrix()
+    {
+       this._cameraMatrix = [
+            this._cameraRight[0],     this._cameraRight[1],     this._cameraRight[2],     -m3.scalarMultiply(this._cameraPosition, this._cameraRight),
+            this._cameraUp[0],        this._cameraUp[1],        this._cameraUp[2],        -m3.scalarMultiply(this._cameraPosition, this._cameraUp),
+            this._cameraDirection[0], this._cameraDirection[1], this._cameraDirection[2], -m3.scalarMultiply(this._cameraPosition, this._cameraDirection),
+            0,                                               0,                        0,                                   1                               
+        ];
+
+        console.log('CameraMatrix',  this._cameraMatrix)
+        console.log('Test eye of CameraMatrix', m3.MultiplyMatrixAndVectors( this._cameraMatrix, [...this._cameraPosition, 1]))
+        console.log('Test right of CameraMatrix', m3.MultiplyMatrixAndVectors( this._cameraMatrix, [...this._cameraRight, 0]))
+    }
+
+    private InitCameraVectors(cameraPosition   : any = [0, 0, 170],
+                              targetCoordinate : any = [0, 0, 0], 
+                              up               : any = [0, 1, 0])
+    {
+        this._cameraPosition = cameraPosition  
+
         this._cameraDirection = m3.normalize(m3.subtractVectors(cameraPosition, targetCoordinate))
         this._cameraRight= m3.normalize(m3.cross(up, this._cameraDirection))
         this._cameraUp = m3.normalize(m3.cross(this._cameraDirection, this._cameraRight))
-        this._cameraPosition = cameraPosition
-        
+
         console.log('CameraPosition', cameraPosition)
         console.log('cameraDirection',this._cameraDirection)
     }
 
-    public get matrix()
-    {
-        let resultMatrix =  [
-            this._cameraRight[0],     this._cameraRight[1],     this._cameraRight[2],     -m3.scalarMultiply(this._cameraPosition, this._cameraRight),
-            this._cameraUp[0],        this._cameraUp[1],        this._cameraUp[2],        -m3.scalarMultiply(this._cameraPosition, this._cameraUp),
-            this._cameraDirection[0], this._cameraDirection[1], this._cameraDirection[2], -m3.scalarMultiply(this._cameraPosition, this._cameraDirection),
-            0,                                               0,                        0,                                   1     
-        ];
 
-        console.log('CameraMatrix', resultMatrix)
-        console.log('Test eye of CameraMatrix', m3.MultiplyMatrixAndVectors(resultMatrix, [...this._cameraPosition, 1]))
-        console.log('Test right of CameraMatrix', m3.MultiplyMatrixAndVectors(resultMatrix, [...this._cameraRight, 0]))
-        
-        return resultMatrix;
+    public MoveForward(delta: number) : void
+    {
+        this.Slide(0, 0, -delta)
     }
 
-    public slide( deltaRight: number = 0, deltaUp: number = 0, deltaDirection: number = 0 )
+    public MoveBack(delta: number) : void
+    {
+        this.Slide(0, 0, delta)
+    }
+
+    public MoveRight(delta: number) : void
+    {
+        this.Slide(delta)
+    }
+
+    public MoveLeft(delta: number) : void
+    {
+        this.Slide(-delta) 
+    }
+
+    private Slide( deltaRight: number = 0, deltaUp: number = 0, deltaDirection: number = 0 ) : void
     {
         
         for(let i = 0; i < 3; i++)
@@ -48,9 +86,10 @@ export class Camera{
                                             deltaUp * this._cameraUp[i] +
                                     deltaDirection * this._cameraDirection[i]
         } 
+        this.CalculateCameraMatrix()        
     }
 
-    public Roll( angle : number)
+    public Roll( angle : number) : void
     {
         let angleInRadians = degToRad(angle)
         let cos = Math.cos(angleInRadians);
@@ -68,9 +107,12 @@ export class Camera{
             -sin * cameraRightOld[1] + cos * this._cameraUp[1],
             -sin * cameraRightOld[2] + cos * this._cameraUp[2],
         ] 
+
+        this.CalculateCameraMatrix()        
+
     }
 
-    public Pitch( angle : number)
+    public Pitch( angle : number) : void
     {
         let angleInRadians = degToRad(angle)
         let cos = Math.cos(angleInRadians);
@@ -88,9 +130,11 @@ export class Camera{
             -sin * cameraUpOld[1] + cos * this._cameraDirection[1],
             -sin * cameraUpOld[2] + cos * this._cameraDirection[2],
         ]
+
+        this.CalculateCameraMatrix()        
     }
 
-    public Yaw( angle : number)
+    public Yaw( angle : number) : void
     {
         let angleInRadians = degToRad(angle)
         let cos = Math.cos(angleInRadians);
@@ -108,57 +152,40 @@ export class Camera{
             -sin * cameraDirectionOld[1] + cos * this._cameraRight[1],
             -sin * cameraDirectionOld[2] + cos * this._cameraRight[2],
         ] 
+
+        this.CalculateCameraMatrix()        
     }
 
-
-    ///Matrix trabformation by Tait Bryan Angles
-
-    public matrixYaw( angle : number)
+    public yRotate(angle : number) : void
     {
-        let angleInRadians = degToRad(angle)
-        let cameraMatrix = this.matrix;
-        let rotateMatrix = m3.yRotation(angleInRadians);
-        this.DecomposeCameraMatrixToVectors(m3.MultiplyMatrix(cameraMatrix,rotateMatrix))
-    }
-
-    public matrixPitch( angle : number)
-    {
-        let angleInRadians = degToRad(angle)
-        let cameraMatrix = this.matrix;
-        let rotateMatrix = m3.xRotation(angleInRadians);
-        this.DecomposeCameraMatrixToVectors(m3.MultiplyMatrix(cameraMatrix,rotateMatrix))
-    }
-
-    public TaitBryanAngles(pitch:number, yaw: number)
-    {
-        let pitchInRadians = degToRad(pitch)
-        let yawInRadians = degToRad(yaw)
-        let cosP = Math.cos(pitchInRadians);
-        let sinP = Math.sin(pitchInRadians);
-        let cosY = Math.cos(yawInRadians);
-        let sinY = Math.sin(yawInRadians);
-
-        let rotateMatrix = [
-            cosY,          0,         sinY, 0,
-            sinP*sinY,  cosP, -cosY * sinP, 0,
-           -cosP*sinY,  sinP,  cosY * cosP, 0,
-                    0,     0,            0, 1  
-        ]
+        const angleInRadians = degToRad(angle)
         
-        let cameraMatrix = this.matrix;
-        this.DecomposeCameraMatrixToVectors(m3.MultiplyMatrix(cameraMatrix,rotateMatrix))
+        const cos = Math.cos(angleInRadians);
+        const sin = Math.sin(angleInRadians);
+
+        let vectors =  [this._cameraRight , this._cameraUp, this._cameraDirection]
+        
+        for(let vector of vectors)
+        {
+            let xComponent = vector[0]
+            let zComponent = vector[2]
+
+            vector[0] = xComponent * cos - zComponent * sin
+            vector[2] = xComponent * sin + zComponent * cos
+        }
+
+        this.CalculateCameraMatrix()        
     }
 
-    private DecomposeCameraMatrixToVectors( matrix : number[] )
+    public set position(thePosition : number[])
     {
-        this._cameraRight[0] = matrix[0]
-        this._cameraRight[1] = matrix[1]
-        this._cameraRight[2] = matrix[2]
-        this._cameraUp[0] = matrix[4]
-        this._cameraUp[1] = matrix[5]
-        this._cameraUp[2] = matrix[6]
-        this._cameraDirection[0] = matrix[8]
-        this._cameraDirection[1] = matrix[9]
-        this._cameraDirection[2] = matrix[10]
+        this._cameraPosition = thePosition
+        this.InitCameraVectors(thePosition)
+        this.CalculateCameraMatrix()
+    }
+
+    public get position() : number[]
+    {
+      return this._cameraPosition 
     }
 }

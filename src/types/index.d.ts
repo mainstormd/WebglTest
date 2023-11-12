@@ -2,6 +2,7 @@ export {};
 
 declare global {
     interface Window{
-        engine:any
+        render:any
+        cameraController:any
     }
 }

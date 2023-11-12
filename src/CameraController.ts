@@ -1,24 +1,58 @@
 import { Camera } from "./Camera";
-import { degToRad, m3 } from "./Engine";
+import { EventManager } from "./EventSystem/EventManager";
+import { degToRad, m3 } from "./Math/math";
+import config from "./Config/config.json"
 
 export class CameraController{
+    private _eventManager: EventManager  
     private _camera: Camera
-    private _pitch: number = 30
-    private _yaw: number = 30
+    private _pitch: number = 0
+    private _yaw: number = 10
 
-    constructor( camera : Camera)
+    constructor( camera : Camera, eventManager: EventManager)
     {
         this._camera = camera
+        this._eventManager = eventManager
+
+        this._eventManager.Subscribe('mousemove',this.HandleMouseMove.bind(this))
+        this._eventManager.Subscribe('keypress',this.HandleKeyPress.bind(this))
     }
 
      //FPS - first person camera 
+
+    private HandleTestFPSCamera(dPitch: number, dYaw: number)
+    {
+         if(this._pitch > 89.0)
+         {
+             this._pitch = 89
+             dPitch = 0;
+         }        
+         
+         if(this._pitch < -89.0)
+         {
+             this._pitch  = -89
+             dPitch = 0;
+         }   
+ 
+         console.log('FPS normalize pitch=%s , yaw=%s', dPitch, dYaw)    
+         
+         this._camera.yRotate(dYaw)     
+         this._camera.Pitch(dPitch)          
+    } 
+     
     private HandleFPSCamera(pitch: number, yaw: number)
     {
         if(pitch > 89.0)
+        {
             pitch = 89.0;
+        }
         
         if(pitch < -89.0)
+        {
             pitch = -89.0;
+        }
+
+        console.log('FPS normalize pitch=%s , yaw=%s', pitch, yaw)    
 
         let newDirection = m3.normalize([
             Math.cos(degToRad(yaw)) * Math.cos(degToRad(pitch)),
@@ -26,9 +60,9 @@ export class CameraController{
             Math.sin(degToRad(yaw)) * Math.cos(degToRad(pitch))
         ])
         
-        let direction = m3.additionVectors(this._camera._cameraPosition, newDirection)  
+        let direction = m3.additionVectors(this._camera.position, newDirection)  
         
-        this._camera = new Camera(this._camera._cameraPosition, direction)
+        this._camera = new Camera(this._camera.position, direction)
     }
 
     private HandleCameraOrbit(pitch: number, yaw: number)
@@ -39,7 +73,7 @@ export class CameraController{
         if(pitch < 0)
               pitch = 4;
   
-        let r = m3.length(this._camera._cameraPosition)
+        let r = m3.length(this._camera.position)
 
         let newPosition = ([
             r * Math.sin(degToRad(pitch)) * Math.cos(degToRad(yaw)), //x
@@ -47,51 +81,47 @@ export class CameraController{
             r * Math.sin(degToRad(pitch)) * Math.sin(degToRad(yaw)), //z
         ])
        
-        ///Странный баг
-        this._camera = new Camera(newPosition)
+        this._camera.position = newPosition
     }
 
-    public HandleKeyPress(key : string)
-    {
+    public HandleKeyPress({ key })
+    {        
         const delta = 2
          
         switch( key )
         {
-            case "w":
-                this._camera.slide( 0, 0, -delta)
+            case "KeyW":
+                this._camera.MoveForward(delta)
                 break;
-            case "a":
-                this._camera.slide(-delta) 
+            case "KeyA":
+                this._camera.MoveLeft(delta)
                 break;
-            case "s":
-                this._camera.slide( 0, 0, delta )
+            case "KeyS":
+                this._camera.MoveBack(delta)
                 break; 
-            case "d":
-                this._camera.slide(delta);
-                break;   
-            case "e":
-                this._camera.TaitBryanAngles(delta,0);
-                break; 
-            case "r":
-                this._camera.TaitBryanAngles(0,delta);
-                break; 
+            case "KeyD":
+                this._camera.MoveRight(delta);
+                break;      
         }
-
     }
 
-    public HandleMouseMove(offsetX: number, offsetY: number, rightMouseButtonDown:boolean)
+    public HandleMouseMove({ offsetX, offsetY, rightMouseButtonDown })
     {
-        const sensitivity = 0.5
+        const sensitivity = config.sensitivity
 
-        this._pitch += offsetY * sensitivity
-        this._yaw += offsetX * sensitivity
+        let dPitch = offsetY * sensitivity
+        let dYaw = offsetX * sensitivity 
 
-        console.log('desh pitch=%s , yaw=%s', this._pitch, this._yaw)
+        this._pitch += dPitch
+        this._yaw += dYaw
+
+        console.log('FPS desh pitch=%s , yaw=%s', this._pitch, this._yaw)
 
         if(rightMouseButtonDown)
-            this.HandleCameraOrbit(this._pitch, this._yaw)
+            this.HandleCameraOrbit( this._pitch, this._yaw )
         else 
-            this.HandleFPSCamera(this._pitch, this._yaw)
+            this.HandleTestFPSCamera(dPitch,dYaw)
+           //this.HandleFPSCamera( this._pitch, this._yaw )
     }
 
     public get Camera()

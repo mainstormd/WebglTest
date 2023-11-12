@@ -1,34 +1,31 @@
-import { CameraController } from "./CameraController";
+import { EventManager } from "./EventSystem/EventManager"
 
+export default class InputSystem {
 
-export default class InputSystem{
-    private _cameraConroller:CameraController  
+    private _eventBus: EventManager  
+    // Mouse Values
     private _previousMouseX: number | null = null
     private _previousMouseY: number | null = null
     private _mouseX: number | null = null 
     private _mouseY: number | null = null
     private _rightMouseButtonDown: boolean = false;
-    
-    constructor(viewport: HTMLCanvasElement, cameraConroller: CameraController){
 
-        this._cameraConroller = cameraConroller
+    constructor(viewport: HTMLCanvasElement, eventBus: EventManager){
 
-        document.addEventListener("keypress", this.onKeyPress.bind(this))
+        this._eventBus = eventBus
+
+        //browserEvents
+        document.addEventListener("keydown"     , this.onKeyDown.bind(this))
         
+        // MouseEvents
         viewport.addEventListener("mousemove"   , this.onMouseMove.bind(this))
         viewport.addEventListener('mousedown'   , this.onMouseDown.bind(this))
         viewport.addEventListener('mouseup'     , this.onMouseUp.bind(this))
         viewport.addEventListener('contextmenu' , event => event.preventDefault())
     }
 
-    private onKeyPress( event: KeyboardEvent )
-    {
-        this._cameraConroller.HandleKeyPress(event.key)
-    }
-
     private onMouseMove( event: MouseEvent )
-    {
-        
+    {        
         this._previousMouseX = this._mouseX
         this._previousMouseY = this._mouseY
 
@@ -40,25 +37,29 @@ export default class InputSystem{
        
         this._mouseX = event.x
         this._mouseY = event.y
-
-        this._cameraConroller.HandleMouseMove(this.offsetX, this.offsetY, this._rightMouseButtonDown)
+       
+        this._eventBus.Emit('mousemove', {
+            rightMouseButtonDown: this._rightMouseButtonDown,
+            offsetX: this.offsetX,  
+            offsetY: this.offsetY,
+        })
     }
 
-    private get offsetX() {
-        
-       if(this._mouseX == null || this._previousMouseX == null )
-           throw new Error("Null value in calculating offsetX")
-
-       return this._mouseX  - this._previousMouseX 
+    private get offsetX() 
+    {   
+        if(this._mouseX == null || this._previousMouseX == null )
+            throw new Error("Null value in calculating offsetX")
+ 
+        return this._mouseX  - this._previousMouseX 
     }
-
-    private get offsetY() {
-        
-        if(this._mouseY == null || this._previousMouseY == null )
-           throw new Error("Null value in calculating offsetY")
-        
-        return  this._previousMouseY - this._mouseY //reverse!!
-     }
+ 
+    private get offsetY() 
+    {  
+         if(this._mouseY == null || this._previousMouseY == null )
+            throw new Error("Null value in calculating offsetY")
+         
+         return  this._previousMouseY - this._mouseY //reverse!!
+    }
 
     private onMouseDown( event: MouseEvent )
     {
@@ -80,9 +81,11 @@ export default class InputSystem{
         }
     }   
 
-    public get CameraController()
-    {
-        return this._cameraConroller
+    private onKeyDown( event: KeyboardEvent )
+    {   
+        this._eventBus.Emit('keypress', {
+            key: event.code
+        })
     }
 }
 
