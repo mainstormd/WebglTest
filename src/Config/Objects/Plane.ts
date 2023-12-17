@@ -1,4 +1,4 @@
-import { glContext } from "./GLUtilities";
+import { glContext } from "../GLUtilities"; 
 
 export class Plane{
 
@@ -15,18 +15,14 @@ export class Plane{
             glContext.bindBuffer(glContext.ARRAY_BUFFER, positionBuffer);
             glContext.bufferData(glContext.ARRAY_BUFFER, new Float32Array(positions), glContext.STATIC_DRAW)
   
-        const faceColors = [ 
-          [0.0,  0.0,  1.0,  0.5],
-          [0.0,  0.0,  1.0,  0.5]   
-        ]   
+        const faceColors = [0.0,  0.0,  1.0,  0.5]           
         
         let colors : any = [];
         
-        for (var j = 0; j < faceColors.length; ++j) {
-          const c = faceColors[j];
-      
-          // Repeat each color four times for the four vertices of the face
-          colors = colors.concat(c, c, c);
+        for (var j = 0; j < 4; ++j) {
+          const c = faceColors;
+
+          colors = colors.concat(c);
         }
         
         const colorBuffer = glContext.createBuffer();
@@ -46,7 +42,8 @@ export class Plane{
           position: positionBuffer,
           countVertex: count,
           color: colorBuffer,
-          indices: indexBuffer
+          indices: indexBuffer,
+          renderMode: glContext.TRIANGLES
         };
     }
     
