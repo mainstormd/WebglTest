@@ -7,7 +7,7 @@ import { Sphere } from "./Objects/Sphere";
 export class Scene{
     private _eventBus: EventManager 
 
-    private _staticObjects = [new Plane(), new Sphere(1,2)] 
+    private _staticObjects = [new Plane(), new Sphere(2)] 
     private _dynamicObjects : Coub [] =   []
     
     private _renderMode : GLenum = glContext.TRIANGLES
@@ -62,8 +62,8 @@ export class Scene{
     public GetRenderAssets()
     {
         let renderAssets : any [] = []
-        renderAssets.push(...this._staticObjects.map(item => item.GetRenderAssets(this._renderMode)))
         renderAssets.push(...this._dynamicObjects.map(item => item.GetRenderAssets(this._renderMode)))
+        renderAssets.push(...this._staticObjects.map(item => item.GetRenderAssets(this._renderMode)))
         return renderAssets
     }
 
