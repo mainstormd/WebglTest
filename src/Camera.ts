@@ -37,8 +37,6 @@ export class Camera{
             0,                                               0,                        0,                                   1                               
         ];
 
-        console.log('CameraMatrix',  this._cameraMatrix)
-        console.log('Test eye of CameraMatrix', m3.MultiplyMatrixAndVectors( this._cameraMatrix, [...this._cameraPosition, 1]))
         console.log('Test right of CameraMatrix', m3.MultiplyMatrixAndVectors( this._cameraMatrix, [...this._cameraRight, 0]))
     }
 
@@ -51,9 +49,6 @@ export class Camera{
         this._cameraDirection = m3.normalize(m3.subtractVectors(cameraPosition, targetCoordinate))
         this._cameraRight= m3.normalize(m3.cross(up, this._cameraDirection))
         this._cameraUp = m3.normalize(m3.cross(this._cameraDirection, this._cameraRight))
-
-        console.log('CameraPosition', cameraPosition)
-        console.log('cameraDirection',this._cameraDirection)
     }
 
 

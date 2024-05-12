@@ -9,7 +9,6 @@ export class Plane{
 
     public GetRenderAssets(renderMode : GLenum = glContext.TRIANGLES) 
     {
-
         const positions = [
             70,  0, -50, 
            -70,  0, -50,
