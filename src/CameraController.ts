@@ -1,7 +1,7 @@
 import { Camera } from "./Camera";
 import { EventManager } from "./EventSystem/EventManager";
 import { degToRad, m3 } from "./Math/math";
-import config from "./Config/config.json"
+import config from "./Configs/config.json"
 
 export class CameraController{
     private _eventManager: EventManager  
@@ -22,15 +22,15 @@ export class CameraController{
 
     private HandleTestFPSCamera(dPitch: number, dYaw: number)
     {
-         if(this._pitch > 89.0)
+         if(this._pitch > config.camera.fpsUpViewLimit)
          {
-             this._pitch = 89
+             this._pitch = config.camera.fpsUpViewLimit
              dPitch = 0;
          }        
          
-         if(this._pitch < -89.0)
+         if(this._pitch < config.camera.fpsDownViewLimit)
          {
-             this._pitch  = -89
+             this._pitch  = config.camera.fpsDownViewLimit
              dPitch = 0;
          }   
  
@@ -42,14 +42,14 @@ export class CameraController{
      
     private HandleFPSCamera(pitch: number, yaw: number)
     {
-        if(pitch > 89.0)
+        if(pitch > config.camera.fpsUpViewLimit)
         {
-            pitch = 89.0;
+            pitch = config.camera.fpsUpViewLimit;
         }
         
-        if(pitch < -89.0)
+        if(pitch < config.camera.fpsDownViewLimit)
         {
-            pitch = -89.0;
+            pitch = config.camera.fpsDownViewLimit;
         }
 
         console.log('FPS normalize pitch=%s , yaw=%s', pitch, yaw)    
@@ -67,11 +67,15 @@ export class CameraController{
 
     private HandleCameraOrbit(pitch: number, yaw: number)
     {
-        if(pitch > 89.0)
-              pitch = 87.0;
-    
-        if(pitch < 0)
-              pitch = 4;
+        if(pitch > config.camera.orbitUpViewLimit)
+        {
+            pitch = config.camera.orbitUpViewLimit;
+        }
+            
+        if(pitch < config.camera.orbitDownViewLimit)
+        {
+            pitch = config.camera.orbitDownViewLimit;
+        }
   
         let r = m3.length(this._camera.position)
 
@@ -86,21 +90,19 @@ export class CameraController{
 
     public HandleKeyPress({ key })
     {        
-        const delta = 2
-         
         switch( key )
         {
             case "KeyW":
-                this._camera.MoveForward(delta)
+                this._camera.MoveForward(config.camera.slide)
                 break;
             case "KeyA":
-                this._camera.MoveLeft(delta)
+                this._camera.MoveLeft(config.camera.slide)
                 break;
             case "KeyS":
-                this._camera.MoveBack(delta)
+                this._camera.MoveBack(config.camera.slide)
                 break; 
             case "KeyD":
-                this._camera.MoveRight(delta);
+                this._camera.MoveRight(config.camera.slide);
                 break;      
         }
     }
@@ -118,10 +120,15 @@ export class CameraController{
         console.log('FPS desh pitch=%s , yaw=%s', this._pitch, this._yaw)
 
         if(rightMouseButtonDown)
+        {
             this.HandleCameraOrbit( this._pitch, this._yaw )
-        else 
+        }   
+        else
+        {
             this.HandleTestFPSCamera(dPitch,dYaw)
-           //this.HandleFPSCamera( this._pitch, this._yaw )
+            //this.HandleFPSCamera( this._pitch, this._yaw )
+        }
+            
     }
 
     public get Camera()

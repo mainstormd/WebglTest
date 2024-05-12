@@ -1,6 +1,5 @@
 import { m3 } from "./Math/math"
 
-
 export class TransfomationsManager{
 
     private _modelMatrix:number[] = m3.IdentityMatrix()

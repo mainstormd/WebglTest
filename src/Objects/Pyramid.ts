@@ -1,8 +1,12 @@
-import { glContext } from "../GLUtilities";
+import { ColorBuffer } from "../GLBuffers/ColorBuffer";
+import { IndexBuffer } from "../GLBuffers/IndexBuffer";
+import { PositionBuffer } from "../GLBuffers/PositionBuffer";
+import { glContext } from "../Utils/GLUtilities";
 
 export class Pyramid{
 
-    get RenderAssets() {  
+    public GetRenderAssets(renderMode : GLenum = glContext.TRIANGLES) 
+    {  
 
          let positions = [
               //up
@@ -40,10 +44,6 @@ export class Pyramid{
              -1.0,  0, -1.0,
          ]
 
-        let positionBuffer = glContext.createBuffer();
-            glContext.bindBuffer(glContext.ARRAY_BUFFER, positionBuffer);
-            glContext.bufferData(glContext.ARRAY_BUFFER, new Float32Array(positions), glContext.STATIC_DRAW)
-  
         const faceColor = [0.0,  1.0,  0.0,  1.0] //green        
         
         let colors : any = [];
@@ -55,24 +55,15 @@ export class Pyramid{
           colors = colors.concat(c)
         }
         
-        const colorBuffer = glContext.createBuffer();
-        glContext.bindBuffer(glContext.ARRAY_BUFFER, colorBuffer);
-        glContext.bufferData(glContext.ARRAY_BUFFER, new Float32Array(colors), glContext.STATIC_DRAW);
-  
-        const indexBuffer = glContext.createBuffer();
-        glContext.bindBuffer(glContext.ELEMENT_ARRAY_BUFFER, indexBuffer);
-
-        const indices = Array.from(Array(positions.length).keys())
-        glContext.bufferData(glContext.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), glContext.STATIC_DRAW);
-        
-        let count = indices.length
+        const indexes = Array.from(Array(positions.length).keys())
+        let count = indexes.length
  
         return {
           modelMatrix: null,
-          position: positionBuffer,
+          position: new PositionBuffer(positions).buffer,
           countVertex: count,
-          color: colorBuffer,
-          indices: indexBuffer,
+          color: new ColorBuffer(colors).buffer,
+          indices: new IndexBuffer(indexes).buffer,
           renderMode: glContext.TRIANGLES
         };
     }

@@ -1,62 +1,25 @@
 import { Camera } from "./Camera";
-import { glContext, GlUtilities } from "./GLUtilities";
+import { glContext, GlUtilities } from "./Utils/GLUtilities";
 import { degToRad, m3 } from "./Math/math";
-import { FRAGMENT_SHADER_SOURCE, VERTEX_SHADER_SOURCE } from "./Shaders";
+import { ShaderProgram } from "./GLShaders/ShaderProgram";
 
 export class Render{
     
-    private _canvas: HTMLCanvasElement;
     private _shaderProgram: WebGLProgram;
 
     constructor()
     {
-        this._canvas = GlUtilities.initialize("glcanvas")
+        let canvas = GlUtilities.GetOrInitializeCanvaasElement("glcanvas")
+        GlUtilities.InitializeGLContext(canvas)
 
         if (glContext) {
             glContext.clearColor(0.1, 0.3, 0.1, 1.0); // установить в качестве цвета очистки буфера цвета чёрный, полная непрозрачность
             glContext.enable(glContext.DEPTH_TEST);                               // включает использование буфера глубины
             glContext.depthFunc(glContext.LESS);                                // определяет работу буфера глубины: более ближние объекты перекрывают дальние
             glContext.clear(glContext.COLOR_BUFFER_BIT | glContext.DEPTH_BUFFER_BIT);      // очистить буфер цвета и буфер глубины.
-          
-          //TODO add draw scene
         }
 
-        this._shaderProgram = this.InitShadersAndGetProgram();
-    }
-    
-    private InitShadersAndGetProgram()
-    {
-        //Init shaders
-        let vertexShader = glContext.createShader(glContext.VERTEX_SHADER);
-        let fragmentShader = glContext.createShader(glContext.FRAGMENT_SHADER); 
-        
-        if(!!vertexShader && !!fragmentShader)
-        {
-            glContext.shaderSource(vertexShader, VERTEX_SHADER_SOURCE);
-            glContext.compileShader(vertexShader);
-
-            glContext.shaderSource(fragmentShader, FRAGMENT_SHADER_SOURCE);
-            glContext.compileShader(fragmentShader);
-        }
-        else 
-            throw "Can't init shaders" 
-
-        //создаем объект программы шейдеров
-        let shaderProgram : WebGLProgram = glContext.createProgram()  as WebGLProgram;
-        
-        if(shaderProgram != null )
-        {
-            // прикрепляем к ней шейдеры
-            glContext.attachShader(shaderProgram , vertexShader);
-            glContext.attachShader(shaderProgram, fragmentShader);
-            // связываем программу с контекстом webgl
-            glContext.linkProgram(shaderProgram);
-            glContext.useProgram(shaderProgram);
-        }
-        else
-            throw "Can't init shader program"
-        
-        return shaderProgram
+        this._shaderProgram = new ShaderProgram().program;
     }
 
     public DrawScence(camera : Camera, sceneObjects: any = [], time : number) : void
@@ -67,6 +30,9 @@ export class Render{
       
       glContext.depthFunc(glContext.LESS);   
       glContext.useProgram(this._shaderProgram);
+
+      glContext.enable(glContext.BLEND)
+      glContext.blendFunc(glContext.SRC_ALPHA, glContext.ONE_MINUS_SRC_ALPHA);
         
       let matrixLocation = glContext.getUniformLocation(this._shaderProgram, "modelViewProjection_matrix");
       let objectTypeUniform = glContext.getUniformLocation(this._shaderProgram, "isSphere");
@@ -89,7 +55,9 @@ export class Render{
         let resultMatrix = viewMatrix 
         
         if(modelMatrix != null)
-         resultMatrix = m3.MultiplyMatrix(viewMatrix, modelMatrix) 
+        {
+          resultMatrix = m3.MultiplyMatrix(viewMatrix, modelMatrix)
+        }  
 
          // Set the matrix.
         glContext.uniformMatrix4fv(matrixLocation, false, resultMatrix);

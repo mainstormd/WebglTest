@@ -48,7 +48,9 @@ export default class InputSystem {
     private get offsetX() 
     {   
         if(this._mouseX == null || this._previousMouseX == null )
+        {
             throw new Error("Null value in calculating offsetX")
+        }    
  
         return this._mouseX  - this._previousMouseX 
     }
@@ -56,7 +58,9 @@ export default class InputSystem {
     private get offsetY() 
     {  
          if(this._mouseY == null || this._previousMouseY == null )
+         {
             throw new Error("Null value in calculating offsetY")
+         }  
          
          return  this._previousMouseY - this._mouseY //reverse!!
     }

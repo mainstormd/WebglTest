@@ -1,5 +1,9 @@
-import { glContext } from "../GLUtilities";
+import { ColorBuffer } from "../GLBuffers/ColorBuffer";
+import { IndexBuffer } from "../GLBuffers/IndexBuffer";
+import { PositionBuffer } from "../GLBuffers/PositionBuffer";
+import { glContext } from "../Utils/GLUtilities";
 import { m3 } from "../Math/math"; 
+import { IndexBufferHelper } from "../Utils/IndexBufferHelper";
 
 export class Sphere{
     private _radius : number    
@@ -11,8 +15,8 @@ export class Sphere{
         this._degreeOfTessellation = degreeOfTessellation
     }
 
-    get RenderAssets() {       
-
+    public GetRenderAssets(renderMode : GLenum = glContext.TRIANGLES) 
+    {       
          let positionsOfPyramid = [
               //up
              -1.0,  0, -1.0,
@@ -63,42 +67,10 @@ export class Sphere{
 
         let positions : number[] = positionsAfterTesselation
 
-        // for(let i = 0; i < positionsAfterTesselation.length / 3; i++)
-        // {
-        //   let vector = [positionsAfterTesselation[ i * 3 ], positionsAfterTesselation[ i * 3 + 1], positionsAfterTesselation[ i * 3 + 2]]
-        //   positions = positions.concat(m3.multiplyScalarOnVector(this._radius, m3.normalize(vector)))        
-        // }
-        
-        let positionBuffer = glContext.createBuffer();
-            glContext.bindBuffer(glContext.ARRAY_BUFFER, positionBuffer);
-            glContext.bufferData(glContext.ARRAY_BUFFER, new Float32Array(positions), glContext.STATIC_DRAW)
-  
-        // const faceColors = [
-        //   [1.0,  1.0,  0.0,  1.0], //yellow
-        //   [0.0,  1.0,  0.0,  1.0] //green
-        // ]
-        
-        // let colors : any = [];
-        
-        // for (var j = 0; j < positions.length / 3; ++j ) {
-
-        //   const c = /*countColor / 3 <= 1 */ (j >= 9  && j < 12) ||
-        //                                      (j >= 21 && j < 24) ||
-        //                                      (j >= 33 && j < 36) ||
-        //                                      (j >= 45 && j < 48) ||
-        //                                      (j >= 57 && j < 60) ||
-        //                                      (j >= 69 && j < 72) ||
-        //                                      (j >= 81 && j < 84) ||
-        //                                      (j >= 93 && j < 96) 
-        //    ? faceColors[0] : faceColors[1] ;
-          
-        //   colors = colors.concat(c)
-        // }
-        
         const faceColors = [
-            [1.0,  0.0,  0.0,  1.0],    // Back face: red /
-            [0.0,  1.0,  0.0,  1.0],    // Top face: green /
-            [1.0,  1.0,  0.0,  1.0]    // Bottom face: blue
+            [1.0,  0.0,  0.0,  0.5],    // Back face: red /
+            [0.0,  1.0,  0.0,  0.5],    // Top face: green /
+            [1.0,  1.0,  0.0,  0.5]    // Bottom face: blue
           ]
           
           let colors : any = [];
@@ -114,36 +86,19 @@ export class Sphere{
             colors = colors.concat(c)
           }
 
+        const indexes = Array.from(Array(positions.length).keys())
 
-
-        const colorBuffer = glContext.createBuffer();
-        glContext.bindBuffer(glContext.ARRAY_BUFFER, colorBuffer);
-        glContext.bufferData(glContext.ARRAY_BUFFER, new Float32Array(colors), glContext.STATIC_DRAW);
-  
-        const indexBuffer = glContext.createBuffer();
-        glContext.bindBuffer(glContext.ELEMENT_ARRAY_BUFFER, indexBuffer);
+        const inputIndexes= renderMode === glContext.LINES ? IndexBufferHelper.GetIdexesForRenderModeLines(indexes) :  indexes
         
-        // const indices = [
-        //      1, 0, 0, 2, 2, 1,
-        //      2, 0, 0, 3, 3, 2,
-        //      3, 0, 0, 4, 4, 3,
-        //      4, 0, 0, 1, 1, 4
-        //     // 1, 4, 2,
-        //     // 2, 4, 3
-        // ]
-
-        const indices = Array.from(Array(positions.length).keys())
-        glContext.bufferData(glContext.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), glContext.STATIC_DRAW);
-        
-        let count = indices.length
+        let count = inputIndexes.length
  
         return {
-          modelMatrix: [1,0,0,0, 0,1,0,3, 0,0,1,0, 0,0,0,1 ],
-          position: positionBuffer,
+          modelMatrix: [1,0,0,0, 0,1,0,3, 0,0,1,0, 0,0,0,1],
+          position: new PositionBuffer(positions).buffer,
           countVertex: count,
-          color: colorBuffer,
-          indices: indexBuffer,
-          renderMode: glContext.TRIANGLES,
+          color: new ColorBuffer(colors).buffer,
+          indices: new IndexBuffer(inputIndexes).buffer,
+          renderMode,
           isSphere:true
         };
     }

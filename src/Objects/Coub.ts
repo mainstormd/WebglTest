@@ -1,9 +1,13 @@
-import { glContext } from "../GLUtilities"; 
+import { ColorBuffer } from "../GLBuffers/ColorBuffer";
+import { IndexBuffer } from "../GLBuffers/IndexBuffer";
+import { PositionBuffer } from "../GLBuffers/PositionBuffer";
+import { glContext } from "../Utils/GLUtilities"; 
 import { TransfomationsManager } from "../TransfomationsManager";
+import { IndexBufferHelper } from "../Utils/IndexBufferHelper";
 
 export class Coub{
-    private _isGradientColor :boolean = false
-    private _transformations :TransfomationsManager = new TransfomationsManager()
+    private _isGradientColor : boolean = false
+    private _transformations : TransfomationsManager = new TransfomationsManager()
 
      /*
          1 o--------o 2
@@ -15,15 +19,8 @@ export class Coub{
         |/       |/
       7 o--------o 8
     */
-    get RenderAssets()
+    public GetRenderAssets(renderMode : GLenum = glContext.TRIANGLES)
     {
-        const positionBuffer = glContext.createBuffer();
-
-        // Select the positionBuffer as the one to apply buffer
-        // operations to from here out.
-  
-        glContext.bindBuffer(glContext.ARRAY_BUFFER, positionBuffer);
-  
         const positions = [
           // Front face
            -1.0,    0,  1.0,
@@ -62,21 +59,9 @@ export class Coub{
            -1.0,  2.0, -1.0,
         ];
   
-        glContext.bufferData(glContext.ARRAY_BUFFER, new Float32Array(positions), glContext.STATIC_DRAW);
-        
-      
         let colors : number[] = this._isGradientColor ? this.GetGradientColor() : this.GetDefaultColor();
       
-  
-        const colorBuffer = glContext.createBuffer();
-        glContext.bindBuffer(glContext.ARRAY_BUFFER, colorBuffer);
-        glContext.bufferData(glContext.ARRAY_BUFFER, new Float32Array(colors), glContext.STATIC_DRAW);
-  
-  
-        const indexBuffer = glContext.createBuffer();
-        glContext.bindBuffer(glContext.ELEMENT_ARRAY_BUFFER, indexBuffer);
-  
-        const indices = [
+        const indexes = [
           0,  1,  2,      0,  2,  3,    // front
           4,  5,  6,      4,  6,  7,    // back
           8,  9,  10,     8,  10, 11,   // top
@@ -85,17 +70,17 @@ export class Coub{
           20, 21, 22,     20, 22, 23,   // left
         ];
   
-        glContext.bufferData(glContext.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), glContext.STATIC_DRAW);
-        
-        let count = indices.length
+        const inputIndexes = renderMode === glContext.LINES ? IndexBufferHelper.GetIdexesForRenderModeLines(indexes) :  indexes
+       
+        let count = inputIndexes.length
   
         return {
           modelMatrix: this._transformations.ModelMatrix,
-          position: positionBuffer,
+          position: new PositionBuffer(positions).buffer,
           countVertex: count,
-          color: colorBuffer,
-          indices: indexBuffer,
-          renderMode: glContext.TRIANGLES
+          color: new ColorBuffer(colors).buffer,
+          indices: new IndexBuffer(inputIndexes).buffer,
+          renderMode 
         };
     }
     

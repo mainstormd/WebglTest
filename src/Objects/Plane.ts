@@ -1,8 +1,14 @@
-import { glContext } from "../GLUtilities"; 
+import { ColorBuffer } from "../GLBuffers/ColorBuffer";
+import { IndexBuffer } from "../GLBuffers/IndexBuffer";
+import { PositionBuffer } from "../GLBuffers/PositionBuffer";
+import { glContext } from "../Utils/GLUtilities"; 
+import { ColorBufferHelper } from "../Utils/ColorBufferHelper";
+import { IndexBufferHelper } from "../Utils/IndexBufferHelper";
 
 export class Plane{
 
-    get RenderAssets() {
+    public GetRenderAssets(renderMode : GLenum = glContext.TRIANGLES) 
+    {
 
         const positions = [
             70,  0, -50, 
@@ -11,39 +17,23 @@ export class Plane{
             70,  0,  50,
         ]
   
-        let positionBuffer = glContext.createBuffer();
-            glContext.bindBuffer(glContext.ARRAY_BUFFER, positionBuffer);
-            glContext.bufferData(glContext.ARRAY_BUFFER, new Float32Array(positions), glContext.STATIC_DRAW)
-  
         const faceColors = [0.0,  0.0,  1.0,  0.5]           
         
-        let colors : any = [];
+        let colors : number[] = ColorBufferHelper.GenerateDuplicateColorByVertexCount(faceColors, 4)
         
-        for (var j = 0; j < 4; ++j) {
-          const c = faceColors;
+        const indexes = [0, 1, 2, 0, 2, 3]
 
-          colors = colors.concat(c);
-        }
+        const inputIndexes= renderMode === glContext.LINES ? IndexBufferHelper.GetIdexesForRenderModeLines(indexes) :  indexes
         
-        const colorBuffer = glContext.createBuffer();
-        glContext.bindBuffer(glContext.ARRAY_BUFFER, colorBuffer);
-        glContext.bufferData(glContext.ARRAY_BUFFER, new Float32Array(colors), glContext.STATIC_DRAW);
-  
-        const indexBuffer = glContext.createBuffer();
-        glContext.bindBuffer(glContext.ELEMENT_ARRAY_BUFFER, indexBuffer);
-        
-        const indices = [0, 1, 2, 0, 2, 3]
-        glContext.bufferData(glContext.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), glContext.STATIC_DRAW);
-        
-        let count = indices.length
+        let count = inputIndexes.length
   
         return {
           modelMatrix: null,
-          position: positionBuffer,
+          position: new PositionBuffer(positions).buffer,
           countVertex: count,
-          color: colorBuffer,
-          indices: indexBuffer,
-          renderMode: glContext.TRIANGLES
+          color: new ColorBuffer(colors).buffer,
+          indices: new IndexBuffer(inputIndexes).buffer,
+          renderMode
         };
     }
     

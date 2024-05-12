@@ -1,0 +1,10 @@
+{
+    "sensitivity" : 0.5,
+    "camera": {
+        "fpsUpViewLimit": 89.0,
+        "fpsDownViewLimit": -89.0, 
+        "orbitUpViewLimit": 89.0,
+        "orbitDownViewLimit": 4.0,
+        "slide": 2.0         
+    }
+}
