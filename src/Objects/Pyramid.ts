@@ -1,7 +1,11 @@
 import { ColorBuffer } from "../GLBuffers/ColorBuffer";
 import { IndexBuffer } from "../GLBuffers/IndexBuffer";
 import { PositionBuffer } from "../GLBuffers/PositionBuffer";
+import { ShaderProgram } from "../GLShaders/ShaderProgram";
+import { VERTEX_SHADER_SOURCE_COMMON } from "../GLShaders/ShaderSources";
+import { m3 } from "../Math/math";
 import { glContext } from "../Utils/GLUtilities";
+import { ObjectsEnum } from "./ObjectEnum";
 
 export class Pyramid{
 
@@ -58,12 +62,16 @@ export class Pyramid{
         let count = indexes.length
  
         return {
-          modelMatrix: null,
-          position: new PositionBuffer(positions).buffer,
+          shaderProgram: new ShaderProgram(VERTEX_SHADER_SOURCE_COMMON),
+          attributes: {
+            position: new PositionBuffer(positions).buffer,
+            color: new ColorBuffer(colors).buffer,
+            indices: new IndexBuffer(indexes).buffer
+          },
+          modelMatrix: m3.IdentityMatrix(),
           countVertex: count,
-          color: new ColorBuffer(colors).buffer,
-          indices: new IndexBuffer(indexes).buffer,
-          renderMode: glContext.TRIANGLES
+          renderMode,
+          type:ObjectsEnum.Common
         };
     }
 }
