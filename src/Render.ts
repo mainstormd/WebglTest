@@ -40,7 +40,7 @@ export class Render{
  
       for(let sceneObject of sceneObjects)
       {
-        let {count, attributes, modelMatrix, renderMode, shaderProgram, type } = sceneObject;
+        let {countVertex:count, attributes, modelMatrix, renderMode, shaderProgram, type } = sceneObject;
 
         if(modelMatrix == null)
         {
