@@ -10,7 +10,6 @@ export class ShaderProgram{
     {
         this._shaderProgram = glContext.createProgram()
 
-
         let vertexShader = new Shader(glContext.VERTEX_SHADER, VERTEX_SHADER_SOURCE).shader;
         let fragmentShader = new Shader(glContext.FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE).shader;  
 
@@ -24,7 +23,21 @@ export class ShaderProgram{
         glContext.attachShader(this._shaderProgram, fragmentShader)
         // связываем программу с контекстом webgl
         glContext.linkProgram(this._shaderProgram)
-        glContext.useProgram(this._shaderProgram)
+        this.validate()
+    }
+
+    private validate() : void
+    {
+        if(this._shaderProgram == null)
+        {
+            throw "Can't init shader program"
+        }
+
+        if(!glContext.getProgramParameter(this._shaderProgram, glContext.LINK_STATUS))
+        {
+            console.error(glContext.getProgramInfoLog(this._shaderProgram));
+            throw new Error('Failed to link program');
+        }
     }
 
     public get program() : WebGLProgram
@@ -33,7 +46,7 @@ export class ShaderProgram{
         {
             throw "Can't init shader program"
         }
-        
+
         return this._shaderProgram
     }
 }
