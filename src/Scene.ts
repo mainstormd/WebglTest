@@ -9,9 +9,9 @@ export class Scene
 {
     private _eventBus: EventManager 
 
-    private _staticObjects = [new Plane(), new Sphere(2), ] 
+    private _staticObjects = [new Plane() ] 
     private _dynamicObjects : Coub [] = []
-    private _animateObjects = [new Cylinder()]
+    private _animateObjects = [new Cylinder(), new Sphere(2)]
 
     private _renderMode : GLenum = glContext.TRIANGLES
 

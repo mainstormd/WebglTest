@@ -40,7 +40,7 @@ export class Render{
  
       for(let sceneObject of sceneObjects)
       {
-        let {countVertex:count, attributes, modelMatrix, renderMode, shaderProgram, type } = sceneObject;
+        let {countVertex:count, attributes, modelMatrix, renderMode, shaderProgram, type, uniforms } = sceneObject;
 
         if(modelMatrix == null)
         {
@@ -54,11 +54,11 @@ export class Render{
         switch(type)
         {
           case ObjectsEnum.Sphere:
-            AttributeAndUniformSetter.SetSphereAttrAndUniforms(time,attributes, resultMatrix, shaderProgram.program);
+            AttributeAndUniformSetter.SetSphereAttrAndUniforms(attributes, uniforms, resultMatrix, shaderProgram.program);
           break;
           
           case ObjectsEnum.Cylinder:
-            AttributeAndUniformSetter.SetCylinderAttrAndUniforms(attributes, resultMatrix, sceneObject.bones, shaderProgram.program);
+            AttributeAndUniformSetter.SetCylinderAttrAndUniforms(attributes, uniforms, resultMatrix, shaderProgram.program);
           break;
 
           default:
