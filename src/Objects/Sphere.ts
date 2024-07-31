@@ -1,8 +1,7 @@
 import { ColorBuffer } from "../GLBuffers/ColorBuffer";
 import { IndexBuffer } from "../GLBuffers/IndexBuffer";
 import { PositionBuffer } from "../GLBuffers/PositionBuffer";
-import { glContext } from "../Utils/GLUtilities";
-import { m3 } from "../Math/math"; 
+import { glContext } from "../Utils/GLUtilities"; 
 import { IndexBufferHelper } from "../Utils/IndexBufferHelper";
 import { VERTEX_SHADER_SOURCE_SPHERE } from "../GLShaders/ShaderSources";
 import { ShaderProgram } from "../GLShaders/ShaderProgram";
@@ -78,7 +77,7 @@ export class Sphere{
           let colors : any = [];
           
           let value = 0
-          for (var j = 0; j < positions.length / 3; ++j, value++ ) {
+          for (let j = 0; j < positions.length / 3; ++j, value++ ) {
             
             if(value > 2)
                value = 0

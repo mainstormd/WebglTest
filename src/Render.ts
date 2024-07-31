@@ -29,10 +29,10 @@ export class Render{
       glContext.blendFunc(glContext.SRC_ALPHA, glContext.ONE_MINUS_SRC_ALPHA);
         
       // Compute the matrix
-      let zNear = 1;
-      let zFar = 2000;
-      let fieldOfViewRadians = degToRad(60);
-      let aspect = glContext.canvas.width / glContext.canvas.height;
+      const zNear = 1;
+      const zFar = 2000;
+      const fieldOfViewRadians = degToRad(60);
+      const aspect = glContext.canvas.width / glContext.canvas.height;
 
       let projectionMatrix = m3.perspective(fieldOfViewRadians, aspect, zNear, zFar);
       let cameraMatrix = camera.matrix;
@@ -67,7 +67,7 @@ export class Render{
         }
       
         // draw
-        let offset = 0;
+        const offset = 0;
           
         if(sceneObject.type === ObjectsEnum.Sphere)
         {

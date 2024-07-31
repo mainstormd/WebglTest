@@ -5,7 +5,7 @@ export class ColorBufferHelper{
     {
         let colors : any = [];
         
-        for (var j = 0; j < vertexCount; ++j) {
+        for (let j = 0; j < vertexCount; ++j) {
           colors = colors.concat(color);
         }
 

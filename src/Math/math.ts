@@ -1,8 +1,8 @@
 export let m3 = {
 
     perspective: function(fieldOfViewInRadians : number, aspect : number, near : number, far : number) {
-      var f = 1 / Math.tan( 0.5 * fieldOfViewInRadians ); // tan that not divide by zero
-      var rangeInv = 1.0 / ( near - far );
+      const f = 1 / Math.tan( 0.5 * fieldOfViewInRadians ); // tan that not divide by zero
+      const rangeInv = 1.0 / ( near - far );
   
       return [
          f / aspect,       0,                          0,                         0,
@@ -31,8 +31,8 @@ export let m3 = {
     },
     
     xRotation: function(angleInRadians : number) {
-      var c = Math.cos(angleInRadians);
-      var s = Math.sin(angleInRadians);
+      const c = Math.cos(angleInRadians);
+      const s = Math.sin(angleInRadians);
     
       return [
         1, 0,  0, 0,
@@ -43,8 +43,8 @@ export let m3 = {
     },
     
     yRotation: function(angleInRadians : number) {
-      var c = Math.cos(angleInRadians);
-      var s = Math.sin(angleInRadians);
+      const c = Math.cos(angleInRadians);
+      const s = Math.sin(angleInRadians);
     
       return [
          c, 0, s, 0,
@@ -55,8 +55,8 @@ export let m3 = {
     },
     
     zRotation: function(angleInRadians : number) {
-      var c = Math.cos(angleInRadians);
-      var s = Math.sin(angleInRadians);
+      const c = Math.cos(angleInRadians);
+      const s = Math.sin(angleInRadians);
     
       return [
         c, -s, 0, 0,
@@ -118,7 +118,7 @@ export let m3 = {
     },
   
     normalize: function normalize(v : any) {
-      var length = this.length(v)
+      const length = this.length(v)
       // make sure we don't divide by 0.
       if (length > 0) {
         return [v[0] / length, v[1] / length, v[2] / length];
