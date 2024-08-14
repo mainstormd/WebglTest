@@ -34,35 +34,62 @@ export class Render{
       const fieldOfViewRadians = degToRad(60);
       const aspect = glContext.canvas.width / glContext.canvas.height;
 
-      let projectionMatrix = m3.perspective(fieldOfViewRadians, aspect, zNear, zFar);
-      let cameraMatrix = camera.matrix;
-      let viewMatrix = m3.MultiplyMatrix(projectionMatrix, cameraMatrix);
+      const projectionMatrix = m3.perspective(fieldOfViewRadians, aspect, zNear, zFar);
+      const viewMatrix = m3.MultiplyMatrix(projectionMatrix, camera.matrix);
  
       for(let sceneObject of sceneObjects)
       {
-        let {countVertex:count, attributes, modelMatrix, renderMode, shaderProgram, type, uniforms } = sceneObject;
+        let {
+          countVertex:count, 
+          attributes, 
+          modelMatrix:ModelMatrix, 
+          renderMode, 
+          shaderProgram, 
+          type, 
+          uniforms 
+        } = sceneObject;
 
-        if(modelMatrix == null)
+        if(ModelMatrix == null)
         {
           throw "ModelMatrix is null"
         }
 
         glContext.useProgram(shaderProgram.program)
 
-        let resultMatrix = m3.MultiplyMatrix(viewMatrix, modelMatrix)
+        const ModelViewProjectionMatrix = m3.MultiplyMatrix(viewMatrix, ModelMatrix)
         
         switch(type)
         {
           case ObjectsEnum.Sphere:
-            AttributeAndUniformSetter.SetSphereAttrAndUniforms(attributes, uniforms, resultMatrix, shaderProgram.program);
+            AttributeAndUniformSetter.SetSphereAttrAndUniforms(
+              attributes, 
+              uniforms, 
+              ModelViewProjectionMatrix,
+              ModelMatrix,
+              camera, 
+              shaderProgram.program
+            );
           break;
           
           case ObjectsEnum.Cylinder:
-            AttributeAndUniformSetter.SetCylinderAttrAndUniforms(attributes, uniforms, resultMatrix, shaderProgram.program);
+            AttributeAndUniformSetter.SetCylinderAttrAndUniforms(
+              attributes, 
+              uniforms, 
+              ModelViewProjectionMatrix,
+              ModelMatrix, 
+              camera,
+              shaderProgram.program
+            );
           break;
 
           default:
-            AttributeAndUniformSetter.SetCommonAttrAndUniforms(attributes, resultMatrix, shaderProgram.program);
+            AttributeAndUniformSetter.SetCommonAttrAndUniforms(
+              attributes, 
+              ModelViewProjectionMatrix,
+              ModelMatrix,
+              camera, 
+              shaderProgram.program
+            );
           break;
         }
       

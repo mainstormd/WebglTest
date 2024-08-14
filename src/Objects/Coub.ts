@@ -11,7 +11,7 @@ import { NormalsBuffer } from "../GLBuffers/NormalsBuffer";
 
 export class Coub{
     private _isGradientColor : boolean = false
-    private _transformations : TransfomationsManager = new TransfomationsManager()
+    private _transformations = new TransfomationsManager()
 
      /*
          1 o--------o 2
@@ -23,56 +23,69 @@ export class Coub{
         |/       |/
       7 o--------o 8
     */
+   
     public GetRenderAssets(renderMode : GLenum = glContext.TRIANGLES)
     {
         const positions = [
           // Front face
-           -1.0,    0,  1.0,
-            1.0,    0,  1.0,
-            1.0,  2.0,  1.0,
-           -1.0,  2.0,  1.0,
-        
+           -0.5, -0.5,  0.5,
+            0.5, -0.5,  0.5,
+            0.5,  0.5,  0.5,
+          
+            -0.5, -0.5,  0.5,
+             0.5,  0.5,  0.5,
+            -0.5,  0.5,  0.5,
+         
           // Back face
-           -1.0,    0, -1.0,
-           -1.0,  2.0, -1.0,
-            1.0,  2.0, -1.0,
-            1.0,    0, -1.0,
+           -0.5, -0.5, -0.5,
+           -0.5,  0.5, -0.5,
+            0.5,  0.5, -0.5,
+        
+            -0.5, -0.5, -0.5,
+             0.5,  0.5, -0.5,
+             0.5, -0.5, -0.5,
         
           // Top face
-           -1.0,  2.0, -1.0,
-           -1.0,  2.0,  1.0,
-            1.0,  2.0,  1.0,
-            1.0,  2.0, -1.0,
+           -0.5,  0.5, -0.5,
+           -0.5,  0.5,  0.5,
+            0.5,  0.5,  0.5,
+            
+            -0.5,  0.5, -0.5,
+             0.5,  0.5,  0.5,
+             0.5,  0.5, -0.5,
         
           // Bottom face
-           -1.0,    0, -1.0,
-            1.0,    0, -1.0,
-            1.0,    0,  1.0,
-           -1.0,    0,  1.0,
-        
+           -0.5,    -0.5, -0.5,
+            0.5,    -0.5, -0.5,
+            0.5,    -0.5,  0.5,
+           
+            -0.5,    -0.5, -0.5,
+             0.5,    -0.5,  0.5,
+            -0.5,    -0.5,  0.5,
+      
           // Right face
-            1.0,    0, -1.0,
-            1.0,  2.0, -1.0,
-            1.0,  2.0,  1.0,
-            1.0,    0,  1.0,
-        
+            0.5,    -0.5, -0.5,
+            0.5,  0.5, -0.5,
+            0.5,  0.5,  0.5,
+            
+            0.5, -0.5, -0.5,
+            0.5,  0.5,  0.5,
+            0.5, -0.5,  0.5,
+         
           // Left face
-           -1.0,    0, -1.0,
-           -1.0,    0,  1.0,
-           -1.0,  2.0,  1.0,
-           -1.0,  2.0, -1.0,
+           -0.5,    -0.5, -0.5,
+           -0.5,    -0.5,  0.5,
+           -0.5,  0.5,  0.5,
+           
+           -0.5,    -0.5, -0.5,
+           -0.5,  0.5,  0.5,
+           -0.5,  0.5, -0.5,
+           
         ];
   
         let colors : number[] = this._isGradientColor ? this.GetGradientColor() : this.GetDefaultColor();
       
-        const indexes = [
-          0,  1,  2,      0,  2,  3,    // front
-          4,  5,  6,      4,  6,  7,    // back
-          8,  9,  10,     8,  10, 11,   // top
-          12, 13, 14,     12, 14, 15,   // bottom
-          16, 17, 18,     16, 18, 19,   // right
-          20, 21, 22,     20, 22, 23,   // left
-        ];
+        const indexes = Array.from(Array(positions.length / 3).keys())
 
         const normals = [
            // Front face
@@ -80,8 +93,12 @@ export class Coub{
             0,    0,   1.0,
             0,    0,   1.0,
             0,    0,   1.0,
+            0,    0,   1.0,
+            0,    0,   1.0,
         
           // Back face
+            0,    0, -1.0,
+            0,    0, -1.0,
             0,    0, -1.0,
             0,    0, -1.0,
             0,    0, -1.0,
@@ -92,8 +109,12 @@ export class Coub{
             0,  1.0,    0,
             0,  1.0,    0,
             0,  1.0,    0,
+            0,  1.0,    0,
+            0,  1.0,    0,
         
           // Bottom face
+            0,  -1.0,   0,
+            0,  -1.0,   0,
             0,  -1.0,   0,
             0,  -1.0,   0,
             0,  -1.0,   0,
@@ -104,8 +125,12 @@ export class Coub{
            1.0,   0,    0,
            1.0,   0,    0,
            1.0,   0,    0,
+           1.0,   0,    0,
+           1.0,   0,    0,
         
           // Left face
+          -1.0,   0,    0,
+          -1.0,   0,    0,
           -1.0,   0,    0,
           -1.0,   0,    0,
           -1.0,   0,    0,
@@ -134,14 +159,14 @@ export class Coub{
     private GetDefaultColor()  
     { 
         const faceColors = [
-            [1.0,  1.0,  1.0,  1.0],    // Front face: white
-            [1.0,  0.0,  0.0,  1.0],    // Back face: red /
-            [0.0,  1.0,  0.0,  1.0],    // Top face: green /
-            [0.0,  0.0,  1.0,  1.0],    // Bottom face: blue
-            [1.0,  1.0,  0.0,  1.0],    // Right face: yellow
-            [1.0,  0.0,  1.0,  1.0],    // Left face: purple
+            [1.0,  0.5,  0.31, 1.0],    // Front face: white
+            [1.0,  0.5,  0.31, 1.0],   // Back face: red /
+            [1.0,  0.5,  0.31, 1.0],    // Top face: green /
+            [1.0,  0.5,  0.31, 1.0],    // Bottom face: blue
+            [1.0,  0.5,  0.31, 1.0],   // Right face: yellow
+            [1.0,  0.5,  0.31, 1.0],    // Left face: purple
           ];
-        
+          
           // Convert the array of colors into a table for all the vertices.
         
           let colors : any = [] ;
@@ -150,7 +175,7 @@ export class Coub{
             const c = faceColors[j];
         
             // Repeat each color four times becouse the four vertices of the face
-            colors = colors.concat(c, c, c, c);
+            colors = colors.concat(c, c, c, c, c, c);
           }
 
           return colors
@@ -225,6 +250,12 @@ export class Coub{
     public Translate( tx: number, ty: number, tz : number)
     {
         this._transformations.Translate(tx,ty,tz)
+        return this
+    }
+
+    public Scale( sx : number, sy : number, sz : number)
+    {
+        this._transformations.Scale(sx, sy, sz)
         return this
     }
 

@@ -1,12 +1,18 @@
+import { Camera } from "../Camera";
 import { glContext } from "./GLUtilities";
 
 export default class AttributeAndUniformSetter
 {
-    static SetCommonAttrAndUniforms(attributes, resultMatrix, shaderProgram) : void
-    {
+    static SetCommonAttrAndUniforms(attributes, ModelViewProjectionMatrix, ModelMatrix, camera : Camera, shaderProgram) : void
+    {debugger
         let matrixLocation = glContext.getUniformLocation(shaderProgram, "ModelViewProjection");
-         // Set the matrix.
-        glContext.uniformMatrix4fv(matrixLocation, false, resultMatrix);
+        glContext.uniformMatrix4fv(matrixLocation, false, ModelViewProjectionMatrix);
+
+        let modelMatrixLocation = glContext.getUniformLocation(shaderProgram, "ModelMatrix");
+        glContext.uniformMatrix4fv(modelMatrixLocation, false, ModelMatrix);
+
+        let cameraPosition = glContext.getUniformLocation(shaderProgram, "cameraPosition");
+        glContext.uniform3fv(cameraPosition, camera.position);
 
         const { position, color, indices, normals } = attributes
 
@@ -19,10 +25,10 @@ export default class AttributeAndUniformSetter
         this.SetCommonAttributes(position, color, indices, shaderProgram)
     }
 
-    static SetSphereAttrAndUniforms(attributes, uniforms, resultMatrix,  shaderProgram) : void
+    static SetSphereAttrAndUniforms(attributes, uniforms, ModelViewProjectionMatrix, ModelMatrix, camera : Camera, shaderProgram) : void
     {
         const { radius, interpolationCoeff } = uniforms
-        this.SetCommonAttrAndUniforms(attributes, resultMatrix, shaderProgram)
+        this.SetCommonAttrAndUniforms(attributes, ModelViewProjectionMatrix, ModelMatrix, camera, shaderProgram)
 
         let radiusUniform = glContext.getUniformLocation(shaderProgram, "radius");
         glContext.uniform1f(radiusUniform, radius)
@@ -31,9 +37,9 @@ export default class AttributeAndUniformSetter
         glContext.uniform1f(interpolationCoeffUniform, interpolationCoeff)
     }
 
-    static SetCylinderAttrAndUniforms(attributes, uniforms, resultMatrix, shaderProgram) : void
-    {
-        this.SetCommonAttrAndUniforms(attributes, resultMatrix, shaderProgram)
+    static SetCylinderAttrAndUniforms(attributes, uniforms, ModelViewProjectionMatrix, ModelMatrix, camera : Camera, shaderProgram) : void
+    { 
+        this.SetCommonAttrAndUniforms(attributes, ModelViewProjectionMatrix, ModelMatrix, camera, shaderProgram)
         
         const { weights } = attributes 
         
