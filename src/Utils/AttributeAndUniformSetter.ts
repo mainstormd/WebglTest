@@ -4,7 +4,7 @@ import { glContext } from "./GLUtilities";
 export default class AttributeAndUniformSetter
 {
     static SetCommonAttrAndUniforms(attributes, ModelViewProjectionMatrix, ModelMatrix, camera : Camera, shaderProgram) : void
-    {debugger
+    {
         let matrixLocation = glContext.getUniformLocation(shaderProgram, "ModelViewProjection");
         glContext.uniformMatrix4fv(matrixLocation, false, ModelViewProjectionMatrix);
 
