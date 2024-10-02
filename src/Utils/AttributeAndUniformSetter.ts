@@ -22,9 +22,30 @@ export default class AttributeAndUniformSetter
         glContext.uniform1f(timeUniform, time)
     }
 
-    static SetCylinderAttrAndUniforms(attributes, resultMatrix, shaderProgram) : void
+    static SetCylinderAttrAndUniforms(attributes, resultMatrix, bones, shaderProgram) : void
     {
         this.SetCommonAttrAndUniforms(attributes, resultMatrix, shaderProgram)
+        
+        const { weights } = attributes 
+        
+        //order important, first use bind, second enable attr pointer 
+        glContext.bindBuffer(glContext.ARRAY_BUFFER, weights);
+
+        let weightAttributeLocation = glContext.getAttribLocation(shaderProgram, "weight");
+            glContext.vertexAttribPointer(weightAttributeLocation, 1, glContext.FLOAT, false, 0, 0);
+            glContext.enableVertexAttribArray(weightAttributeLocation);
+
+        const { IdentityBone, RotateBone } = bones
+        //  uniform mat4 IdentityBone;
+        //  uniform mat4 RotateBone;    
+        let matrixIdentityBone = glContext.getUniformLocation(shaderProgram, "IdentityBone");
+        // Set the matrix.
+        glContext.uniformMatrix4fv(matrixIdentityBone, false, IdentityBone);
+
+        let matrixRotateBone = glContext.getUniformLocation(shaderProgram, "RotateBone");
+        // Set the matrix.
+        glContext.uniformMatrix4fv(matrixRotateBone, false, RotateBone);
+       
     }
 
     static SetCommonAttributes(position, color, indices, shaderProgram) : void
@@ -32,13 +53,13 @@ export default class AttributeAndUniformSetter
         //order important, first use bind, second enable attr pointer 
         glContext.bindBuffer(glContext.ARRAY_BUFFER, position);
 
-        let positionAttributeLocation = glContext.getAttribLocation(shaderProgram, "a_Position");
+        let positionAttributeLocation = glContext.getAttribLocation(shaderProgram, "position");
             glContext.vertexAttribPointer(positionAttributeLocation, 3, glContext.FLOAT, false, 0, 0);
             glContext.enableVertexAttribArray(positionAttributeLocation);
 
         glContext.bindBuffer(glContext.ARRAY_BUFFER, color);
 
-        let vertexColorAttribute = glContext.getAttribLocation(shaderProgram, "u_color");
+        let vertexColorAttribute = glContext.getAttribLocation(shaderProgram, "color");
             glContext.vertexAttribPointer(vertexColorAttribute, 4, glContext.FLOAT, false, 0, 0);
             glContext.enableVertexAttribArray(vertexColorAttribute);
                

@@ -54,15 +54,15 @@ export class Render{
         switch(type)
         {
           case ObjectsEnum.Sphere:
-            AttributeAndUniformSetter.SetSphereAttrAndUniforms(time,attributes,resultMatrix,shaderProgram.program);
+            AttributeAndUniformSetter.SetSphereAttrAndUniforms(time,attributes, resultMatrix, shaderProgram.program);
           break;
           
           case ObjectsEnum.Cylinder:
-            AttributeAndUniformSetter.SetCylinderAttrAndUniforms(attributes,resultMatrix,shaderProgram.program);
+            AttributeAndUniformSetter.SetCylinderAttrAndUniforms(attributes, resultMatrix, sceneObject.bones, shaderProgram.program);
           break;
 
           default:
-            AttributeAndUniformSetter.SetCommonAttrAndUniforms(attributes,resultMatrix,shaderProgram.program);
+            AttributeAndUniformSetter.SetCommonAttrAndUniforms(attributes, resultMatrix, shaderProgram.program);
           break;
         }
       

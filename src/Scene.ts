@@ -5,12 +5,14 @@ import { Plane } from "./Objects/Plane";
 import { Sphere } from "./Objects/Sphere";
 import { Cylinder } from "./Objects/Cylinder";
 
-export class Scene{
+export class Scene
+{
     private _eventBus: EventManager 
 
-    private _staticObjects = [new Plane(), new Sphere(2), new Cylinder()] 
-    private _dynamicObjects : Coub [] =   []
-    
+    private _staticObjects = [new Plane(), new Sphere(2), ] 
+    private _dynamicObjects : Coub [] = []
+    private _animateObjects = [new Cylinder()]
+
     private _renderMode : GLenum = glContext.TRIANGLES
 
     constructor(eventBus: EventManager)
@@ -54,9 +56,10 @@ export class Scene{
         return coubs
     }
 
-    public Update()
+    public Update(time : number)
     {
         this._dynamicObjects.forEach( item => item.yRotate(0.1))
+        this._animateObjects.forEach( item => item.Animate(time))
         return this
     }
 
@@ -65,6 +68,7 @@ export class Scene{
         let renderAssets : any [] = []
         renderAssets.push(...this._dynamicObjects.map(item => item.GetRenderAssets(this._renderMode)))
         renderAssets.push(...this._staticObjects.map(item => item.GetRenderAssets(this._renderMode)))
+        renderAssets.push(...this._animateObjects.map(item => item.GetRenderAssets(this._renderMode)))
         return renderAssets
     }
 

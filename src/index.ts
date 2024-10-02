@@ -37,7 +37,7 @@ function animate(time)
     {
         times++
         previous = now
-        scene.Update()
+        scene.Update(time)
         render.DrawScence(currentCamera, scene.GetRenderAssets(), time * 0.001) 
     }
    
