@@ -51,7 +51,7 @@ export class Pyramid{
         
         let colors : any = [];
         
-        for (var j = 0; j < positions.length / 3; ++j ) {
+        for (let j = 0; j < positions.length / 3; ++j ) {
 
           const c = faceColor
           

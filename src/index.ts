@@ -26,8 +26,8 @@ let times = 0
 
 function animate(time)
 {
-    let now = Date.now() 
-    let duration = 16
+    const now = Date.now() 
+    const duration = 16
 
     let render = window.render
     let currentCamera = window.cameraController.Camera

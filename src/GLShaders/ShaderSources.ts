@@ -49,7 +49,7 @@ export const VERTEX_SHADER_SOURCE_CYLINDER = `
     uniform mat4 RotateBone;
     
     void main() { 
-        vec4 totalPosition = position * ((1.0 - weight) * IdentityBone + (weight) * RotateBone);
+        vec4 totalPosition = position * ((1.0 - weight) * IdentityBone + weight * RotateBone);
         gl_Position = totalPosition * ModelViewProjection;
         vColor = color;
     }

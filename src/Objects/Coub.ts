@@ -106,7 +106,7 @@ export class Coub{
         
           let colors : any = [] ;
         
-          for (var j = 0; j < faceColors.length; ++j) {
+          for (let j = 0; j < faceColors.length; ++j) {
             const c = faceColors[j];
         
             // Repeat each color four times becouse the four vertices of the face
