@@ -4,6 +4,10 @@ import { PositionBuffer } from "../GLBuffers/PositionBuffer";
 import { glContext } from "../Utils/GLUtilities"; 
 import { ColorBufferHelper } from "../Utils/ColorBufferHelper";
 import { IndexBufferHelper } from "../Utils/IndexBufferHelper";
+import { ShaderProgram } from "../GLShaders/ShaderProgram";
+import { VERTEX_SHADER_SOURCE_COMMON } from "../GLShaders/ShaderSources";
+import { m3 } from "../Math/math";
+import { ObjectsEnum } from "./ObjectEnum";
 
 export class Plane{
 
@@ -27,11 +31,15 @@ export class Plane{
         let count = inputIndexes.length
   
         return {
-          modelMatrix: null,
-          position: new PositionBuffer(positions).buffer,
+          shaderProgram: new ShaderProgram(VERTEX_SHADER_SOURCE_COMMON),
+          modelMatrix: m3.IdentityMatrix(),
+          attributes:{
+            position: new PositionBuffer(positions).buffer,
+            color: new ColorBuffer(colors).buffer,
+            indices: new IndexBuffer(inputIndexes).buffer
+          },
+          type: ObjectsEnum.Common,
           countVertex: count,
-          color: new ColorBuffer(colors).buffer,
-          indices: new IndexBuffer(inputIndexes).buffer,
           renderMode
         };
     }

@@ -4,6 +4,9 @@ import { PositionBuffer } from "../GLBuffers/PositionBuffer";
 import { glContext } from "../Utils/GLUtilities";
 import { m3 } from "../Math/math"; 
 import { IndexBufferHelper } from "../Utils/IndexBufferHelper";
+import { VERTEX_SHADER_SOURCE_SPHERE } from "../GLShaders/ShaderSources";
+import { ShaderProgram } from "../GLShaders/ShaderProgram";
+import { ObjectsEnum } from "./ObjectEnum";
 
 export class Sphere{
     private _degreeOfTessellation : number    
@@ -92,13 +95,16 @@ export class Sphere{
         let count = inputIndexes.length
  
         return {
+          shaderProgram: new ShaderProgram(VERTEX_SHADER_SOURCE_SPHERE),
           modelMatrix: [1,0,0,10, 0,1,0,5, 0,0,1,0, 0,0,0,1],
-          position: new PositionBuffer(positions).buffer,
+          attributes: {
+             position: new PositionBuffer(positions).buffer,
+             color: new ColorBuffer(colors).buffer,
+             indices: new IndexBuffer(inputIndexes).buffer
+          },
           countVertex: count,
-          color: new ColorBuffer(colors).buffer,
-          indices: new IndexBuffer(inputIndexes).buffer,
           renderMode,
-          isSphere:true
+          type:ObjectsEnum.Sphere
         };
     }
     

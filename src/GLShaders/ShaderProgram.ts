@@ -1,12 +1,12 @@
 import { glContext } from "../Utils/GLUtilities"
 import { Shader } from "./Shader";
-import { FRAGMENT_SHADER_SOURCE, VERTEX_SHADER_SOURCE } from "./ShaderSources";
+import { FRAGMENT_SHADER_SOURCE } from "./ShaderSources";
 
 export class ShaderProgram{
 
     private _shaderProgram : WebGLProgram | null
     
-    constructor()
+    constructor(VERTEX_SHADER_SOURCE: string)
     {
         this._shaderProgram = glContext.createProgram()
 

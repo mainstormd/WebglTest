@@ -4,6 +4,9 @@ import { PositionBuffer } from "../GLBuffers/PositionBuffer";
 import { glContext } from "../Utils/GLUtilities"; 
 import { TransfomationsManager } from "../TransfomationsManager";
 import { IndexBufferHelper } from "../Utils/IndexBufferHelper";
+import { ShaderProgram } from "../GLShaders/ShaderProgram";
+import { VERTEX_SHADER_SOURCE_COMMON } from "../GLShaders/ShaderSources";
+import { ObjectsEnum } from "./ObjectEnum";
 
 export class Coub{
     private _isGradientColor : boolean = false
@@ -75,12 +78,16 @@ export class Coub{
         let count = inputIndexes.length
   
         return {
+          shaderProgram: new ShaderProgram(VERTEX_SHADER_SOURCE_COMMON),
+          attributes: {
+            position: new PositionBuffer(positions).buffer,
+            color: new ColorBuffer(colors).buffer,
+            indices: new IndexBuffer(inputIndexes).buffer
+          },
           modelMatrix: this._transformations.ModelMatrix,
-          position: new PositionBuffer(positions).buffer,
           countVertex: count,
-          color: new ColorBuffer(colors).buffer,
-          indices: new IndexBuffer(inputIndexes).buffer,
-          renderMode 
+          renderMode,
+          type: ObjectsEnum.Common, 
         };
     }
     

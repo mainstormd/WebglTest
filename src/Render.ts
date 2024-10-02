@@ -1,12 +1,11 @@
 import { Camera } from "./Camera";
 import { glContext, GlUtilities } from "./Utils/GLUtilities";
 import { degToRad, m3 } from "./Math/math";
-import { ShaderProgram } from "./GLShaders/ShaderProgram";
+import { ObjectsEnum } from "./Objects/ObjectEnum";
+import AttributeAndUniformSetter from "./Utils/AttributeAndUniformSetter";
 
 export class Render{
     
-    private _shaderProgram: WebGLProgram;
-
     constructor()
     {
         let canvas = GlUtilities.GetOrInitializeCanvaasElement("glcanvas")
@@ -19,24 +18,16 @@ export class Render{
             glContext.clear(glContext.COLOR_BUFFER_BIT | glContext.DEPTH_BUFFER_BIT);      // очистить буфер цвета и буфер глубины.
             glContext.viewport(0, 0, glContext.canvas.width, glContext.canvas.height);
         }
-
-        this._shaderProgram = new ShaderProgram().program;
-        glContext.useProgram(this._shaderProgram);
     }
 
     public DrawScence(camera : Camera, sceneObjects: any = [], time : number) : void
     {
-      
       glContext.clear(glContext.COLOR_BUFFER_BIT | glContext.DEPTH_BUFFER_BIT);
       glContext.disable(glContext.CULL_FACE);
 
       glContext.enable(glContext.BLEND)
       glContext.blendFunc(glContext.SRC_ALPHA, glContext.ONE_MINUS_SRC_ALPHA);
         
-      let matrixLocation = glContext.getUniformLocation(this._shaderProgram, "modelViewProjection_matrix");
-      let objectTypeUniform = glContext.getUniformLocation(this._shaderProgram, "isSphere");
-      let objectTimeUniforn = glContext.getUniformLocation(this._shaderProgram, "time");
-      
       // Compute the matrix
       let zNear = 1;
       let zFar = 2000;
@@ -49,52 +40,43 @@ export class Render{
  
       for(let sceneObject of sceneObjects)
       {
-        let { position, countVertex : count, color, indices, modelMatrix, renderMode } = sceneObject;
+        let {count, attributes, modelMatrix, renderMode, shaderProgram, type } = sceneObject;
 
-        let resultMatrix = viewMatrix 
-        
-        if(modelMatrix != null)
+        if(modelMatrix == null)
         {
-          resultMatrix = m3.MultiplyMatrix(viewMatrix, modelMatrix)
-        }  
+          throw "ModelMatrix is null"
+        }
 
-         // Set the matrix.
-        glContext.uniformMatrix4fv(matrixLocation, false, resultMatrix);
+        glContext.useProgram(shaderProgram.program)
 
-        //set objectType field
-        glContext.uniform1f(objectTypeUniform, sceneObject?.isSphere ?? false)
+        let resultMatrix = m3.MultiplyMatrix(viewMatrix, modelMatrix)
         
-        //set objectType time
-        glContext.uniform1f(objectTimeUniforn, time)
-
-        //order important, first use bind, second enable attr pointer 
-        glContext.bindBuffer(glContext.ARRAY_BUFFER, position);
-
-          let positionAttributeLocation = glContext.getAttribLocation(this._shaderProgram, "a_Position");
-          glContext.vertexAttribPointer(positionAttributeLocation, 3, glContext.FLOAT, false, 0, 0);
-          glContext.enableVertexAttribArray(positionAttributeLocation);
-
-        glContext.bindBuffer(glContext.ARRAY_BUFFER, color);
-
-          let vertexColorAttribute = glContext.getAttribLocation(this._shaderProgram, "u_color");
-          glContext.vertexAttribPointer(vertexColorAttribute, 4, glContext.FLOAT, false, 0, 0);
-          glContext.enableVertexAttribArray(vertexColorAttribute);
+        switch(type)
+        {
+          case ObjectsEnum.Sphere:
+            AttributeAndUniformSetter.SetSphereAttrAndUniforms(time,attributes,resultMatrix,shaderProgram.program);
+          break;
           
-        if(indices != null)
-        {
-          glContext.bindBuffer(glContext.ELEMENT_ARRAY_BUFFER, indices)
-        }  
+          case ObjectsEnum.Cylinder:
+            AttributeAndUniformSetter.SetCylinderAttrAndUniforms(attributes,resultMatrix,shaderProgram.program);
+          break;
+
+          default:
+            AttributeAndUniformSetter.SetCommonAttrAndUniforms(attributes,resultMatrix,shaderProgram.program);
+          break;
+        }
       
         // draw
         let offset = 0;
           
-        if(sceneObject?.isSphere)
+        if(sceneObject.type === ObjectsEnum.Sphere)
         {
           glContext.enable(glContext.CULL_FACE);
           glContext.cullFace(glContext.BACK);
           glContext.drawElements(renderMode, count, glContext.UNSIGNED_SHORT, offset);
           glContext.cullFace(glContext.FRONT);
           glContext.drawElements(renderMode, count, glContext.UNSIGNED_SHORT, offset);
+          glContext.disable(glContext.CULL_FACE);
           continue
         }
 
