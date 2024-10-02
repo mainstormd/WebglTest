@@ -8,7 +8,7 @@ export class Camera{
     private  _cameraPosition: number[] = [];
     
     //vectors
-    private _cameraDirection: number[] = [];
+    public _cameraDirection: number[] = [];
     private _cameraRight: number[] = [];
     private _cameraUp: number[] = [];
 

@@ -9,7 +9,47 @@ export class Scene
 {
     private _eventBus: EventManager 
 
-    private _staticObjects = [new Plane(), new Coub(), new Coub().Translate(0.0, 0.5, 2.0).Scale(0.3, 0.3, 0.3) ] 
+    private _staticObjects = [
+        new Plane(), 
+        //new Coub().Translate(0.0, 0.5, 2.0),
+        new Coub().Translate(0.0, 0.5, -3.0),
+        new Coub().Translate(-2.0, 0.5, -2.0),
+        new Coub().Translate(2.0, 0.5, -2.0),
+        
+        new Coub().Translate(0.0, 0.5, -5.0),
+        new Coub().Translate(-2.0, 0.5, -4.0),
+        new Coub().Translate(2.0, 0.5, -4.0),
+
+        new Coub().Translate(0.0, 0.5, -7.0),
+        new Coub().Translate(-2.0, 0.5, -6.0),
+        new Coub().Translate(2.0, 0.5, -6.0),
+
+        new Coub().Translate(0.0, 0.5, -9.0),
+        new Coub().Translate(-2.0, 0.5, -8.0),
+        new Coub().Translate(2.0, 0.5, -8.0),
+
+        new Coub().Translate(0.0, 0.5, -11.0),
+        new Coub().Translate(-2.0, 0.5, -10.0),
+        new Coub().Translate(2.0, 0.5, -10.0),
+
+        new Coub().Translate(0.0, 0.5, -13.0),
+        new Coub().Translate(-2.0, 0.5, -12.0),
+        new Coub().Translate(2.0, 0.5, -12.0),
+
+        new Coub().Translate(0.0, 0.5, -15.0),
+        new Coub().Translate(-2.0, 0.5, -14.0),
+        new Coub().Translate(2.0, 0.5, -14.0),
+
+        new Coub().Translate(0.0, 0.5, -17.0),
+        new Coub().Translate(-2.0, 0.5, -16.0),
+        new Coub().Translate(2.0, 0.5, -16.0),
+        new Coub().Translate(2.0, 0.5, -16.0),
+        
+        new Coub().Translate(0.0, 0.5, 2.0).Scale(0.3, 0.3, 0.3), 
+        new Coub().Translate(-3.0, 0.5, -5.0).Scale(0.3, 0.3, 0.3),
+        new Coub().Translate(3.5, 0.5, -4.0).Scale(0.3, 0.3, 0.3),  // spot light     
+    ]
+
     private _dynamicObjects : Coub [] = []
     private _animateObjects = [/*new Cylinder(),*/ new Sphere(3,0.5)]
 

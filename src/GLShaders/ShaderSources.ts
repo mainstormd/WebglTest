@@ -7,7 +7,6 @@ export const VERTEX_SHADER_SOURCE_COMMON = `
     varying lowp vec4 objectColor;
     varying lowp vec4 objectPosition;
     varying lowp vec3 objectNormal;
-    varying lowp vec3 lightPosition;
 
     // A matrix to transform the positions by
     uniform mat4 ModelViewProjection;
@@ -19,8 +18,6 @@ export const VERTEX_SHADER_SOURCE_COMMON = `
         objectColor = color;
         objectPosition = vec4(position * ModelMatrix);
         objectNormal = vec3(normal * mat3(ModelMatrix));
-
-        lightPosition = vec3(0.0, 1.0, 2.0);
     }
 `;
 
@@ -32,7 +29,6 @@ export const VERTEX_SHADER_SOURCE_SPHERE = `
     varying lowp vec4 objectColor;
     varying lowp vec4 objectPosition;
     varying lowp vec3 objectNormal;
-    varying lowp vec3 lightPosition;
 
     // A matrix to transform the positions by
     uniform mat4 ModelViewProjection;
@@ -44,15 +40,13 @@ export const VERTEX_SHADER_SOURCE_SPHERE = `
     void main() { 
         vec4 spherePosition = vec4(normalize(position.xyz) * radius, position.w);
         //if animation enabled
-        vec4 resultPosition = mix(position, spherePosition, 1.0);  
+        vec4 resultPosition = mix(position, spherePosition, 1.0); //1.0  is off animation  
        
         gl_Position = resultPosition * ModelViewProjection;
         
         objectPosition = resultPosition * ModelMatrix;
         objectNormal = normal  * mat3(ModelMatrix);
         objectColor = color;
-
-        lightPosition = vec3(0.0, 1.0, 2.0);
     }
 `;
 
@@ -80,33 +74,124 @@ export const VERTEX_SHADER_SOURCE_CYLINDER = `
 export const FRAGMENT_SHADER_SOURCE =  `
     precision mediump float;
 
+    /*
+        if MAX_POINT_LIGHTS >= 128 we have error:
+        FRAGMENT shader uniforms count exceeds MAX_FRAGMENT_UNIFORM_VECTORS(1024)
+    */
+    #define MAX_POINT_LIGHTS 10
+
+    struct PointLight{
+        vec3 position;
+        vec3 color;
+
+        float ambientStrength;
+        float diffuseStrength;
+        float specularStrength;
+
+        float constant;
+        float linear;
+        float quadratic;
+    };
+
+    struct SpotLight{
+        vec3 color;
+        vec3 position;
+        vec3 direction;
+
+        float ambientStrength;
+        float diffuseStrength;
+        float specularStrength;
+
+        float constant;
+        float linear;
+        float quadratic;
+
+        float cosOfCutoff;
+        float cosOfOuterCutoff;
+    };
+
     varying lowp vec4 objectColor;
     varying lowp vec4 objectPosition;
     varying lowp vec3 objectNormal;
-    varying lowp vec3 lightPosition;
     
     uniform vec3 cameraPosition;
+    uniform int countPointLights;
+    
+    uniform PointLight pointLights[MAX_POINT_LIGHTS];
+    uniform SpotLight spotLight;
 
-    void main() {
-        float ambientStrength = 0.1;
-        vec3 lightColor = vec3(1.0, 1.0, 1.0);
-        vec3 ambient = ambientStrength * lightColor;
-        
+    vec3 CalcPointLight(PointLight light, vec3 objectNormal, vec4 objectPosition, vec3 cameraPosition)
+    {
         vec3 normal = normalize(objectNormal);
-        vec3 lightDirection = normalize(lightPosition - objectPosition.xyz);
+        vec3 lightDirection = normalize(light.position - objectPosition.xyz);
+        
         float diff = max(dot(normal, lightDirection), 0.0);
-        vec3 diffuse = diff * lightColor;
-
-        float specularStrength = 0.5;
+        
         vec3 viewDir = normalize(cameraPosition - objectPosition.xyz);
         vec3 reflectDir = reflect(-lightDirection, normal);
         float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
-        vec3 specular = specularStrength * spec * lightColor; 
+        
+        float distance = length(light.position - objectPosition.xyz);
+        float attenuation = 1.0 / (light.constant * distance + light.linear * distance + light.quadratic * (distance * distance) );
 
-        vec3 result = (ambient + diffuse + specular ) * vec3(objectColor.xyz);
-        gl_FragColor = vec4(result, objectColor.w);
+        vec3 ambient = light.ambientStrength * light.color;
+        vec3 diffuse = light.diffuseStrength * diff * light.color;
+        vec3 specular = light.specularStrength * spec * light.color; 
 
-        //gl_FragColor = objectColor;
+        ambient *= attenuation;
+        diffuse *= attenuation;
+        specular *= attenuation;
+        
+        return ambient + diffuse + specular;
+    }
+
+    vec3 CalcSpotLight(SpotLight light, vec3 objectNormal, vec4 objectPosition, vec3 cameraPosition)
+    {   
+        vec3 normal = normalize(objectNormal);
+        vec3 lightDirection = normalize(light.position - objectPosition.xyz);
+        float diff = max(dot(normal, lightDirection), 0.0);
+        
+        vec3 viewDir = normalize(cameraPosition - objectPosition.xyz);
+        vec3 reflectDir = reflect(-lightDirection, normal);
+        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
+        
+        float distance = length(light.position - objectPosition.xyz);
+        float attenuation = 1.0 / (light.constant * distance + light.linear * distance + light.quadratic * distance * distance);
+
+        vec3 ambient = light.ambientStrength * light.color;
+        vec3 diffuse = light.diffuseStrength * diff * light.color;
+        vec3 specular = light.specularStrength * spec * light.color;
+        
+        float theta = dot(lightDirection, normalize(light.direction));
+        float epsilon = light.cosOfCutoff - light.cosOfOuterCutoff;
+        float intensity = clamp((theta - light.cosOfOuterCutoff) / epsilon, 0.0, 1.0);
+        
+
+        ambient *= attenuation * intensity;
+        diffuse *= attenuation * intensity;
+        specular *= attenuation * intensity;
+        
+        return ambient + diffuse + specular;
+    }
+    
+    void main() {
+
+        vec3 color = vec3(0, 0, 0);
+ 
+        for(int i = 0; i < MAX_POINT_LIGHTS; i++)
+        {
+            if(i >= countPointLights)
+            {
+                break;
+            }
+            
+            color += CalcPointLight(pointLights[i], objectNormal, objectPosition, cameraPosition);
+        }
+
+        color += CalcSpotLight(spotLight, objectNormal, objectPosition, cameraPosition);
+
+        color *= objectColor.xyz;
+        gl_FragColor = vec4(color.xyz, objectColor.w);
     }  
 `;
 

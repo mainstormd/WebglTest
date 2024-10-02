@@ -92,8 +92,49 @@ export class Render{
             );
           break;
         }
-      
-        // draw
+
+        let countPointLightsUniform = glContext.getUniformLocation(shaderProgram.program, "countPointLights");
+        glContext.uniform1i(countPointLightsUniform, 2);
+        
+        AttributeAndUniformSetter.SetPointLightUniforms(
+          { 
+            position: [0.0, 0.1, 2.0],
+            color:  [1.0, 1.0, 1.0], 
+            ambientStrength:  0.1, 
+            diffuseStrength:  1.0, 
+            specularStrength: 0.5, 
+            constant: 1.0, 
+            linear: 0.0014, 
+            quadratic:  0.000007
+        }, 0, shaderProgram.program)
+        
+        AttributeAndUniformSetter.SetPointLightUniforms(
+          { 
+            position: [-3.0, 0.5, -5.0],
+            color:  [1.0, 1.0, 1.0], 
+            ambientStrength:  0.1, 
+            diffuseStrength:  1.0, 
+            specularStrength: 0.5, 
+            constant: 1.0, 
+            linear: 0.0014, 
+            quadratic:  0.000007
+        }, 1, shaderProgram.program)
+
+        AttributeAndUniformSetter.SetSpotLightUniforms(
+          { 
+            color:  [1.0, 1.0, 1.0], 
+            position: [3.5, 0.5, -4.0],
+            direction: m3.subtractVectors([3.5, 0.5, -4.0],  [0, 0.5, -4]),
+            ambientStrength:  0.1, 
+            diffuseStrength:  1.0, 
+            specularStrength: 0.5, 
+            constant: 1.0, 
+            linear: 0.0014, 
+            quadratic:  0.000007,
+            cosOfCutoff: Math.cos(degToRad(12.5)),
+            cosOfOuterCutoff: Math.cos(degToRad(27))
+        }, shaderProgram.program)
+
         const offset = 0;
           
         if(sceneObject.type === ObjectsEnum.Sphere)
