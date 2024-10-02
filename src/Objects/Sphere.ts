@@ -6,12 +6,10 @@ import { m3 } from "../Math/math";
 import { IndexBufferHelper } from "../Utils/IndexBufferHelper";
 
 export class Sphere{
-    private _radius : number    
     private _degreeOfTessellation : number    
 
-    constructor( radius : number = 3 , degreeOfTessellation : number = 3)
+    constructor(degreeOfTessellation : number = 3)
     { 
-        this._radius = radius
         this._degreeOfTessellation = degreeOfTessellation
     }
 
@@ -67,10 +65,11 @@ export class Sphere{
 
         let positions : number[] = positionsAfterTesselation
 
+        let opacity = 0.5
         const faceColors = [
-            [1.0,  0.0,  0.0,  0.5],    // Back face: red /
-            [0.0,  1.0,  0.0,  0.5],    // Top face: green /
-            [1.0,  1.0,  0.0,  0.5]    // Bottom face: blue
+            [1.0,  0.0,  0.0,  opacity],    // Back face: red /
+            [0.0,  1.0,  0.0,  opacity],    // Top face: green /
+            [1.0,  1.0,  0.0,  opacity]    // Bottom face: blue
           ]
           
           let colors : any = [];

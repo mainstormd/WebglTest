@@ -14,22 +14,21 @@ export class Render{
 
         if (glContext) {
             glContext.clearColor(0.1, 0.3, 0.1, 1.0); // установить в качестве цвета очистки буфера цвета чёрный, полная непрозрачность
-            glContext.enable(glContext.DEPTH_TEST);                               // включает использование буфера глубины
-            glContext.depthFunc(glContext.LESS);                                // определяет работу буфера глубины: более ближние объекты перекрывают дальние
+            glContext.enable(glContext.DEPTH_TEST);  // включает использование буфера глубины
+            glContext.depthFunc(glContext.LESS);    // определяет работу буфера глубины: более ближние объекты перекрывают дальние
             glContext.clear(glContext.COLOR_BUFFER_BIT | glContext.DEPTH_BUFFER_BIT);      // очистить буфер цвета и буфер глубины.
+            glContext.viewport(0, 0, glContext.canvas.width, glContext.canvas.height);
         }
 
         this._shaderProgram = new ShaderProgram().program;
+        glContext.useProgram(this._shaderProgram);
     }
 
     public DrawScence(camera : Camera, sceneObjects: any = [], time : number) : void
     {
-      glContext.viewport(0, 0, glContext.canvas.width, glContext.canvas.height);
+      
       glContext.clear(glContext.COLOR_BUFFER_BIT | glContext.DEPTH_BUFFER_BIT);
       glContext.disable(glContext.CULL_FACE);
-      
-      glContext.depthFunc(glContext.LESS);   
-      glContext.useProgram(this._shaderProgram);
 
       glContext.enable(glContext.BLEND)
       glContext.blendFunc(glContext.SRC_ALPHA, glContext.ONE_MINUS_SRC_ALPHA);
@@ -88,8 +87,18 @@ export class Render{
       
         // draw
         let offset = 0;
-          // glContext.drawArrays(glContext.TRIANGLES, offset, count);
+          
+        if(sceneObject?.isSphere)
+        {
+          glContext.enable(glContext.CULL_FACE);
+          glContext.cullFace(glContext.BACK);
           glContext.drawElements(renderMode, count, glContext.UNSIGNED_SHORT, offset);
+          glContext.cullFace(glContext.FRONT);
+          glContext.drawElements(renderMode, count, glContext.UNSIGNED_SHORT, offset);
+          continue
+        }
+
+        glContext.drawElements(renderMode, count, glContext.UNSIGNED_SHORT, offset);
       }
     }
 }
