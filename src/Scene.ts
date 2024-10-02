@@ -3,11 +3,12 @@ import { glContext } from "./Utils/GLUtilities";
 import { Coub } from "./Objects/Coub";
 import { Plane } from "./Objects/Plane";
 import { Sphere } from "./Objects/Sphere";
+import { Cylinder } from "./Objects/Cylinder";
 
 export class Scene{
     private _eventBus: EventManager 
 
-    private _staticObjects = [new Plane(), new Sphere(2)] 
+    private _staticObjects = [new Plane(), new Sphere(2), new Cylinder()] 
     private _dynamicObjects : Coub [] =   []
     
     private _renderMode : GLenum = glContext.TRIANGLES

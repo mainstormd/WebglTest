@@ -92,7 +92,7 @@ export class Sphere{
         let count = inputIndexes.length
  
         return {
-          modelMatrix: [1,0,0,0, 0,1,0,3, 0,0,1,0, 0,0,0,1],
+          modelMatrix: [1,0,0,10, 0,1,0,5, 0,0,1,0, 0,0,0,1],
           position: new PositionBuffer(positions).buffer,
           countVertex: count,
           color: new ColorBuffer(colors).buffer,
