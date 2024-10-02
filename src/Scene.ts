@@ -52,7 +52,7 @@ export class Scene
     ]
 
     private _dynamicObjects : Coub [] = []
-    private _animateObjects = [new Cylinder(), new Sphere(3,0.5)]
+    private _animateObjects = [new Cylinder(), /*new Sphere(3,0.5)*/]
 
     private _renderMode : GLenum = glContext.TRIANGLES
 
@@ -110,9 +110,10 @@ export class Scene
         //renderAssets.push(...this._dynamicObjects.map(item => item.GetRenderAssets(this._renderMode)))
         renderAssets.push(...this._staticObjects.map(item => item.GetRenderAssets(this._renderMode)))
         renderAssets.push(...this._animateObjects.map(item => item.GetRenderAssets(this._renderMode)))
+        renderAssets.push(...this._animateObjects.map(item => item.GetRenderLineOfNormalsAssets()))
         //renderAssets.push(...[new Sphere(3,0.5).GetRenderLineOfNormalsAssets()])
         renderAssets.push(...[new Coub().Translate(0.0, 0.5, -3.0).GetRenderLineOfNormalsAssets()])
-        renderAssets.push(...[new Cylinder().GetRenderLineOfNormalsAssets()])
+        //renderAssets.push(...[new Cylinder().GetRenderLineOfNormalsAssets()])
         return renderAssets
     }
 

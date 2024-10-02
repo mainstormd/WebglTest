@@ -4,7 +4,6 @@ import { ShaderProgram } from "../GLShaders/ShaderProgram";
 import { FRAGMENT_SHADER_NOLIGHT_SOURCE, FRAGMENT_SHADER_SOURCE, VERTEX_SHADER_SOURCE_CYLINDER, VERTEX_SHADER_SOURCE_LINE_NORMAL } from "../GLShaders/ShaderSources";
 import { degToRad, m3 } from "../Math/math";
 import { ColorBufferHelper } from "../Utils/ColorBufferHelper";
-import { CommonAttribureAndUniformSetter } from "../Utils/CommonAttribureAndUniformSetter";
 import { CylinderAttribureAndUniformSetter } from "../Utils/CylinderAttribureAndUniformSetter";
 import { glContext } from "../Utils/GLUtilities";
 import { ObjectsEnum } from "./ObjectEnum";
@@ -207,6 +206,7 @@ export class Cylinder{
       const vectorDimention = 3
 
       let positions : number [] = []
+      let weights : number [] = []
 
       for(let i = 0; i < this._positions.length / vectorDimention; i++)
       {
@@ -227,6 +227,7 @@ export class Cylinder{
                                     )
         )
         
+        weights.push(this._weights[i], this._weights[i])
         positions.push(...startPositionOfLine, ...endPositionOfLine)
       }
 
@@ -238,8 +239,8 @@ export class Cylinder{
       
       const count = indexes.length
 
-      const shaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_LINE_NORMAL,FRAGMENT_SHADER_NOLIGHT_SOURCE) 
-      const assetSetter = new CommonAttribureAndUniformSetter(shaderProgram.program)
+      const shaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_CYLINDER, FRAGMENT_SHADER_NOLIGHT_SOURCE) 
+      const assetSetter = new CylinderAttribureAndUniformSetter(shaderProgram.program)
 
       return {
         shaderProgram,
@@ -249,6 +250,12 @@ export class Cylinder{
           position: new DefaultBuffer(positions).buffer,
           color: new DefaultBuffer(colors).buffer,
           indices: new IndexBuffer(indexes).buffer,
+          normals: new DefaultBuffer(this._normals).buffer,
+          weights: new DefaultBuffer(weights).buffer
+        },
+        uniforms: {
+          IdentityBone: this.IdentityBone,
+          RotateBone: this.RotateBone
         },
         type: ObjectsEnum.Common,
         countVertex: count,

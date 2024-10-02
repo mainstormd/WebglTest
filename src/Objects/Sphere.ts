@@ -80,7 +80,7 @@ export class Sphere{
           }, 
           countVertex: count,
           renderMode,
-          type:ObjectsEnum.Sphere
+          type: ObjectsEnum.Sphere
         };
     }
 
