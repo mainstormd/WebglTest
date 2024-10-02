@@ -10,12 +10,12 @@ export const VERTEX_SHADER_SOURCE = `
     uniform float time;
     uniform int radius;
 
-    uniform bool isSphere; // 1 sphere others
+    uniform float isSphere; // 1 sphere others
 
     void main() { 
         vec4 position;
         
-        if(isSphere == true)
+        if(isSphere == 1.0)
         {
             vec4 spherePosition = vec4(normalize(a_Position.xyz) * 3.0, a_Position.w);
             position = mix(a_Position, spherePosition, (sin(time)+(sin(3.0*time) / 3.0)  + 1.0)/2.0);  
