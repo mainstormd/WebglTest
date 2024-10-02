@@ -7,6 +7,7 @@ import { FRAGMENT_SHADER_NOLIGHT_SOURCE, FRAGMENT_SHADER_SOURCE, VERTEX_SHADER_S
 import { m3 } from "../Math/math";
 import { ObjectsEnum } from "./ObjectEnum";
 import { DefaultBuffer } from "../GLBuffers/DefaultBuffer";
+import { CommonAttribureAndUniformSetter } from "../Utils/CommonAttribureAndUniformSetter";
 
 export class Plane{
 
@@ -30,6 +31,9 @@ export class Plane{
       0,  1,   0
   ]
 
+  private _shaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_COMMON,FRAGMENT_SHADER_SOURCE)
+  public assetSetter = new CommonAttribureAndUniformSetter(this._shaderProgram.program)
+
   public GetRenderAssets(renderMode : GLenum = glContext.TRIANGLES) 
   {
 
@@ -44,7 +48,7 @@ export class Plane{
       let count = inputIndexes.length
 
       return {
-        shaderProgram: new ShaderProgram(VERTEX_SHADER_SOURCE_COMMON,FRAGMENT_SHADER_SOURCE),
+        shaderProgram: this._shaderProgram,
         modelMatrix: m3.IdentityMatrix(),
         attributes:{
           position: new DefaultBuffer(this._positions).buffer,
@@ -52,7 +56,8 @@ export class Plane{
           indices: new IndexBuffer(inputIndexes).buffer,
           normals: new DefaultBuffer(this._normals).buffer
         },
-        type: ObjectsEnum.Common,
+        type: ObjectsEnum.Test,
+        assetSetter: this.assetSetter,
         countVertex: count,
         renderMode
       };

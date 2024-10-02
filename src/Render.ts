@@ -46,7 +46,7 @@ export class Render{
           renderMode, 
           shaderProgram, 
           type, 
-          uniforms 
+          uniforms
         } = sceneObject;
 
         if(ModelMatrix == null)
@@ -80,6 +80,17 @@ export class Render{
               camera,
               shaderProgram.program
             );
+          break;
+
+          case ObjectsEnum.Test:
+            debugger;
+            sceneObject.assetSetter.Set(
+            attributes, 
+            ModelViewProjectionMatrix,
+            ModelMatrix,
+            camera, 
+            shaderProgram.program
+          );
           break;
 
           default:

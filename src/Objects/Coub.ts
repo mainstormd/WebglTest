@@ -8,6 +8,7 @@ import { FRAGMENT_SHADER_NOLIGHT_SOURCE, FRAGMENT_SHADER_SOURCE, VERTEX_SHADER_S
 import { ObjectsEnum } from "./ObjectEnum";
 import { ColorBufferHelper } from "../Utils/ColorBufferHelper";
 import { m3 } from "../Math/math";
+import { CommonAttribureAndUniformSetter } from "../Utils/CommonAttribureAndUniformSetter";
 
 export class Coub{
     private _isGradientColor : boolean = false
@@ -130,7 +131,9 @@ export class Coub{
     ]; 
 
     private _defaultColor = this.GetDefaultColor();  
-    
+    private _shaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_COMMON,FRAGMENT_SHADER_SOURCE);
+    public assetSetter = new CommonAttribureAndUniformSetter(this._shaderProgram.program)
+
     public GetRenderAssets(renderMode : GLenum = glContext.TRIANGLES)
     {
         let colors : number[] = this._isGradientColor ? this.GetGradientColor() : this._defaultColor;
@@ -141,7 +144,7 @@ export class Coub{
         let count = inputIndexes.length
   
         return {
-          shaderProgram: new ShaderProgram(VERTEX_SHADER_SOURCE_COMMON,FRAGMENT_SHADER_SOURCE),
+          shaderProgram: this._shaderProgram,
           attributes: {
             position: new DefaultBuffer(this._positions).buffer,
             color: new DefaultBuffer(colors).buffer,
@@ -149,9 +152,10 @@ export class Coub{
             normals: new DefaultBuffer(this._normals).buffer
           },
           modelMatrix: this._transformations.ModelMatrix,
+          assetSetter: this.assetSetter,
           countVertex: count,
           renderMode,
-          type: ObjectsEnum.Common, 
+          type: ObjectsEnum.Test, 
         };
     }
 
