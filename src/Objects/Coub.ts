@@ -5,7 +5,7 @@ import { glContext } from "../Utils/GLUtilities";
 import { TransfomationsManager } from "../TransfomationsManager";
 import { IndexBufferHelper } from "../Utils/IndexBufferHelper";
 import { ShaderProgram } from "../GLShaders/ShaderProgram";
-import { VERTEX_SHADER_SOURCE_COMMON } from "../GLShaders/ShaderSources";
+import { FRAGMENT_SHADER_SOURCE, VERTEX_SHADER_SOURCE_COMMON } from "../GLShaders/ShaderSources";
 import { ObjectsEnum } from "./ObjectEnum";
 import { NormalsBuffer } from "../GLBuffers/NormalsBuffer";
 
@@ -142,7 +142,7 @@ export class Coub{
         let count = inputIndexes.length
   
         return {
-          shaderProgram: new ShaderProgram(VERTEX_SHADER_SOURCE_COMMON),
+          shaderProgram: new ShaderProgram(VERTEX_SHADER_SOURCE_COMMON,FRAGMENT_SHADER_SOURCE),
           attributes: {
             position: new PositionBuffer(positions).buffer,
             color: new ColorBuffer(colors).buffer,

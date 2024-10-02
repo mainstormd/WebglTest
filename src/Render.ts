@@ -20,7 +20,7 @@ export class Render{
         }
     }
 
-    public DrawScence(camera : Camera, sceneObjects: any = [], time : number) : void
+    public DrawScence(camera : Camera, sceneObjects: any = []) : void
     {
       glContext.clear(glContext.COLOR_BUFFER_BIT | glContext.DEPTH_BUFFER_BIT);
       glContext.disable(glContext.CULL_FACE);

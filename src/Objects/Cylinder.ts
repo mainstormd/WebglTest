@@ -3,7 +3,7 @@ import { IndexBuffer } from "../GLBuffers/IndexBuffer";
 import { PositionBuffer } from "../GLBuffers/PositionBuffer";
 import { WeightsBuffer } from "../GLBuffers/WeightsBuffer";
 import { ShaderProgram } from "../GLShaders/ShaderProgram";
-import { VERTEX_SHADER_SOURCE_CYLINDER } from "../GLShaders/ShaderSources";
+import { FRAGMENT_SHADER_SOURCE, VERTEX_SHADER_SOURCE_CYLINDER } from "../GLShaders/ShaderSources";
 import { degToRad, m3 } from "../Math/math";
 import { ColorBufferHelper } from "../Utils/ColorBufferHelper";
 import { glContext } from "../Utils/GLUtilities";
@@ -42,13 +42,12 @@ export class Cylinder{
     public GetCirclePositionWeight( radius: number, height: number) : PositionWeight []
     {
         let points : PositionWeight[] = []
-        const delta = 5
+        const delta = degToRad(5)
 
-        for(let angle = 0; angle <= 360; angle += delta)
+        for(let angle = 0; angle <= 2 * Math.PI; angle += delta)
         {
-            let angleInRadians = degToRad(angle)
-            let cos = Math.cos(angleInRadians);
-            let sin = Math.sin(angleInRadians);
+            let cos = Math.cos(angle);
+            let sin = Math.sin(angle);
             points.push(new PositionWeight(new vec3(radius * cos, height, radius * sin), height))
         }
         
@@ -105,11 +104,11 @@ export class Cylinder{
           
         if(index === indexesOld.length)
         {
-          reducer.push(item,indexesOld[0])
+          reducer.push(item, indexesOld[0])
           return reducer
         }
         
-        reducer.push(item,item,indexesOld[(index + 1) - 3]);
+        reducer.push(item, item, indexesOld[(index + 1) - 3]);
         return reducer
       },[])
 
@@ -168,7 +167,7 @@ export class Cylinder{
       const inputIndexes= renderMode === glContext.LINES ? this.GetCircleIdexesForRenderModeLines(indexes) :  indexes
 
       return {
-        shaderProgram: new ShaderProgram(VERTEX_SHADER_SOURCE_CYLINDER),
+        shaderProgram: new ShaderProgram(VERTEX_SHADER_SOURCE_CYLINDER, FRAGMENT_SHADER_SOURCE),
         attributes:{
           position: new PositionBuffer(positions).buffer,
           color: new ColorBuffer(colors).buffer,
