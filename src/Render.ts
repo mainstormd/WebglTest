@@ -118,12 +118,12 @@ export class Render{
             constant: 1.0, 
             linear: 0.0014, 
             quadratic:  0.000007
-        }, 1, shaderProgram.program)
+          }, 1, shaderProgram.program)
 
         AttributeAndUniformSetter.SetSpotLightUniforms(
           { 
             color:  [1.0, 1.0, 1.0], 
-            position: [3.5, 0.5, -4.0],
+            position:[3.5, 0.5, -4.0],
             direction: m3.subtractVectors([3.5, 0.5, -4.0],  [0, 0.5, -4]),
             ambientStrength:  0.1, 
             diffuseStrength:  1.0, 
@@ -133,7 +133,18 @@ export class Render{
             quadratic:  0.000007,
             cosOfCutoff: Math.cos(degToRad(12.5)),
             cosOfOuterCutoff: Math.cos(degToRad(27))
-        }, shaderProgram.program)
+          }, shaderProgram.program)
+
+        AttributeAndUniformSetter.SetFogUniforms(
+          { 
+            color: [0.5, 0.5, 0.5],
+            start: -100.0, 
+            end: 100.0,
+            density: 0.35, 
+            mode: 2, 
+            isEnabled:-1
+          }, shaderProgram.program)
+        
 
         const offset = 0;
           

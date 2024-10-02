@@ -168,4 +168,34 @@ export default class AttributeAndUniformSetter
         let cosOfOuterCutoffUniform = glContext.getUniformLocation(shaderProgram, `spotLight.cosOfOuterCutoff`);
         glContext.uniform1f(cosOfOuterCutoffUniform, cosOfOuterCutoff); 
     }
+
+    static SetFogUniforms(uniforms, shaderProgram) : void
+    {    
+        const { 
+            color,
+            start, 
+            end,
+            density, 
+            mode, 
+            isEnabled, 
+        } = uniforms
+         
+        let colorUniform = glContext.getUniformLocation(shaderProgram, `fog.color`);
+        glContext.uniform3fv(colorUniform, color);
+
+        let startUniform = glContext.getUniformLocation(shaderProgram, `fog.start`);
+        glContext.uniform1f(startUniform, start);
+
+        let endUniform = glContext.getUniformLocation(shaderProgram, `fog.end`);
+        glContext.uniform1f(endUniform, end);
+        
+        let densityUniform = glContext.getUniformLocation(shaderProgram, `fog.density`);
+        glContext.uniform1f(densityUniform, density);
+
+        let modeUniform = glContext.getUniformLocation(shaderProgram, `fog.mode`);
+        glContext.uniform1i(modeUniform, mode);
+
+        let isEnabledUniform = glContext.getUniformLocation(shaderProgram, "fog.isEnabled");
+        glContext.uniform1i(isEnabledUniform, isEnabled);
+    }
 }

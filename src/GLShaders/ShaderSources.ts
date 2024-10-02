@@ -7,7 +7,7 @@ export const VERTEX_SHADER_SOURCE_COMMON = `
     varying lowp vec4 objectColor;
     varying lowp vec4 objectPosition;
     varying lowp vec3 objectNormal;
-
+      
     // A matrix to transform the positions by
     uniform mat4 ModelViewProjection;
     uniform mat4 ModelMatrix;
@@ -110,6 +110,18 @@ export const FRAGMENT_SHADER_SOURCE =  `
         float cosOfOuterCutoff;
     };
 
+    struct Fog{
+        vec3 color;
+        
+        float start;
+        float end;
+        float density;
+
+        // 1-linear, 2-exp, 3-exp2
+        int mode;
+        int isEnabled;
+    };
+
     varying lowp vec4 objectColor;
     varying lowp vec4 objectPosition;
     varying lowp vec3 objectNormal;
@@ -119,6 +131,7 @@ export const FRAGMENT_SHADER_SOURCE =  `
     
     uniform PointLight pointLights[MAX_POINT_LIGHTS];
     uniform SpotLight spotLight;
+    uniform Fog fog;
 
     vec3 CalcPointLight(PointLight light, vec3 objectNormal, vec4 objectPosition, vec3 cameraPosition)
     {
@@ -173,6 +186,29 @@ export const FRAGMENT_SHADER_SOURCE =  `
         
         return ambient + diffuse + specular;
     }
+
+    float CalcFogFactor(Fog fog, float objDistance)
+    {
+        float fogFactor = 0.0;
+        
+        if(fog.mode == 0)
+        {
+            float fogLength = fog.end - fog.start;
+            fogFactor = (fog.end - objDistance) / fogLength;
+        }
+
+        if(fog.mode == 1) 
+        {
+            fogFactor = exp(-fog.density * objDistance);
+        }
+        
+        if(fog.mode == 2) 
+        {
+            fogFactor = exp(-pow(fog.density * objDistance, 2.0));
+        }
+	
+	    return 1.0 - clamp(fogFactor, 0.0, 1.0);
+    }
     
     void main() {
 
@@ -189,8 +225,14 @@ export const FRAGMENT_SHADER_SOURCE =  `
         }
 
         color += CalcSpotLight(spotLight, objectNormal, objectPosition, cameraPosition);
-
         color *= objectColor.xyz;
+
+        if(fog.isEnabled > 0)
+        {
+            float objDistance = length(objectPosition.xyz);
+            color = mix(color, fog.color, CalcFogFactor(fog, objDistance));
+        }
+
         gl_FragColor = vec4(color.xyz, objectColor.w);
     }  
 `;
