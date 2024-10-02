@@ -4,7 +4,6 @@ import { Render } from "./Render"
 import { EventManager } from "./EventSystem/EventManager"
 import InputSystem from "./InputSystem"
 import { Scene } from "./Scene"
-import { Plane } from "./Objects/Plane"
 
 window.render = new Render()
 

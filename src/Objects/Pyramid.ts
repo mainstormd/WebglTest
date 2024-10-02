@@ -7,7 +7,6 @@ export class Pyramid{
 
     public GetRenderAssets(renderMode : GLenum = glContext.TRIANGLES) 
     {  
-
          let positions = [
               //up
              -1.0,  0, -1.0,
