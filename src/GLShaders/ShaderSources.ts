@@ -192,7 +192,7 @@ export const FRAGMENT_SHADER_SOURCE =  `
         float fogFactor = 0.0;
         
         if(fog.mode == 0)
-        {
+        {  
             float fogLength = fog.end - fog.start;
             fogFactor = (fog.end - objDistance) / fogLength;
         }

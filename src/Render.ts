@@ -123,7 +123,7 @@ export class Render{
         AttributeAndUniformSetter.SetSpotLightUniforms(
           { 
             color:  [1.0, 1.0, 1.0], 
-            position:[3.5, 0.5, -4.0],
+            position: [3.5, 0.5, -4.0],
             direction: m3.subtractVectors([3.5, 0.5, -4.0],  [0, 0.5, -4]),
             ambientStrength:  0.1, 
             diffuseStrength:  1.0, 
@@ -138,11 +138,11 @@ export class Render{
         AttributeAndUniformSetter.SetFogUniforms(
           { 
             color: [0.5, 0.5, 0.5],
-            start: -100.0, 
-            end: 100.0,
-            density: 0.35, 
-            mode: 2, 
-            isEnabled:-1
+            start: 0.1, // параметр работает только для 0 мода
+            end: 10.0, // параметр работает только для 0 мода
+            density: 0.35, // параметр работают только для 1 и 2 мода, для него управлять расстояния нельзя
+            mode: 0, // 
+            isEnabled:1
           }, shaderProgram.program)
         
 
