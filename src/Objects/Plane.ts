@@ -8,6 +8,7 @@ import { ShaderProgram } from "../GLShaders/ShaderProgram";
 import { VERTEX_SHADER_SOURCE_COMMON } from "../GLShaders/ShaderSources";
 import { m3 } from "../Math/math";
 import { ObjectsEnum } from "./ObjectEnum";
+import { NormalsBuffer } from "../GLBuffers/NormalsBuffer";
 
 export class Plane{
 
@@ -17,7 +18,14 @@ export class Plane{
             70,  0, -50, 
            -70,  0, -50,
            -70,  0,  50, 
-            70,  0,  50,
+            70,  0,  50
+        ]
+
+        const normals = [
+           0,  1,   0, 
+           0,  1,   0,
+           0,  1,   0, 
+           0,  1,   0,
         ]
   
         const faceColors = [0.0,  0.0,  1.0,  0.5]           
@@ -36,7 +44,8 @@ export class Plane{
           attributes:{
             position: new PositionBuffer(positions).buffer,
             color: new ColorBuffer(colors).buffer,
-            indices: new IndexBuffer(inputIndexes).buffer
+            indices: new IndexBuffer(inputIndexes).buffer,
+            normals: new NormalsBuffer(normals).buffer
           },
           type: ObjectsEnum.Common,
           countVertex: count,

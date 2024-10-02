@@ -12,7 +12,7 @@ export class Render{
         GlUtilities.InitializeGLContext(canvas)
 
         if (glContext) {
-            glContext.clearColor(0.1, 0.3, 0.1, 1.0); // установить в качестве цвета очистки буфера цвета чёрный, полная непрозрачность
+            glContext.clearColor(0, 0, 0, 1); // установить в качестве цвета очистки буфера цвета чёрный, полная непрозрачность
             glContext.enable(glContext.DEPTH_TEST);  // включает использование буфера глубины
             glContext.depthFunc(glContext.LESS);    // определяет работу буфера глубины: более ближние объекты перекрывают дальние
             glContext.clear(glContext.COLOR_BUFFER_BIT | glContext.DEPTH_BUFFER_BIT);      // очистить буфер цвета и буфер глубины.

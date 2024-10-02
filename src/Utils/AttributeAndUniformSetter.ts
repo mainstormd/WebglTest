@@ -8,7 +8,13 @@ export default class AttributeAndUniformSetter
          // Set the matrix.
         glContext.uniformMatrix4fv(matrixLocation, false, resultMatrix);
 
-        const { position, color, indices } = attributes
+        const { position, color, indices, normals } = attributes
+
+        glContext.bindBuffer(glContext.ARRAY_BUFFER, normals);
+
+        let normalAttributeLocation = glContext.getAttribLocation(shaderProgram, "normal");
+            glContext.vertexAttribPointer(normalAttributeLocation, 3, glContext.FLOAT, false, 0, 0);
+            glContext.enableVertexAttribArray(normalAttributeLocation);
 
         this.SetCommonAttributes(position, color, indices, shaderProgram)
     }

@@ -7,6 +7,7 @@ import { IndexBufferHelper } from "../Utils/IndexBufferHelper";
 import { ShaderProgram } from "../GLShaders/ShaderProgram";
 import { VERTEX_SHADER_SOURCE_COMMON } from "../GLShaders/ShaderSources";
 import { ObjectsEnum } from "./ObjectEnum";
+import { NormalsBuffer } from "../GLBuffers/NormalsBuffer";
 
 export class Coub{
     private _isGradientColor : boolean = false
@@ -72,6 +73,44 @@ export class Coub{
           16, 17, 18,     16, 18, 19,   // right
           20, 21, 22,     20, 22, 23,   // left
         ];
+
+        const normals = [
+           // Front face
+            0,    0,   1.0,
+            0,    0,   1.0,
+            0,    0,   1.0,
+            0,    0,   1.0,
+        
+          // Back face
+            0,    0, -1.0,
+            0,    0, -1.0,
+            0,    0, -1.0,
+            0,    0, -1.0,
+        
+          // Top face
+            0,  1.0,    0,
+            0,  1.0,    0,
+            0,  1.0,    0,
+            0,  1.0,    0,
+        
+          // Bottom face
+            0,  -1.0,   0,
+            0,  -1.0,   0,
+            0,  -1.0,   0,
+            0,  -1.0,   0,
+        
+          // Right face
+           1.0,   0,    0,
+           1.0,   0,    0,
+           1.0,   0,    0,
+           1.0,   0,    0,
+        
+          // Left face
+          -1.0,   0,    0,
+          -1.0,   0,    0,
+          -1.0,   0,    0,
+          -1.0,   0,    0
+        ] 
   
         const inputIndexes = renderMode === glContext.LINES ? IndexBufferHelper.GetIdexesForRenderModeLines(indexes) :  indexes
        
@@ -82,7 +121,8 @@ export class Coub{
           attributes: {
             position: new PositionBuffer(positions).buffer,
             color: new ColorBuffer(colors).buffer,
-            indices: new IndexBuffer(inputIndexes).buffer
+            indices: new IndexBuffer(inputIndexes).buffer,
+            normals: new NormalsBuffer(normals).buffer
           },
           modelMatrix: this._transformations.ModelMatrix,
           countVertex: count,

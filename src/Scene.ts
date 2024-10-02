@@ -9,7 +9,7 @@ export class Scene
 {
     private _eventBus: EventManager 
 
-    private _staticObjects = [new Plane() ] 
+    private _staticObjects = [new Plane(), new Coub().Translate(5,0,5) ] 
     private _dynamicObjects : Coub [] = []
     private _animateObjects = [new Cylinder(), new Sphere(2)]
 
@@ -66,9 +66,9 @@ export class Scene
     public GetRenderAssets()
     {
         let renderAssets : any [] = []
-        renderAssets.push(...this._dynamicObjects.map(item => item.GetRenderAssets(this._renderMode)))
+        //renderAssets.push(...this._dynamicObjects.map(item => item.GetRenderAssets(this._renderMode)))
         renderAssets.push(...this._staticObjects.map(item => item.GetRenderAssets(this._renderMode)))
-        renderAssets.push(...this._animateObjects.map(item => item.GetRenderAssets(this._renderMode)))
+        //renderAssets.push(...this._animateObjects.map(item => item.GetRenderAssets(this._renderMode)))
         return renderAssets
     }
 
