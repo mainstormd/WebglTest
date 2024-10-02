@@ -7,6 +7,8 @@ import { ObjectsEnum } from "./ObjectEnum";
 import { degToRad, m3 } from "../Math/math";
 import { ColorBufferHelper } from "../Utils/ColorBufferHelper";
 import { DefaultBuffer } from "../GLBuffers/DefaultBuffer";
+import { CommonAttribureAndUniformSetter } from "../Utils/CommonAttribureAndUniformSetter";
+import { SphereAttribureAndUniformSetter } from "../Utils/SphereAttribureAndUniformSetter";
 
 export class Sphere{
     private _radius : number
@@ -14,12 +16,16 @@ export class Sphere{
     private _interpolationCoeff : number = 1 
     private _positions : number[] // Positions of pyramid after tesselation
     private _normals: number[]
+  
     private _modelMatrix: number[] = [
       1, 0, 0,   0, 
       0, 1, 0, 1.5, 
       0, 0, 1,   0, 
       0, 0, 0,   1
     ]
+
+    private _shaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_SPHERE,FRAGMENT_SHADER_SOURCE)
+    public assetSetter = new SphereAttribureAndUniformSetter(this._shaderProgram.program)
 
     constructor(degreeOfTessellation : number = 3, radius : number = 3)
     { 
@@ -59,7 +65,8 @@ export class Sphere{
         let count = inputIndexes.length
  
         return {
-          shaderProgram: new ShaderProgram(VERTEX_SHADER_SOURCE_SPHERE,FRAGMENT_SHADER_SOURCE),
+          shaderProgram: this._shaderProgram,
+          assetSetter: this.assetSetter,
           modelMatrix: this._modelMatrix,
           attributes: {
              position: new DefaultBuffer(this._positions).buffer,
@@ -170,14 +177,18 @@ export class Sphere{
     
     const count = indexes.length
 
+    const shaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_LINE_NORMAL,FRAGMENT_SHADER_NOLIGHT_SOURCE) 
+    const assetSetter = new CommonAttribureAndUniformSetter(shaderProgram.program)
+
     return {
-      shaderProgram: new ShaderProgram(VERTEX_SHADER_SOURCE_LINE_NORMAL,FRAGMENT_SHADER_NOLIGHT_SOURCE),
+      shaderProgram,
       modelMatrix: this._modelMatrix,
       attributes:{
         position: new DefaultBuffer(positions).buffer,
         color: new DefaultBuffer(colors).buffer,
         indices: new IndexBuffer(indexes).buffer,
       },
+      assetSetter,
       type: ObjectsEnum.Common,
       countVertex: count,
       renderMode: glContext.LINES

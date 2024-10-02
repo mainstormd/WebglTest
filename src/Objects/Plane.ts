@@ -8,6 +8,7 @@ import { m3 } from "../Math/math";
 import { ObjectsEnum } from "./ObjectEnum";
 import { DefaultBuffer } from "../GLBuffers/DefaultBuffer";
 import { CommonAttribureAndUniformSetter } from "../Utils/CommonAttribureAndUniformSetter";
+import { PhongAttribureAndUniformSetter } from "../Utils/PhongAttribureAndUniformSetter";
 
 export class Plane{
 
@@ -32,7 +33,7 @@ export class Plane{
   ]
 
   private _shaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_COMMON,FRAGMENT_SHADER_SOURCE)
-  public assetSetter = new CommonAttribureAndUniformSetter(this._shaderProgram.program)
+  public assetSetter = new PhongAttribureAndUniformSetter(this._shaderProgram.program)
 
   public GetRenderAssets(renderMode : GLenum = glContext.TRIANGLES) 
   {
@@ -100,14 +101,18 @@ export class Plane{
     
     const count = indexes.length
 
+    const shaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_LINE_NORMAL,FRAGMENT_SHADER_NOLIGHT_SOURCE) 
+    const assetSetter = new CommonAttribureAndUniformSetter(shaderProgram.program)
+
     return {
-      shaderProgram: new ShaderProgram(VERTEX_SHADER_SOURCE_LINE_NORMAL,FRAGMENT_SHADER_NOLIGHT_SOURCE),
+      shaderProgram,
       modelMatrix: m3.IdentityMatrix(),
       attributes:{
         position: new DefaultBuffer(positions).buffer,
         color: new DefaultBuffer(colors).buffer,
         indices: new IndexBuffer(indexes).buffer,
       },
+      assetSetter,
       type: ObjectsEnum.Common,
       countVertex: count,
       renderMode: glContext.LINES

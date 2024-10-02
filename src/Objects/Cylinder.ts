@@ -4,6 +4,8 @@ import { ShaderProgram } from "../GLShaders/ShaderProgram";
 import { FRAGMENT_SHADER_NOLIGHT_SOURCE, FRAGMENT_SHADER_SOURCE, VERTEX_SHADER_SOURCE_CYLINDER, VERTEX_SHADER_SOURCE_LINE_NORMAL } from "../GLShaders/ShaderSources";
 import { degToRad, m3 } from "../Math/math";
 import { ColorBufferHelper } from "../Utils/ColorBufferHelper";
+import { CommonAttribureAndUniformSetter } from "../Utils/CommonAttribureAndUniformSetter";
+import { CylinderAttribureAndUniformSetter } from "../Utils/CylinderAttribureAndUniformSetter";
 import { glContext } from "../Utils/GLUtilities";
 import { ObjectsEnum } from "./ObjectEnum";
 
@@ -44,6 +46,9 @@ export class Cylinder{
     private _positions : number [] = []
     private _weights : number [] = []
     private _normals : number [] = [] 
+
+    private _shaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_CYLINDER, FRAGMENT_SHADER_SOURCE)
+    public assetSetter = new CylinderAttribureAndUniformSetter(this._shaderProgram.program)
 
     constructor()
     {
@@ -176,7 +181,7 @@ export class Cylinder{
       const inputIndexes= renderMode === glContext.LINES ? this.GetCircleIdexesForRenderModeLines(indexes) :  indexes
 
       return {
-        shaderProgram: new ShaderProgram(VERTEX_SHADER_SOURCE_CYLINDER, FRAGMENT_SHADER_SOURCE),
+        shaderProgram: this._shaderProgram,
         attributes:{
           position: new DefaultBuffer(this._positions).buffer,
           color: new DefaultBuffer(colors).buffer,
@@ -188,6 +193,7 @@ export class Cylinder{
           IdentityBone: this.IdentityBone,
           RotateBone: this.RotateBone
         },
+        assetSetter: this.assetSetter,
         modelMatrix: this.modelMatrix,
         countVertex: count,
         renderMode: renderMode,
@@ -232,8 +238,12 @@ export class Cylinder{
       
       const count = indexes.length
 
+      const shaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_LINE_NORMAL,FRAGMENT_SHADER_NOLIGHT_SOURCE) 
+      const assetSetter = new CommonAttribureAndUniformSetter(shaderProgram.program)
+
       return {
-        shaderProgram: new ShaderProgram(VERTEX_SHADER_SOURCE_LINE_NORMAL,FRAGMENT_SHADER_NOLIGHT_SOURCE),
+        shaderProgram,
+        assetSetter,
         modelMatrix: this.modelMatrix,
         attributes:{
           position: new DefaultBuffer(positions).buffer,

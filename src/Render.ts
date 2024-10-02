@@ -45,7 +45,6 @@ export class Render{
           modelMatrix:ModelMatrix, 
           renderMode, 
           shaderProgram, 
-          type, 
           uniforms
         } = sceneObject;
 
@@ -57,52 +56,15 @@ export class Render{
         glContext.useProgram(shaderProgram.program)
 
         const ModelViewProjectionMatrix = m3.MultiplyMatrix(viewMatrix, ModelMatrix)
-        
-        switch(type)
-        {
-          case ObjectsEnum.Sphere:
-            AttributeAndUniformSetter.SetSphereAttrAndUniforms(
-              attributes, 
-              uniforms, 
-              ModelViewProjectionMatrix,
-              ModelMatrix,
-              camera, 
-              shaderProgram.program
-            );
-          break;
-          
-          case ObjectsEnum.Cylinder:
-            AttributeAndUniformSetter.SetCylinderAttrAndUniforms(
-              attributes, 
-              uniforms, 
-              ModelViewProjectionMatrix,
-              ModelMatrix, 
-              camera,
-              shaderProgram.program
-            );
-          break;
-
-          case ObjectsEnum.Test:
-            debugger;
-            sceneObject.assetSetter.Set(
-            attributes, 
-            ModelViewProjectionMatrix,
-            ModelMatrix,
-            camera, 
-            shaderProgram.program
-          );
-          break;
-
-          default:
-            AttributeAndUniformSetter.SetCommonAttrAndUniforms(
-              attributes, 
-              ModelViewProjectionMatrix,
-              ModelMatrix,
-              camera, 
-              shaderProgram.program
-            );
-          break;
-        }
+      
+        sceneObject.assetSetter.Set(
+          attributes,
+          uniforms, 
+          ModelViewProjectionMatrix,
+          ModelMatrix,
+          camera, 
+          shaderProgram.program
+        );
 
         let countPointLightsUniform = glContext.getUniformLocation(shaderProgram.program, "countPointLights");
         glContext.uniform1i(countPointLightsUniform, 2);

@@ -9,6 +9,7 @@ import { ObjectsEnum } from "./ObjectEnum";
 import { ColorBufferHelper } from "../Utils/ColorBufferHelper";
 import { m3 } from "../Math/math";
 import { CommonAttribureAndUniformSetter } from "../Utils/CommonAttribureAndUniformSetter";
+import { PhongAttribureAndUniformSetter } from "../Utils/PhongAttribureAndUniformSetter";
 
 export class Coub{
     private _isGradientColor : boolean = false
@@ -132,7 +133,7 @@ export class Coub{
 
     private _defaultColor = this.GetDefaultColor();  
     private _shaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_COMMON,FRAGMENT_SHADER_SOURCE);
-    public assetSetter = new CommonAttribureAndUniformSetter(this._shaderProgram.program)
+    public assetSetter = new PhongAttribureAndUniformSetter(this._shaderProgram.program)
 
     public GetRenderAssets(renderMode : GLenum = glContext.TRIANGLES)
     {
@@ -196,8 +197,12 @@ export class Coub{
       
       const count = indexes.length
 
+      const shaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_LINE_NORMAL,FRAGMENT_SHADER_NOLIGHT_SOURCE) 
+      const assetSetter = new CommonAttribureAndUniformSetter(shaderProgram.program)
+      
       return {
-        shaderProgram: new ShaderProgram(VERTEX_SHADER_SOURCE_LINE_NORMAL,FRAGMENT_SHADER_NOLIGHT_SOURCE),
+        shaderProgram,
+        assetSetter,
         modelMatrix: this._transformations.ModelMatrix,
         attributes:{
           position: new DefaultBuffer(positions).buffer,
