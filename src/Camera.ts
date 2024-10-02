@@ -86,7 +86,7 @@ export class Camera{
 
     public Roll( angle : number) : void
     {
-        let angleInRadians = degToRad(angle)
+        const angleInRadians = degToRad(angle)
         let cos = Math.cos(angleInRadians);
         let sin = Math.sin(angleInRadians);
         let cameraRightOld = this._cameraRight; 
