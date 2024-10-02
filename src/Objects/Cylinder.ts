@@ -1,8 +1,5 @@
-import { ColorBuffer } from "../GLBuffers/ColorBuffer";
+import { DefaultBuffer } from "../GLBuffers/DefaultBuffer";
 import { IndexBuffer } from "../GLBuffers/IndexBuffer";
-import { NormalsBuffer } from "../GLBuffers/NormalsBuffer";
-import { PositionBuffer } from "../GLBuffers/PositionBuffer";
-import { WeightsBuffer } from "../GLBuffers/WeightsBuffer";
 import { ShaderProgram } from "../GLShaders/ShaderProgram";
 import { FRAGMENT_SHADER_NOLIGHT_SOURCE, FRAGMENT_SHADER_SOURCE, VERTEX_SHADER_SOURCE_CYLINDER, VERTEX_SHADER_SOURCE_LINE_NORMAL } from "../GLShaders/ShaderSources";
 import { degToRad, m3 } from "../Math/math";
@@ -181,11 +178,11 @@ export class Cylinder{
       return {
         shaderProgram: new ShaderProgram(VERTEX_SHADER_SOURCE_CYLINDER, FRAGMENT_SHADER_SOURCE),
         attributes:{
-          position: new PositionBuffer(this._positions).buffer,
-          color: new ColorBuffer(colors).buffer,
+          position: new DefaultBuffer(this._positions).buffer,
+          color: new DefaultBuffer(colors).buffer,
           indices: new IndexBuffer(inputIndexes).buffer,
-          normals: new NormalsBuffer(this._normals).buffer,
-          weights: new WeightsBuffer(this._weights).buffer
+          normals: new DefaultBuffer(this._normals).buffer,
+          weights: new DefaultBuffer(this._weights).buffer
         },
         uniforms: {
           IdentityBone: this.IdentityBone,
@@ -239,8 +236,8 @@ export class Cylinder{
         shaderProgram: new ShaderProgram(VERTEX_SHADER_SOURCE_LINE_NORMAL,FRAGMENT_SHADER_NOLIGHT_SOURCE),
         modelMatrix: this.modelMatrix,
         attributes:{
-          position: new PositionBuffer(positions).buffer,
-          color: new ColorBuffer(colors).buffer,
+          position: new DefaultBuffer(positions).buffer,
+          color: new DefaultBuffer(colors).buffer,
           indices: new IndexBuffer(indexes).buffer,
         },
         type: ObjectsEnum.Common,

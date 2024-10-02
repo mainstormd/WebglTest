@@ -1,14 +1,12 @@
-import { ColorBuffer } from "../GLBuffers/ColorBuffer";
 import { IndexBuffer } from "../GLBuffers/IndexBuffer";
-import { PositionBuffer } from "../GLBuffers/PositionBuffer";
 import { glContext } from "../Utils/GLUtilities"; 
 import { IndexBufferHelper } from "../Utils/IndexBufferHelper";
 import { FRAGMENT_SHADER_NOLIGHT_SOURCE, FRAGMENT_SHADER_SOURCE, VERTEX_SHADER_SOURCE_LINE_NORMAL, VERTEX_SHADER_SOURCE_SPHERE } from "../GLShaders/ShaderSources";
 import { ShaderProgram } from "../GLShaders/ShaderProgram";
 import { ObjectsEnum } from "./ObjectEnum";
 import { degToRad, m3 } from "../Math/math";
-import { NormalsBuffer } from "../GLBuffers/NormalsBuffer";
 import { ColorBufferHelper } from "../Utils/ColorBufferHelper";
+import { DefaultBuffer } from "../GLBuffers/DefaultBuffer";
 
 export class Sphere{
     private _radius : number
@@ -64,10 +62,10 @@ export class Sphere{
           shaderProgram: new ShaderProgram(VERTEX_SHADER_SOURCE_SPHERE,FRAGMENT_SHADER_SOURCE),
           modelMatrix: this._modelMatrix,
           attributes: {
-             position: new PositionBuffer(this._positions).buffer,
-             color: new ColorBuffer(colors).buffer,
+             position: new DefaultBuffer(this._positions).buffer,
+             color: new DefaultBuffer(colors).buffer,
              indices: new IndexBuffer(inputIndexes).buffer,
-             normals: new NormalsBuffer(this._normals).buffer
+             normals: new DefaultBuffer(this._normals).buffer
           },
           uniforms: {
             interpolationCoeff: this._interpolationCoeff,
@@ -176,8 +174,8 @@ export class Sphere{
       shaderProgram: new ShaderProgram(VERTEX_SHADER_SOURCE_LINE_NORMAL,FRAGMENT_SHADER_NOLIGHT_SOURCE),
       modelMatrix: this._modelMatrix,
       attributes:{
-        position: new PositionBuffer(positions).buffer,
-        color: new ColorBuffer(colors).buffer,
+        position: new DefaultBuffer(positions).buffer,
+        color: new DefaultBuffer(colors).buffer,
         indices: new IndexBuffer(indexes).buffer,
       },
       type: ObjectsEnum.Common,

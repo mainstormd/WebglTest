@@ -1,6 +1,4 @@
-import { ColorBuffer } from "../GLBuffers/ColorBuffer";
 import { IndexBuffer } from "../GLBuffers/IndexBuffer";
-import { PositionBuffer } from "../GLBuffers/PositionBuffer";
 import { glContext } from "../Utils/GLUtilities"; 
 import { ColorBufferHelper } from "../Utils/ColorBufferHelper";
 import { IndexBufferHelper } from "../Utils/IndexBufferHelper";
@@ -8,7 +6,7 @@ import { ShaderProgram } from "../GLShaders/ShaderProgram";
 import { FRAGMENT_SHADER_NOLIGHT_SOURCE, FRAGMENT_SHADER_SOURCE, VERTEX_SHADER_SOURCE_COMMON, VERTEX_SHADER_SOURCE_LINE_NORMAL } from "../GLShaders/ShaderSources";
 import { m3 } from "../Math/math";
 import { ObjectsEnum } from "./ObjectEnum";
-import { NormalsBuffer } from "../GLBuffers/NormalsBuffer";
+import { DefaultBuffer } from "../GLBuffers/DefaultBuffer";
 
 export class Plane{
 
@@ -49,10 +47,10 @@ export class Plane{
         shaderProgram: new ShaderProgram(VERTEX_SHADER_SOURCE_COMMON,FRAGMENT_SHADER_SOURCE),
         modelMatrix: m3.IdentityMatrix(),
         attributes:{
-          position: new PositionBuffer(this._positions).buffer,
-          color: new ColorBuffer(colors).buffer,
+          position: new DefaultBuffer(this._positions).buffer,
+          color: new DefaultBuffer(colors).buffer,
           indices: new IndexBuffer(inputIndexes).buffer,
-          normals: new NormalsBuffer(this._normals).buffer
+          normals: new DefaultBuffer(this._normals).buffer
         },
         type: ObjectsEnum.Common,
         countVertex: count,
@@ -101,8 +99,8 @@ export class Plane{
       shaderProgram: new ShaderProgram(VERTEX_SHADER_SOURCE_LINE_NORMAL,FRAGMENT_SHADER_NOLIGHT_SOURCE),
       modelMatrix: m3.IdentityMatrix(),
       attributes:{
-        position: new PositionBuffer(positions).buffer,
-        color: new ColorBuffer(colors).buffer,
+        position: new DefaultBuffer(positions).buffer,
+        color: new DefaultBuffer(colors).buffer,
         indices: new IndexBuffer(indexes).buffer,
       },
       type: ObjectsEnum.Common,
