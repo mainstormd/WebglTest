@@ -52,21 +52,31 @@ export const VERTEX_SHADER_SOURCE_SPHERE = `
 
 export const VERTEX_SHADER_SOURCE_CYLINDER = `
     attribute vec4 position; 
+    attribute vec3 normal;
     attribute vec4 color;   
+    
     attribute float weight;
-  
-    varying lowp vec4 objectColor;
 
     // A matrix to transform the positions by
     uniform mat4 ModelViewProjection;
+    uniform mat4 ModelMatrix;
     
     //bones
     uniform mat4 IdentityBone;
     uniform mat4 RotateBone;
+
+    //varyings
+    varying lowp vec4 objectColor;
+    varying lowp vec4 objectPosition;
+    varying lowp vec3 objectNormal;
     
     void main() { 
-        vec4 totalPosition = position * ((1.0 - weight) * IdentityBone + weight * RotateBone);
+        mat4 ResultBone = (1.0 - weight) * IdentityBone + weight * RotateBone;
+        vec4 totalPosition = position * ResultBone;
         gl_Position = totalPosition * ModelViewProjection;
+        
+        objectPosition = totalPosition * ModelMatrix;
+        objectNormal = normal  * mat3(ResultBone) * mat3(ModelMatrix);
         objectColor = color;
     }
 `;
