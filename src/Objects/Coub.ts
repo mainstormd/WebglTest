@@ -5,9 +5,11 @@ import { glContext } from "../Utils/GLUtilities";
 import { TransfomationsManager } from "../TransfomationsManager";
 import { IndexBufferHelper } from "../Utils/IndexBufferHelper";
 import { ShaderProgram } from "../GLShaders/ShaderProgram";
-import { FRAGMENT_SHADER_SOURCE, VERTEX_SHADER_SOURCE_COMMON } from "../GLShaders/ShaderSources";
+import { FRAGMENT_SHADER_NOLIGHT_SOURCE, FRAGMENT_SHADER_SOURCE, VERTEX_SHADER_SOURCE_COMMON, VERTEX_SHADER_SOURCE_LINE_NORMAL } from "../GLShaders/ShaderSources";
 import { ObjectsEnum } from "./ObjectEnum";
 import { NormalsBuffer } from "../GLBuffers/NormalsBuffer";
+import { ColorBufferHelper } from "../Utils/ColorBufferHelper";
+import { m3 } from "../Math/math";
 
 export class Coub{
     private _isGradientColor : boolean = false
@@ -23,131 +25,131 @@ export class Coub{
         |/       |/
       7 o--------o 8
     */
-   
+    private  _positions = [
+        // Front face
+       -0.5, -0.5,  0.5,
+        0.5, -0.5,  0.5,
+        0.5,  0.5,  0.5,
+      
+       -0.5, -0.5,  0.5,
+        0.5,  0.5,  0.5,
+       -0.5,  0.5,  0.5,
+       
+        // Back face
+       -0.5, -0.5, -0.5,
+       -0.5,  0.5, -0.5,
+        0.5,  0.5, -0.5,
+    
+       -0.5, -0.5, -0.5,
+        0.5,  0.5, -0.5,
+        0.5, -0.5, -0.5,
+    
+        // Top face
+       -0.5,  0.5, -0.5,
+       -0.5,  0.5,  0.5,
+        0.5,  0.5,  0.5,
+        
+       -0.5,  0.5, -0.5,
+        0.5,  0.5,  0.5,
+        0.5,  0.5, -0.5,
+      
+        // Bottom face
+       -0.5,  -0.5, -0.5,
+        0.5,  -0.5, -0.5,
+        0.5,  -0.5,  0.5,
+        
+       -0.5, -0.5, -0.5,
+        0.5, -0.5,  0.5,
+       -0.5, -0.5,  0.5,
+  
+        // Right face
+        0.5, -0.5, -0.5,
+        0.5,  0.5, -0.5,
+        0.5,  0.5,  0.5,
+        
+        0.5, -0.5, -0.5,
+        0.5,  0.5,  0.5,
+        0.5, -0.5,  0.5,
+       
+        // Left face
+        -0.5, -0.5, -0.5,
+        -0.5, -0.5,  0.5,
+        -0.5,  0.5,  0.5,
+        
+        -0.5, -0.5, -0.5,
+        -0.5,  0.5,  0.5,
+        -0.5,  0.5, -0.5   
+      ];
+
+      private _normals = [
+        // Front face
+        0,    0,   1.0,
+        0,    0,   1.0,
+        0,    0,   1.0,
+        0,    0,   1.0,
+        0,    0,   1.0,
+        0,    0,   1.0,
+     
+       // Back face
+        0,    0, -1.0,
+        0,    0, -1.0,
+        0,    0, -1.0,
+        0,    0, -1.0,
+        0,    0, -1.0,
+        0,    0, -1.0,
+     
+       // Top face
+        0,  1.0,    0,
+        0,  1.0,    0,
+        0,  1.0,    0,
+        0,  1.0,    0,
+        0,  1.0,    0,
+        0,  1.0,    0,
+     
+       // Bottom face
+        0,  -1.0,   0,
+        0,  -1.0,   0,
+        0,  -1.0,   0,
+        0,  -1.0,   0,
+        0,  -1.0,   0,
+        0,  -1.0,   0,
+     
+       // Right face
+        1.0,   0,    0,
+        1.0,   0,    0,
+        1.0,   0,    0,
+        1.0,   0,    0,
+        1.0,   0,    0,
+        1.0,   0,    0,
+     
+       // Left face
+       -1.0,   0,    0,
+       -1.0,   0,    0,
+       -1.0,   0,    0,
+       -1.0,   0,    0,
+       -1.0,   0,    0,
+       -1.0,   0,    0
+    ]; 
+
+    private _defaultColor = this.GetDefaultColor();  
+    
+
     public GetRenderAssets(renderMode : GLenum = glContext.TRIANGLES)
     {
-        const positions = [
-          // Front face
-           -0.5, -0.5,  0.5,
-            0.5, -0.5,  0.5,
-            0.5,  0.5,  0.5,
-          
-            -0.5, -0.5,  0.5,
-             0.5,  0.5,  0.5,
-            -0.5,  0.5,  0.5,
-         
-          // Back face
-           -0.5, -0.5, -0.5,
-           -0.5,  0.5, -0.5,
-            0.5,  0.5, -0.5,
+        let colors : number[] = this._isGradientColor ? this.GetGradientColor() : this._defaultColor;
         
-            -0.5, -0.5, -0.5,
-             0.5,  0.5, -0.5,
-             0.5, -0.5, -0.5,
-        
-          // Top face
-           -0.5,  0.5, -0.5,
-           -0.5,  0.5,  0.5,
-            0.5,  0.5,  0.5,
-            
-            -0.5,  0.5, -0.5,
-             0.5,  0.5,  0.5,
-             0.5,  0.5, -0.5,
-        
-          // Bottom face
-           -0.5,    -0.5, -0.5,
-            0.5,    -0.5, -0.5,
-            0.5,    -0.5,  0.5,
-           
-            -0.5,    -0.5, -0.5,
-             0.5,    -0.5,  0.5,
-            -0.5,    -0.5,  0.5,
-      
-          // Right face
-            0.5,    -0.5, -0.5,
-            0.5,  0.5, -0.5,
-            0.5,  0.5,  0.5,
-            
-            0.5, -0.5, -0.5,
-            0.5,  0.5,  0.5,
-            0.5, -0.5,  0.5,
-         
-          // Left face
-           -0.5,    -0.5, -0.5,
-           -0.5,    -0.5,  0.5,
-           -0.5,  0.5,  0.5,
-           
-           -0.5,    -0.5, -0.5,
-           -0.5,  0.5,  0.5,
-           -0.5,  0.5, -0.5,
-           
-        ];
-  
-        let colors : number[] = this._isGradientColor ? this.GetGradientColor() : this.GetDefaultColor();
-      
-        const indexes = Array.from(Array(positions.length / 3).keys())
-
-        const normals = [
-           // Front face
-            0,    0,   1.0,
-            0,    0,   1.0,
-            0,    0,   1.0,
-            0,    0,   1.0,
-            0,    0,   1.0,
-            0,    0,   1.0,
-        
-          // Back face
-            0,    0, -1.0,
-            0,    0, -1.0,
-            0,    0, -1.0,
-            0,    0, -1.0,
-            0,    0, -1.0,
-            0,    0, -1.0,
-        
-          // Top face
-            0,  1.0,    0,
-            0,  1.0,    0,
-            0,  1.0,    0,
-            0,  1.0,    0,
-            0,  1.0,    0,
-            0,  1.0,    0,
-        
-          // Bottom face
-            0,  -1.0,   0,
-            0,  -1.0,   0,
-            0,  -1.0,   0,
-            0,  -1.0,   0,
-            0,  -1.0,   0,
-            0,  -1.0,   0,
-        
-          // Right face
-           1.0,   0,    0,
-           1.0,   0,    0,
-           1.0,   0,    0,
-           1.0,   0,    0,
-           1.0,   0,    0,
-           1.0,   0,    0,
-        
-          // Left face
-          -1.0,   0,    0,
-          -1.0,   0,    0,
-          -1.0,   0,    0,
-          -1.0,   0,    0,
-          -1.0,   0,    0,
-          -1.0,   0,    0
-        ] 
-  
-        const inputIndexes = renderMode === glContext.LINES ? IndexBufferHelper.GetIdexesForRenderModeLines(indexes) :  indexes
+        const indexes = Array.from(Array(this._positions.length / 3).keys())
+        const inputIndexes = renderMode === glContext.LINES ? IndexBufferHelper.GetIdexesForRenderModeLines(indexes) : indexes
        
         let count = inputIndexes.length
   
         return {
           shaderProgram: new ShaderProgram(VERTEX_SHADER_SOURCE_COMMON,FRAGMENT_SHADER_SOURCE),
           attributes: {
-            position: new PositionBuffer(positions).buffer,
+            position: new PositionBuffer(this._positions).buffer,
             color: new ColorBuffer(colors).buffer,
             indices: new IndexBuffer(inputIndexes).buffer,
-            normals: new NormalsBuffer(normals).buffer
+            normals: new NormalsBuffer(this._normals).buffer
           },
           modelMatrix: this._transformations.ModelMatrix,
           countVertex: count,
@@ -155,30 +157,81 @@ export class Coub{
           type: ObjectsEnum.Common, 
         };
     }
+
+    public GetRenderLineOfNormalsAssets()
+    {
+      const lengthLine = 0.1
+      const vectorDimention = 3
+
+      let positions : number [] = []
+
+      for(let i = 0; i < this._positions.length / vectorDimention; i++)
+      {
+        const startPositionOfLine = [
+          this._positions[ i * 3 ], 
+          this._positions[ i * 3 + 1 ], 
+          this._positions[ i * 3 + 2 ]
+        ]
+
+        const endPositionOfLine = m3.additionVectors(startPositionOfLine, 
+                                    m3.multiplyScalarOnVector(
+                                      lengthLine,
+                                      [
+                                        this._normals[ i * 3 ], 
+                                        this._normals[ i * 3 + 1 ], 
+                                        this._normals[ i * 3 + 2 ]
+                                      ]
+                                    )
+        )
+        
+        positions.push(...startPositionOfLine, ...endPositionOfLine)
+      }
+
+      const faceColors = [0.0,  1.0,  0.0, 1.0] 
+
+      const colors : number[] = ColorBufferHelper.GenerateDuplicateColorByVertexCount(faceColors, positions.length / vectorDimention )
+      
+      const indexes = Array.from(Array(positions.length).keys())
+      
+      const count = indexes.length
+
+      return {
+        shaderProgram: new ShaderProgram(VERTEX_SHADER_SOURCE_LINE_NORMAL,FRAGMENT_SHADER_NOLIGHT_SOURCE),
+        modelMatrix: this._transformations.ModelMatrix,
+        attributes:{
+          position: new PositionBuffer(positions).buffer,
+          color: new ColorBuffer(colors).buffer,
+          indices: new IndexBuffer(indexes).buffer,
+        },
+        type: ObjectsEnum.Common,
+        countVertex: count,
+        renderMode: glContext.LINES
+      };
+    }
     
     private GetDefaultColor()  
     { 
-        const faceColors = [
-            [1.0,  0.5,  0.31, 1.0],    // Front face: white
-            [1.0,  0.5,  0.31, 1.0],   // Back face: red /
-            [1.0,  0.5,  0.31, 1.0],    // Top face: green /
-            [1.0,  0.5,  0.31, 1.0],    // Bottom face: blue
-            [1.0,  0.5,  0.31, 1.0],   // Right face: yellow
-            [1.0,  0.5,  0.31, 1.0],    // Left face: purple
-          ];
-          
-          // Convert the array of colors into a table for all the vertices.
+      const faceColors = [
+          [1.0,  0.5,  0.31, 1.0],    // Front face: white
+          [1.0,  0.5,  0.31, 1.0],   // Back face: red /
+          [1.0,  0.5,  0.31, 1.0],    // Top face: green /
+          [1.0,  0.5,  0.31, 1.0],    // Bottom face: blue
+          [1.0,  0.5,  0.31, 1.0],   // Right face: yellow
+          [1.0,  0.5,  0.31, 1.0],    // Left face: purple
+        ];
         
-          let colors : any = [] ;
-        
-          for (let j = 0; j < faceColors.length; ++j) {
-            const c = faceColors[j];
-        
-            // Repeat each color four times becouse the four vertices of the face
-            colors = colors.concat(c, c, c, c, c, c);
-          }
+      // Convert the array of colors into a table for all the vertices.
+    
+      let colors : any = [] ;
+    
+      for (let j = 0; j < faceColors.length; ++j) {
+        const c = faceColors[j];
+    
+        // Repeat each color four times becouse the four vertices of the face
+        colors.push(...c, ...c, ...c, ...c, ...c, ...c);
+      }
 
-          return colors
+      return colors
     }
     
     private GetGradientColor()  
