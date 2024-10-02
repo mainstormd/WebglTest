@@ -119,6 +119,32 @@ export default class AttributeAndUniformSetter
         glContext.uniform1f(quadraticUniform, quadratic); 
     }
 
+    static SetDirectionalLightUniforms(uniforms, shaderProgram) : void
+    { 
+        const { 
+            direction, 
+            color, 
+            ambientStrength, 
+            diffuseStrength, 
+            specularStrength, 
+        } = uniforms
+         
+        let positionUniform = glContext.getUniformLocation(shaderProgram, `directionalLight.direction`);
+        glContext.uniform3fv(positionUniform, direction);
+
+        let colorUniform = glContext.getUniformLocation(shaderProgram, `directionalLight.color`);
+        glContext.uniform3fv(colorUniform, color);
+
+        let ambientStrengthUniform = glContext.getUniformLocation(shaderProgram, `directionalLight.ambientStrength`);
+        glContext.uniform1f(ambientStrengthUniform, ambientStrength);
+
+        let diffuseStrengthUniform = glContext.getUniformLocation(shaderProgram, `directionalLight.diffuseStrength`);
+        glContext.uniform1f(diffuseStrengthUniform, diffuseStrength);
+        
+        let specularStrengthUniform = glContext.getUniformLocation(shaderProgram, `directionalLight.specularStrength`);
+        glContext.uniform1f(specularStrengthUniform, specularStrength);
+    }
+
     static SetSpotLightUniforms(uniforms, shaderProgram) : void
     { 
         const { 

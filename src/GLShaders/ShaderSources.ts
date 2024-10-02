@@ -103,6 +103,15 @@ export const FRAGMENT_SHADER_SOURCE =  `
         float quadratic;
     };
 
+    struct DirectionalLight{
+        vec3 direction;
+        vec3 color; 
+
+        float ambientStrength;
+        float diffuseStrength;
+        float specularStrength;
+    };
+
     struct SpotLight{
         vec3 color;
         vec3 position;
@@ -140,6 +149,7 @@ export const FRAGMENT_SHADER_SOURCE =  `
     uniform int countPointLights;
     
     uniform PointLight pointLights[MAX_POINT_LIGHTS];
+    uniform DirectionalLight directionalLight; 
     uniform SpotLight spotLight;
     uniform Fog fog;
 
@@ -164,6 +174,24 @@ export const FRAGMENT_SHADER_SOURCE =  `
         ambient *= attenuation;
         diffuse *= attenuation;
         specular *= attenuation;
+        
+        return ambient + diffuse + specular;
+    }
+
+    vec3 CalcDirectionalLight(DirectionalLight light, vec3 objectNormal, vec4 objectPosition, vec3 cameraPosition)
+    {
+        vec3 normal = normalize(objectNormal);
+        vec3 lightDirection = normalize(light.direction);
+        
+        float diff = max(dot(normal, lightDirection), 0.0);
+        
+        vec3 viewDir = normalize(cameraPosition - objectPosition.xyz);
+        vec3 reflectDir = reflect(-lightDirection, normal);
+        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
+        
+        vec3 ambient = light.ambientStrength * light.color;
+        vec3 diffuse = light.diffuseStrength * diff * light.color;
+        vec3 specular = light.specularStrength * spec * light.color; 
         
         return ambient + diffuse + specular;
     }
@@ -235,6 +263,7 @@ export const FRAGMENT_SHADER_SOURCE =  `
         }
 
         color += CalcSpotLight(spotLight, objectNormal, objectPosition, cameraPosition);
+        color += CalcDirectionalLight(directionalLight, objectNormal, objectPosition, cameraPosition);
         color *= objectColor.xyz;
 
         if(fog.isEnabled > 0)

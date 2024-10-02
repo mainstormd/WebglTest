@@ -93,6 +93,15 @@ export class Render{
             quadratic:  0.000007
           }, 1, shaderProgram.program)
 
+        AttributeAndUniformSetter.SetDirectionalLightUniforms(
+          { 
+            color:  [1.0, 1.0, 1.0], 
+            direction: [1.0, 0.3, 0.5],
+            ambientStrength:  0.1, 
+            diffuseStrength:  1.0, 
+            specularStrength: 0.5, 
+          }, shaderProgram.program)
+
         AttributeAndUniformSetter.SetSpotLightUniforms(
           { 
             color:  [1.0, 1.0, 1.0], 
@@ -117,7 +126,6 @@ export class Render{
             mode: 0, // 
             isEnabled:1
           }, shaderProgram.program)
-        
 
         const offset = 0;
           
