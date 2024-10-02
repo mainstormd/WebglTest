@@ -20,7 +20,7 @@ export class Render{
         }
     }
 
-    public DrawScence(camera : Camera, sceneObjects: any = []) : void
+    public DrawScence(camera : Camera, sceneObjects: any = [], isFogEnabled : boolean) : void
     {
       glContext.clear(glContext.COLOR_BUFFER_BIT | glContext.DEPTH_BUFFER_BIT);
       glContext.disable(glContext.CULL_FACE);
@@ -124,7 +124,7 @@ export class Render{
             end: 10.0, // параметр работает только для 0 мода
             density: 0.35, // параметр работают только для 1 и 2 мода, для него управлять расстояния нельзя
             mode: 0, // 
-            isEnabled:1
+            isEnabled: isFogEnabled
           }, shaderProgram.program)
 
         const offset = 0;

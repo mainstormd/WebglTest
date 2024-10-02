@@ -132,35 +132,65 @@ export class Coub{
     ]; 
 
     private _defaultColor = this.GetDefaultColor();  
+   
     private _shaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_COMMON,FRAGMENT_SHADER_SOURCE);
     public assetSetter = new PhongAttribureAndUniformSetter(this._shaderProgram.program)
 
-    public GetRenderAssets(renderMode : GLenum = glContext.TRIANGLES)
+    public GetRenderAssets()
     {
         let colors : number[] = this._isGradientColor ? this.GetGradientColor() : this._defaultColor;
         
         const indexes = Array.from(Array(this._positions.length / 3).keys())
-        const inputIndexes = renderMode === glContext.LINES ? IndexBufferHelper.GetIdexesForRenderModeLines(indexes) : indexes
        
-        let count = inputIndexes.length
+        let count = indexes.length
   
         return {
           shaderProgram: this._shaderProgram,
           attributes: {
             position: new DefaultBuffer(this._positions).buffer,
             color: new DefaultBuffer(colors).buffer,
-            indices: new IndexBuffer(inputIndexes).buffer,
+            indices: new IndexBuffer(indexes).buffer,
             normals: new DefaultBuffer(this._normals).buffer
           },
           modelMatrix: this._transformations.ModelMatrix,
           assetSetter: this.assetSetter,
           countVertex: count,
-          renderMode,
-          type: ObjectsEnum.Test, 
+          renderMode: glContext.TRIANGLES,
+          type: ObjectsEnum.Common, 
         };
     }
 
-    public GetRenderLineOfNormalsAssets()
+    private _wireframeShaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_COMMON, FRAGMENT_SHADER_NOLIGHT_SOURCE)
+    private _wireframeAssetSetter = new CommonAttribureAndUniformSetter(this._wireframeShaderProgram.program)
+
+    public GetWireframeRenderAssets()
+    {
+        let colors : number[] = this._isGradientColor ? this.GetGradientColor() : this._defaultColor;
+        
+        const indexes = Array.from(Array(this._positions.length / 3).keys())
+        const inputIndexes = IndexBufferHelper.GetIdexesForRenderModeLines(indexes) 
+       
+        let count = inputIndexes.length
+  
+        return {
+          shaderProgram: this._wireframeShaderProgram,
+          attributes: {
+            position: new DefaultBuffer(this._positions).buffer,
+            color: new DefaultBuffer(colors).buffer,
+            indices: new IndexBuffer(inputIndexes).buffer
+          },
+          modelMatrix: this._transformations.ModelMatrix,
+          assetSetter: this._wireframeAssetSetter,
+          countVertex: count,
+          renderMode: glContext.LINES,
+          type: ObjectsEnum.Common, 
+        };
+    }
+
+    private _normalesShaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_LINE_NORMAL, FRAGMENT_SHADER_NOLIGHT_SOURCE) 
+    private _normalesAssetSetter = new CommonAttribureAndUniformSetter(this._normalesShaderProgram.program)
+
+    public GetNormalsRenderAssets()
     {
       const lengthLine = 0.1
       const vectorDimention = 3
@@ -196,13 +226,10 @@ export class Coub{
       const indexes = Array.from(Array(positions.length).keys())
       
       const count = indexes.length
-
-      const shaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_LINE_NORMAL,FRAGMENT_SHADER_NOLIGHT_SOURCE) 
-      const assetSetter = new CommonAttribureAndUniformSetter(shaderProgram.program)
       
       return {
-        shaderProgram,
-        assetSetter,
+        shaderProgram: this._normalesShaderProgram,
+        assetSetter : this._normalesAssetSetter,
         modelMatrix: this._transformations.ModelMatrix,
         attributes:{
           position: new DefaultBuffer(positions).buffer,

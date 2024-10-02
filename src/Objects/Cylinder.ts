@@ -1,7 +1,7 @@
 import { DefaultBuffer } from "../GLBuffers/DefaultBuffer";
 import { IndexBuffer } from "../GLBuffers/IndexBuffer";
 import { ShaderProgram } from "../GLShaders/ShaderProgram";
-import { FRAGMENT_SHADER_NOLIGHT_SOURCE, FRAGMENT_SHADER_SOURCE, VERTEX_SHADER_SOURCE_CYLINDER, VERTEX_SHADER_SOURCE_LINE_NORMAL } from "../GLShaders/ShaderSources";
+import { FRAGMENT_SHADER_NOLIGHT_SOURCE, FRAGMENT_SHADER_SOURCE, VERTEX_SHADER_SOURCE_CYLINDER } from "../GLShaders/ShaderSources";
 import { degToRad, m3 } from "../Math/math";
 import { ColorBufferHelper } from "../Utils/ColorBufferHelper";
 import { CylinderAttribureAndUniformSetter } from "../Utils/CylinderAttribureAndUniformSetter";
@@ -168,7 +168,7 @@ export class Cylinder{
       return indexes
     }
 
-    public GetRenderAssets(renderMode : GLenum = glContext.TRIANGLES) 
+    public GetRenderAssets() 
     {  
       const faceColor = [0.0,  1.0,  0.0,  1.0] //green        
         
@@ -177,10 +177,44 @@ export class Cylinder{
       const indexes = Array.from(Array(this._positions.length).keys())
       const count = indexes.length
 
-      const inputIndexes= renderMode === glContext.LINES ? this.GetCircleIdexesForRenderModeLines(indexes) :  indexes
-
       return {
         shaderProgram: this._shaderProgram,
+        attributes:{
+          position: new DefaultBuffer(this._positions).buffer,
+          color: new DefaultBuffer(colors).buffer,
+          indices: new IndexBuffer(indexes).buffer,
+          normals: new DefaultBuffer(this._normals).buffer,
+          weights: new DefaultBuffer(this._weights).buffer
+        },
+        uniforms: {
+          IdentityBone: this.IdentityBone,
+          RotateBone: this.RotateBone
+        },
+        assetSetter: this.assetSetter,
+        modelMatrix: this.modelMatrix,
+        countVertex: count,
+        renderMode: glContext.TRIANGLES,
+        type: ObjectsEnum.Cylinder,
+      };
+    }
+
+    private _wireframeShaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_CYLINDER, FRAGMENT_SHADER_NOLIGHT_SOURCE)
+    private _wireframeAssetSetter = new CylinderAttribureAndUniformSetter(this._wireframeShaderProgram.program)
+
+    public GetWireframeRenderAssets() 
+    {  
+      const faceColor = [0.0,  1.0,  0.0,  1.0] //green        
+        
+      let colors : number[] = ColorBufferHelper.GenerateDuplicateColorByVertexCount(faceColor, this._positions.length / 3)
+      
+      const indexes = Array.from(Array(this._positions.length).keys())
+
+      const inputIndexes = this.GetCircleIdexesForRenderModeLines(indexes) 
+
+      const count = inputIndexes.length
+
+      return {
+        shaderProgram: this._wireframeShaderProgram,
         attributes:{
           position: new DefaultBuffer(this._positions).buffer,
           color: new DefaultBuffer(colors).buffer,
@@ -192,15 +226,18 @@ export class Cylinder{
           IdentityBone: this.IdentityBone,
           RotateBone: this.RotateBone
         },
-        assetSetter: this.assetSetter,
+        assetSetter: this._wireframeAssetSetter,
         modelMatrix: this.modelMatrix,
         countVertex: count,
-        renderMode: renderMode,
+        renderMode: glContext.LINES,
         type: ObjectsEnum.Cylinder,
       };
     }
 
-    public GetRenderLineOfNormalsAssets()
+    private _normalesShaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_CYLINDER, FRAGMENT_SHADER_NOLIGHT_SOURCE) 
+    private _normalesAssetSetter = new CylinderAttribureAndUniformSetter(this._normalesShaderProgram.program)
+
+    public GetNormalsRenderAssets()
     {
       const lengthLine = 0.1
       const vectorDimention = 3
@@ -239,12 +276,9 @@ export class Cylinder{
       
       const count = indexes.length
 
-      const shaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_CYLINDER, FRAGMENT_SHADER_NOLIGHT_SOURCE) 
-      const assetSetter = new CylinderAttribureAndUniformSetter(shaderProgram.program)
-
       return {
-        shaderProgram,
-        assetSetter,
+        shaderProgram: this._normalesShaderProgram,
+        assetSetter: this._normalesAssetSetter,
         modelMatrix: this.modelMatrix,
         attributes:{
           position: new DefaultBuffer(positions).buffer,

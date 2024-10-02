@@ -33,20 +33,17 @@ export class Plane{
   ]
 
   private _shaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_COMMON,FRAGMENT_SHADER_SOURCE)
-  public assetSetter = new PhongAttribureAndUniformSetter(this._shaderProgram.program)
+  private _assetSetter = new PhongAttribureAndUniformSetter(this._shaderProgram.program)
 
-  public GetRenderAssets(renderMode : GLenum = glContext.TRIANGLES) 
+  public GetRenderAssets() 
   {
-
       const faceColors = [0.0,  0.0,  1.0,  0.5]           
       
       let colors : number[] = ColorBufferHelper.GenerateDuplicateColorByVertexCount(faceColors, 6)
       
       const indexes = [0, 1, 2, 3, 4, 5]
 
-      const inputIndexes= renderMode === glContext.LINES ? IndexBufferHelper.GetIdexesForRenderModeLines(indexes) :  indexes
-      
-      let count = inputIndexes.length
+      let count = indexes.length
 
       return {
         shaderProgram: this._shaderProgram,
@@ -54,17 +51,50 @@ export class Plane{
         attributes:{
           position: new DefaultBuffer(this._positions).buffer,
           color: new DefaultBuffer(colors).buffer,
-          indices: new IndexBuffer(inputIndexes).buffer,
+          indices: new IndexBuffer(indexes).buffer,
           normals: new DefaultBuffer(this._normals).buffer
         },
-        type: ObjectsEnum.Test,
-        assetSetter: this.assetSetter,
+        type: ObjectsEnum.Common,
+        assetSetter: this._assetSetter,
         countVertex: count,
-        renderMode
+        renderMode: glContext.TRIANGLES
       };
   }
+
+  private _wireframeShaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_COMMON, FRAGMENT_SHADER_NOLIGHT_SOURCE)
+  private _wireframeAssetSetter = new CommonAttribureAndUniformSetter(this._wireframeShaderProgram.program)
+
+  public GetWireframeRenderAssets() 
+  {
+      const faceColors = [0.0,  0.0,  1.0,  0.5]           
+      
+      let colors : number[] = ColorBufferHelper.GenerateDuplicateColorByVertexCount(faceColors, 6)
+      
+      const indexes = [0, 1, 2, 3, 4, 5]
+
+      const inputIndexes = IndexBufferHelper.GetIdexesForRenderModeLines(indexes)
+      
+      let count = inputIndexes.length
+
+      return {
+        shaderProgram: this._wireframeShaderProgram,
+        modelMatrix: m3.IdentityMatrix(),
+        attributes:{
+          position: new DefaultBuffer(this._positions).buffer,
+          color: new DefaultBuffer(colors).buffer,
+          indices: new IndexBuffer(inputIndexes).buffer
+        },
+        type: ObjectsEnum.Common,
+        assetSetter: this._wireframeAssetSetter,
+        countVertex: count,
+        renderMode: glContext.LINES
+      };
+  }
+
+  private _normalesShaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_LINE_NORMAL, FRAGMENT_SHADER_NOLIGHT_SOURCE) 
+  private _normalesAssetSetter = new CommonAttribureAndUniformSetter(this._normalesShaderProgram.program)
   
-  public GetRenderLineOfNormalsAssets()
+  public GetNormalsRenderAssets()
   {
     const lengthLine = 0.9
     const vectorDimention = 3
@@ -101,22 +131,18 @@ export class Plane{
     
     const count = indexes.length
 
-    const shaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_LINE_NORMAL,FRAGMENT_SHADER_NOLIGHT_SOURCE) 
-    const assetSetter = new CommonAttribureAndUniformSetter(shaderProgram.program)
-
     return {
-      shaderProgram,
+      shaderProgram : this._normalesShaderProgram,
       modelMatrix: m3.IdentityMatrix(),
       attributes:{
         position: new DefaultBuffer(positions).buffer,
         color: new DefaultBuffer(colors).buffer,
         indices: new IndexBuffer(indexes).buffer,
       },
-      assetSetter,
+      assetSetter: this._normalesAssetSetter,
       type: ObjectsEnum.Common,
       countVertex: count,
       renderMode: glContext.LINES
     };
   }
-
 }

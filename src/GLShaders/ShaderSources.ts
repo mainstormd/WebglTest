@@ -40,7 +40,7 @@ export const VERTEX_SHADER_SOURCE_SPHERE = `
     void main() { 
         vec4 spherePosition = vec4(normalize(position.xyz) * radius, position.w);
         //if animation enabled
-        vec4 resultPosition = mix(position, spherePosition, 1.0); //1.0  is off animation  
+        vec4 resultPosition = mix(position, spherePosition, interpolationCoeff); //1.0  is off animation  
        
         gl_Position = resultPosition * ModelViewProjection;
         

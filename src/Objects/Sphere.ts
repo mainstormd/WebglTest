@@ -24,7 +24,7 @@ export class Sphere{
       0, 0, 0,   1
     ]
 
-    private _shaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_SPHERE,FRAGMENT_SHADER_SOURCE)
+    private _shaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_SPHERE, FRAGMENT_SHADER_SOURCE)
     public assetSetter = new SphereAttribureAndUniformSetter(this._shaderProgram.program)
 
     constructor(degreeOfTessellation : number = 3, radius : number = 3)
@@ -35,7 +35,57 @@ export class Sphere{
         this._normals = this.ComputeNormals()
     }
 
-    public GetRenderAssets(renderMode : GLenum = glContext.TRIANGLES) 
+    public GetRenderAssets() 
+    {       
+        let opacity = 0.5
+
+        const faceColors = [
+            [1.0,  0.0,  0.0,  opacity],    // Back face: red /
+            [0.0,  1.0,  0.0,  opacity],    // Top face: green /
+            [1.0,  1.0,  0.0,  opacity]    // Bottom face: blue
+          ]
+          
+        let colors : any = [];
+        
+        let value = 0
+        for (let j = 0; j < this._positions.length / 3; ++j, value++ ) {
+          
+          if(value > 2)
+              value = 0
+
+          const c = faceColors[value]
+          
+          colors = colors.concat(c)
+        }
+
+        const indexes = Array.from(Array(this._positions.length).keys())
+        
+        let count = indexes.length
+ 
+        return {
+          shaderProgram: this._shaderProgram,
+          assetSetter: this.assetSetter,
+          modelMatrix: this._modelMatrix,
+          attributes: {
+             position: new DefaultBuffer(this._positions).buffer,
+             color: new DefaultBuffer(colors).buffer,
+             indices: new IndexBuffer(indexes).buffer,
+             normals: new DefaultBuffer(this._normals).buffer
+          },
+          uniforms: {
+            interpolationCoeff: this._interpolationCoeff,
+            radius : this._radius
+          }, 
+          countVertex: count,
+          renderMode : glContext.TRIANGLES,
+          type: ObjectsEnum.Sphere
+        };
+    }
+
+    private _wireframeShaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_SPHERE, FRAGMENT_SHADER_NOLIGHT_SOURCE)
+    private _wireframeAssetSetter = new SphereAttribureAndUniformSetter(this._wireframeShaderProgram.program)
+
+    public GetWireframeRenderAssets() 
     {       
         let opacity = 0.5
 
@@ -60,13 +110,13 @@ export class Sphere{
 
         const indexes = Array.from(Array(this._positions.length).keys())
 
-        const inputIndexes= renderMode === glContext.LINES ? this.GetIdexesForLinesRenderMode(indexes) :  indexes
+        const inputIndexes = this.GetIdexesForLinesRenderMode(indexes) 
         
         let count = inputIndexes.length
  
         return {
-          shaderProgram: this._shaderProgram,
-          assetSetter: this.assetSetter,
+          shaderProgram: this._wireframeShaderProgram,
+          assetSetter: this._wireframeAssetSetter,
           modelMatrix: this._modelMatrix,
           attributes: {
              position: new DefaultBuffer(this._positions).buffer,
@@ -79,9 +129,67 @@ export class Sphere{
             radius : this._radius
           }, 
           countVertex: count,
-          renderMode,
+          renderMode : glContext.LINES,
           type: ObjectsEnum.Sphere
         };
+    }
+
+    private _normalesShaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_LINE_NORMAL, FRAGMENT_SHADER_NOLIGHT_SOURCE) 
+    private _normalesAssetSetter = new CommonAttribureAndUniformSetter(this._normalesShaderProgram.program)
+
+    public GetNormalsRenderAssets()
+    {
+      const lengthLine = 0.1
+      const vectorDimention = 3
+
+      let positions : number [] = []
+
+      for(let i = 0; i < this._positions.length / vectorDimention; i++)
+      {
+        const startPositionOfLine = m3.multiplyScalarOnVector(
+                                              this._radius,
+                                              [
+                                                this._normals[ i * 3 ], 
+                                                this._normals[ i * 3 + 1 ], 
+                                                this._normals[ i * 3 + 2 ]
+                                              ]
+        )
+
+        const endPositionOfLine = m3.additionVectors(startPositionOfLine, 
+                                    m3.multiplyScalarOnVector(
+                                      lengthLine,
+                                      [
+                                        this._normals[ i * 3 ], 
+                                        this._normals[ i * 3 + 1 ], 
+                                        this._normals[ i * 3 + 2 ]
+                                      ]
+                                    )
+          )
+        
+          positions.push(...startPositionOfLine, ...endPositionOfLine)
+      }
+
+      const faceColors = [0.0,  1.0,  0.0, 1.0] 
+
+      const colors : number[] = ColorBufferHelper.GenerateDuplicateColorByVertexCount(faceColors, positions.length / vectorDimention )
+    
+      const indexes = Array.from(Array(positions.length).keys())
+    
+      const count = indexes.length
+
+      return {
+        shaderProgram : this._normalesShaderProgram,
+        modelMatrix: this._modelMatrix,
+        attributes:{
+          position: new DefaultBuffer(positions).buffer,
+          color: new DefaultBuffer(colors).buffer,
+          indices: new IndexBuffer(indexes).buffer,
+        },
+        assetSetter : this._normalesAssetSetter,
+        type: ObjectsEnum.Common,
+        countVertex: count,
+        renderMode: glContext.LINES
+      };
     }
 
     private ComputePositions() : number []
@@ -136,81 +244,23 @@ export class Sphere{
 
       return positionsAfterTesselation
     }
-
-  public GetRenderLineOfNormalsAssets()
-  {
-    const lengthLine = 0.2
-    const vectorDimention = 3
-
-    let positions : number [] = []
-
-    for(let i = 0; i < this._positions.length / vectorDimention; i++)
-    {
-      const startPositionOfLine = m3.multiplyScalarOnVector(
-                                            this._radius,
-                                            [
-                                              this._normals[ i * 3 ], 
-                                              this._normals[ i * 3 + 1 ], 
-                                              this._normals[ i * 3 + 2 ]
-                                            ]
-      )
-
-      const endPositionOfLine = m3.additionVectors(startPositionOfLine, 
-                                  m3.multiplyScalarOnVector(
-                                    lengthLine,
-                                    [
-                                      this._normals[ i * 3 ], 
-                                      this._normals[ i * 3 + 1 ], 
-                                      this._normals[ i * 3 + 2 ]
-                                    ]
-                                  )
-      )
       
-      positions.push(...startPositionOfLine, ...endPositionOfLine)
-    }
-
-    const faceColors = [0.0,  1.0,  0.0, 1.0] 
-
-    const colors : number[] = ColorBufferHelper.GenerateDuplicateColorByVertexCount(faceColors, positions.length / vectorDimention )
-    
-    const indexes = Array.from(Array(positions.length).keys())
-    
-    const count = indexes.length
-
-    const shaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_LINE_NORMAL,FRAGMENT_SHADER_NOLIGHT_SOURCE) 
-    const assetSetter = new CommonAttribureAndUniformSetter(shaderProgram.program)
-
-    return {
-      shaderProgram,
-      modelMatrix: this._modelMatrix,
-      attributes:{
-        position: new DefaultBuffer(positions).buffer,
-        color: new DefaultBuffer(colors).buffer,
-        indices: new IndexBuffer(indexes).buffer,
-      },
-      assetSetter,
-      type: ObjectsEnum.Common,
-      countVertex: count,
-      renderMode: glContext.LINES
-    };
-  }
-    
     private ComputeNormals() : number[]
     {
-        let normals : number [] = []  
+      let normals : number [] = []  
 
-        for(let i = 0; i < this._positions.length / 3; i ++ )
-        {
-          let vec = m3.normalize([
-                                  this._positions[ i * 3 ], 
-                                  this._positions[ i * 3 + 1 ], 
-                                  this._positions[ i * 3 + 2 ]
-          ])
+      for(let i = 0; i < this._positions.length / 3; i ++ )
+      {
+        let vec = m3.normalize([
+                                this._positions[ i * 3 ], 
+                                this._positions[ i * 3 + 1 ], 
+                                this._positions[ i * 3 + 2 ]
+        ])
 
-          normals.push(vec[0], vec[1], vec[2]) 
-        }
+        normals.push(vec[0], vec[1], vec[2]) 
+      }
 
-        return normals
+      return normals
     }
 
     private TesselationTriangle(leftVertex, centerVertex, rightVertex, degreeOfTessellation)  
@@ -270,10 +320,10 @@ export class Sphere{
       return indexes
     }
 
-    public Animate(time : number)
+    public Animate(time : number, isEnabledAnimation: boolean = false)
     {
       const speedOfAnimation = 10
       const alpha = degToRad(time / speedOfAnimation)
-      this._interpolationCoeff = (Math.sin(alpha) + Math.sin(3.0 * alpha) / 3.0 + 1) / 2.0
+      this._interpolationCoeff = isEnabledAnimation ? (Math.sin(alpha) + Math.sin(3.0 * alpha) / 3.0 + 1) / 2.0 : 1
     }
 }
