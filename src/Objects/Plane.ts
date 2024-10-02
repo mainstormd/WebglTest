@@ -18,21 +18,27 @@ export class Plane{
             70,  0, -50, 
            -70,  0, -50,
            -70,  0,  50, 
+            
+            70,  0, -50,
+           -70,  0,  50,
             70,  0,  50
-        ]
-
-        const normals = [
-           0,  1,   0, 
-           0,  1,   0,
-           0,  1,   0, 
-           0,  1,   0,
         ]
   
         const faceColors = [0.0,  0.0,  1.0,  0.5]           
         
-        let colors : number[] = ColorBufferHelper.GenerateDuplicateColorByVertexCount(faceColors, 4)
+        let colors : number[] = ColorBufferHelper.GenerateDuplicateColorByVertexCount(faceColors, 6)
         
-        const indexes = [0, 1, 2, 0, 2, 3]
+        const indexes = [0, 1, 2, 3, 4, 5]
+
+        const normals = [
+          0,  1,   0, 
+          0,  1,   0, 
+          0,  1,   0, 
+
+          0,  1,   0,
+          0,  1,   0, 
+          0,  1,   0
+        ]
 
         const inputIndexes= renderMode === glContext.LINES ? IndexBufferHelper.GetIdexesForRenderModeLines(indexes) :  indexes
         

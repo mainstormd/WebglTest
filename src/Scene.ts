@@ -9,7 +9,7 @@ export class Scene
 {
     private _eventBus: EventManager 
 
-    private _staticObjects = [new Plane(), new Coub().Translate(5,0,5) ] 
+    private _staticObjects = [new Plane(), new Coub(), new Coub().Translate(0.0, 0.5, 2.0).Scale(0.3, 0.3, 0.3) ] 
     private _dynamicObjects : Coub [] = []
     private _animateObjects = [new Cylinder(), new Sphere(2)]
 

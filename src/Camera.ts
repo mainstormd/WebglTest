@@ -5,7 +5,7 @@ export class Camera{
     private _cameraMatrix: number[] = []
     
     //position 
-    private  _cameraPosition: any = [];
+    private  _cameraPosition: number[] = [];
     
     //vectors
     private _cameraDirection: number[] = [];

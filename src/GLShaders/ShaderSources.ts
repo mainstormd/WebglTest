@@ -11,15 +11,18 @@ export const VERTEX_SHADER_SOURCE_COMMON = `
 
     // A matrix to transform the positions by
     uniform mat4 ModelViewProjection;
+    uniform mat4 ModelMatrix;
+
    
 
     void main() { 
         gl_Position = position * ModelViewProjection;
 
         objectColor = color;
-        objectPosition = position;
-        objectNormal = normal;
-        lightPosition = vec3(0.0, 1.0, 10.0);
+        objectPosition = vec4(position * ModelMatrix);
+        objectNormal = vec3(normal * mat3(ModelMatrix));
+
+        lightPosition = vec3(0.0, 1.0, 2.0);
     }
 `;
 
@@ -72,18 +75,26 @@ export const FRAGMENT_SHADER_SOURCE =  `
     varying lowp vec4 objectPosition;
     varying lowp vec3 objectNormal;
     varying lowp vec3 lightPosition;
- 
+    
+    uniform vec3 cameraPosition;
+
     void main() {
         float ambientStrength = 0.1;
         vec3 lightColor = vec3(1.0, 1.0, 1.0);
         vec3 ambient = ambientStrength * lightColor;
         
         vec3 normal = normalize(objectNormal);
-        vec3 lightDirection = (lightPosition - objectPosition.xyz);
+        vec3 lightDirection = normalize(lightPosition - objectPosition.xyz);
         float diff = max(dot(normal, lightDirection), 0.0);
         vec3 diffuse = diff * lightColor;
 
-        vec3 result = (ambient + diffuse) * vec3(objectColor.xyz);
+        float specularStrength = 0.5;
+        vec3 viewDir = normalize(cameraPosition - objectPosition.xyz);
+        vec3 reflectDir = reflect(-lightDirection, normal);
+        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
+        vec3 specular = specularStrength * spec * lightColor; 
+
+        vec3 result = (ambient + diffuse + specular ) * vec3(objectColor.xyz);
         gl_FragColor = vec4(result, objectColor.w);
 
         //gl_FragColor = objectColor;
