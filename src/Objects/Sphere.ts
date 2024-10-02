@@ -6,13 +6,17 @@ import { IndexBufferHelper } from "../Utils/IndexBufferHelper";
 import { VERTEX_SHADER_SOURCE_SPHERE } from "../GLShaders/ShaderSources";
 import { ShaderProgram } from "../GLShaders/ShaderProgram";
 import { ObjectsEnum } from "./ObjectEnum";
+import { degToRad } from "../Math/math";
 
 export class Sphere{
-    private _degreeOfTessellation : number    
+    private _radius : number
+    private _degreeOfTessellation : number 
+    private _interpolationCoeff : number = 1 
 
-    constructor(degreeOfTessellation : number = 3)
+    constructor(degreeOfTessellation : number = 3, radius : number = 3)
     { 
         this._degreeOfTessellation = degreeOfTessellation
+        this._radius = radius
     }
 
     public GetRenderAssets(renderMode : GLenum = glContext.TRIANGLES) 
@@ -68,6 +72,7 @@ export class Sphere{
         let positions : number[] = positionsAfterTesselation
 
         let opacity = 0.5
+
         const faceColors = [
             [1.0,  0.0,  0.0,  opacity],    // Back face: red /
             [0.0,  1.0,  0.0,  opacity],    // Top face: green /
@@ -101,9 +106,14 @@ export class Sphere{
              color: new ColorBuffer(colors).buffer,
              indices: new IndexBuffer(inputIndexes).buffer
           },
+          uniforms: {
+            interpolationCoeff: this._interpolationCoeff,
+            radius : this._radius
+          }, 
           countVertex: count,
           renderMode,
-          type:ObjectsEnum.Sphere
+          type:ObjectsEnum.Sphere,
+          
         };
     }
     
@@ -149,5 +159,12 @@ export class Sphere{
                 this.TesselationTriangle(leftMiddleSegment, rightMiddleSegment, centerMiddleSegment, degreeOfTessellation - 1))
 
       return positions
+    }
+
+    public Animate(time : number)
+    {
+      const speedOfAnimation = 10
+      const alpha = degToRad(time / speedOfAnimation)
+      this._interpolationCoeff = (Math.sin(alpha) + Math.sin(3.0 * alpha) / 3.0 + 1) / 2.0
     }
 }

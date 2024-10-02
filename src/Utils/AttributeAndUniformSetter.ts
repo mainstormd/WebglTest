@@ -13,16 +13,19 @@ export default class AttributeAndUniformSetter
         this.SetCommonAttributes(position, color, indices, shaderProgram)
     }
 
-    static SetSphereAttrAndUniforms(time, attributes, resultMatrix, shaderProgram) : void
+    static SetSphereAttrAndUniforms(attributes, uniforms, resultMatrix,  shaderProgram) : void
     {
+        const { radius, interpolationCoeff } = uniforms
         this.SetCommonAttrAndUniforms(attributes, resultMatrix, shaderProgram)
 
-        let timeUniform = glContext.getUniformLocation(shaderProgram, "time");
-        //set objectType time
-        glContext.uniform1f(timeUniform, time)
+        let radiusUniform = glContext.getUniformLocation(shaderProgram, "radius");
+        glContext.uniform1f(radiusUniform, radius)
+
+        let interpolationCoeffUniform = glContext.getUniformLocation(shaderProgram, "interpolationCoeff");
+        glContext.uniform1f(interpolationCoeffUniform, interpolationCoeff)
     }
 
-    static SetCylinderAttrAndUniforms(attributes, resultMatrix, bones, shaderProgram) : void
+    static SetCylinderAttrAndUniforms(attributes, uniforms, resultMatrix, shaderProgram) : void
     {
         this.SetCommonAttrAndUniforms(attributes, resultMatrix, shaderProgram)
         
@@ -35,7 +38,7 @@ export default class AttributeAndUniformSetter
             glContext.vertexAttribPointer(weightAttributeLocation, 1, glContext.FLOAT, false, 0, 0);
             glContext.enableVertexAttribArray(weightAttributeLocation);
 
-        const { IdentityBone, RotateBone } = bones
+        const { IdentityBone, RotateBone } = uniforms
         //  uniform mat4 IdentityBone;
         //  uniform mat4 RotateBone;    
         let matrixIdentityBone = glContext.getUniformLocation(shaderProgram, "IdentityBone");

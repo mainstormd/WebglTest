@@ -175,7 +175,7 @@ export class Cylinder{
           indices: new IndexBuffer(inputIndexes).buffer,
           weights: new WeightsBuffer(weights).buffer
         },
-        bones: {
+        uniforms: {
           IdentityBone: this.IdentityBone,
           RotateBone: this.RotateBone
         },

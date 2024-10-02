@@ -22,12 +22,13 @@ export const VERTEX_SHADER_SOURCE_SPHERE = `
 
     // A matrix to transform the positions by
     uniform mat4 ModelViewProjection;
-    uniform float time;
-    uniform int radius;
+
+    uniform float interpolationCoeff;
+    uniform float radius;
 
     void main() { 
-        vec4 spherePosition = vec4(normalize(position.xyz) * 3.0, position.w);
-        vec4 resultPosition = mix(position, spherePosition, (sin(time)+(sin(3.0*time) / 3.0)  + 1.0)/2.0);  
+        vec4 spherePosition = vec4(normalize(position.xyz) * radius, position.w);
+        vec4 resultPosition = mix(position, spherePosition, interpolationCoeff);  
         gl_Position = resultPosition * ModelViewProjection;
         
         vColor = color;
