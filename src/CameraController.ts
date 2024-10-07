@@ -2,12 +2,14 @@ import { Camera } from "./Camera";
 import { EventManager } from "./EventSystem/EventManager";
 import { degToRad, m3 } from "./Math/math";
 import config from "./Configs/config.json"
+import { KeyboardConroller } from "./KeyboardConroller";
 
 export class CameraController{
     private _eventManager: EventManager  
     private _camera: Camera
     private _pitch: number = 0
     private _yaw: number = 10
+    private _keyboardConroller = new KeyboardConroller()
 
     constructor( camera : Camera, eventManager: EventManager)
     {
@@ -15,7 +17,6 @@ export class CameraController{
         this._eventManager = eventManager
 
         this._eventManager.Subscribe('mousemove',this.HandleMouseMove.bind(this))
-        this._eventManager.Subscribe('keypress',this.HandleKeyPress.bind(this))
     }
 
      //FPS - first person camera 
@@ -88,25 +89,6 @@ export class CameraController{
         this._camera.position = newPosition
     }
 
-    public HandleKeyPress({ key })
-    {        
-        switch( key )
-        {
-            case "KeyW":
-                this._camera.MoveForward(config.camera.slide)
-                break;
-            case "KeyA":
-                this._camera.MoveLeft(config.camera.slide)
-                break;
-            case "KeyS":
-                this._camera.MoveBack(config.camera.slide)
-                break; 
-            case "KeyD":
-                this._camera.MoveRight(config.camera.slide);
-                break;      
-        }
-    }
-
     public HandleMouseMove({ offsetX, offsetY, rightMouseButtonDown })
     {
         const sensitivity = config.sensitivity
@@ -129,6 +111,21 @@ export class CameraController{
             //this.HandleFPSCamera( this._pitch, this._yaw )
         }
             
+    }
+
+    public Update()
+    {
+        if(this._keyboardConroller.IsButtonDown("KeyW"))
+            this._camera.MoveForward(config.camera.slide)
+            
+        if(this._keyboardConroller.IsButtonDown("KeyA"))
+            this._camera.MoveLeft(config.camera.slide)
+            
+        if(this._keyboardConroller.IsButtonDown("KeyS"))
+            this._camera.MoveBack(config.camera.slide)
+            
+        if(this._keyboardConroller.IsButtonDown("KeyD"))
+            this._camera.MoveRight(config.camera.slide);    
     }
 
     public get Camera()

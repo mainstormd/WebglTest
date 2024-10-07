@@ -80,4 +80,148 @@ export default class AttributeAndUniformSetter
                
         glContext.bindBuffer(glContext.ELEMENT_ARRAY_BUFFER, indices)  
     }
+
+    static SetPointLightUniforms(uniforms, pointNumberInArray, shaderProgram) : void
+    { 
+        const { 
+            position, 
+            color, 
+            ambientStrength, 
+            diffuseStrength, 
+            specularStrength, 
+            constant, 
+            linear, 
+            quadratic
+        } = uniforms
+         
+        let positionUniform = glContext.getUniformLocation(shaderProgram, `pointLights[${pointNumberInArray}].position`);
+        glContext.uniform3fv(positionUniform, position);
+
+        let colorUniform = glContext.getUniformLocation(shaderProgram, `pointLights[${pointNumberInArray}].color`);
+        glContext.uniform3fv(colorUniform, color);
+
+        let ambientStrengthUniform = glContext.getUniformLocation(shaderProgram, `pointLights[${pointNumberInArray}].ambientStrength`);
+        glContext.uniform1f(ambientStrengthUniform, ambientStrength);
+
+        let diffuseStrengthUniform = glContext.getUniformLocation(shaderProgram, `pointLights[${pointNumberInArray}].diffuseStrength`);
+        glContext.uniform1f(diffuseStrengthUniform, diffuseStrength);
+        
+        let specularStrengthUniform = glContext.getUniformLocation(shaderProgram, `pointLights[${pointNumberInArray}].specularStrength`);
+        glContext.uniform1f(specularStrengthUniform, specularStrength);
+
+        let constantUniform = glContext.getUniformLocation(shaderProgram, `pointLights[${pointNumberInArray}].constant`);
+        glContext.uniform1f(constantUniform, constant);
+
+        let linearUniform = glContext.getUniformLocation(shaderProgram, `pointLights[${pointNumberInArray}].linear`);
+        glContext.uniform1f(linearUniform, linear);
+
+        let quadraticUniform = glContext.getUniformLocation(shaderProgram, `pointLights[${pointNumberInArray}].quadratic`);
+        glContext.uniform1f(quadraticUniform, quadratic); 
+    }
+
+    static SetDirectionalLightUniforms(uniforms, shaderProgram) : void
+    { 
+        const { 
+            direction, 
+            color, 
+            ambientStrength, 
+            diffuseStrength, 
+            specularStrength, 
+        } = uniforms
+         
+        let positionUniform = glContext.getUniformLocation(shaderProgram, `directionalLight.direction`);
+        glContext.uniform3fv(positionUniform, direction);
+
+        let colorUniform = glContext.getUniformLocation(shaderProgram, `directionalLight.color`);
+        glContext.uniform3fv(colorUniform, color);
+
+        let ambientStrengthUniform = glContext.getUniformLocation(shaderProgram, `directionalLight.ambientStrength`);
+        glContext.uniform1f(ambientStrengthUniform, ambientStrength);
+
+        let diffuseStrengthUniform = glContext.getUniformLocation(shaderProgram, `directionalLight.diffuseStrength`);
+        glContext.uniform1f(diffuseStrengthUniform, diffuseStrength);
+        
+        let specularStrengthUniform = glContext.getUniformLocation(shaderProgram, `directionalLight.specularStrength`);
+        glContext.uniform1f(specularStrengthUniform, specularStrength);
+    }
+
+    static SetSpotLightUniforms(uniforms, shaderProgram) : void
+    { 
+        const { 
+            color,
+            position, 
+            direction,
+            ambientStrength, 
+            diffuseStrength, 
+            specularStrength, 
+            constant, 
+            linear, 
+            quadratic,
+            cosOfCutoff, 
+            cosOfOuterCutoff
+        } = uniforms
+         
+        let colorUniform = glContext.getUniformLocation(shaderProgram, `spotLight.color`);
+        glContext.uniform3fv(colorUniform, color);
+
+        let positionUniform = glContext.getUniformLocation(shaderProgram, `spotLight.position`);
+        glContext.uniform3fv(positionUniform, position);
+
+        let directionUniform = glContext.getUniformLocation(shaderProgram, `spotLight.direction`);
+        glContext.uniform3fv(directionUniform, direction);
+
+        let ambientStrengthUniform = glContext.getUniformLocation(shaderProgram, `spotLight.ambientStrength`);
+        glContext.uniform1f(ambientStrengthUniform, ambientStrength);
+
+        let diffuseStrengthUniform = glContext.getUniformLocation(shaderProgram, `spotLight.diffuseStrength`);
+        glContext.uniform1f(diffuseStrengthUniform, diffuseStrength);
+        
+        let specularStrengthUniform = glContext.getUniformLocation(shaderProgram, `spotLight.specularStrength`);
+        glContext.uniform1f(specularStrengthUniform, specularStrength);
+
+        let constantUniform = glContext.getUniformLocation(shaderProgram, `spotLight.constant`);
+        glContext.uniform1f(constantUniform, constant);
+
+        let linearUniform = glContext.getUniformLocation(shaderProgram, `spotLight.linear`);
+        glContext.uniform1f(linearUniform, linear);
+
+        let quadraticUniform = glContext.getUniformLocation(shaderProgram, `spotLight.quadratic`);
+        glContext.uniform1f(quadraticUniform, quadratic); 
+
+        let cosOfCutoffUniform = glContext.getUniformLocation(shaderProgram, `spotLight.cosOfCutoff`);
+        glContext.uniform1f(cosOfCutoffUniform, cosOfCutoff); 
+
+        let cosOfOuterCutoffUniform = glContext.getUniformLocation(shaderProgram, `spotLight.cosOfOuterCutoff`);
+        glContext.uniform1f(cosOfOuterCutoffUniform, cosOfOuterCutoff); 
+    }
+
+    static SetFogUniforms(uniforms, shaderProgram) : void
+    {    
+        const { 
+            color,
+            start, 
+            end,
+            density, 
+            mode, 
+            isEnabled, 
+        } = uniforms
+         
+        let colorUniform = glContext.getUniformLocation(shaderProgram, `fog.color`);
+        glContext.uniform3fv(colorUniform, color);
+
+        let startUniform = glContext.getUniformLocation(shaderProgram, `fog.start`);
+        glContext.uniform1f(startUniform, start);
+
+        let endUniform = glContext.getUniformLocation(shaderProgram, `fog.end`);
+        glContext.uniform1f(endUniform, end);
+        
+        let densityUniform = glContext.getUniformLocation(shaderProgram, `fog.density`);
+        glContext.uniform1f(densityUniform, density);
+
+        let modeUniform = glContext.getUniformLocation(shaderProgram, `fog.mode`);
+        glContext.uniform1i(modeUniform, mode);
+
+        let isEnabledUniform = glContext.getUniformLocation(shaderProgram, "fog.isEnabled");
+        glContext.uniform1i(isEnabledUniform, isEnabled);
+    }
 }
