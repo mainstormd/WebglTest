@@ -19,8 +19,6 @@ export class Scene
 
     private _staticObjects = [
         new Plane(), 
-
-        
         
         new Coub().Translate(0.0, 0.5, -5.0),
         new Coub().Translate(-2.0, 0.5, -4.0),
@@ -51,7 +49,6 @@ export class Scene
         new Coub().Translate(2.0, 0.5, -16.0),
         new Coub().Translate(2.0, 0.5, -16.0),
 
-        
         new Coub().Translate(0.0, 0.5, 2.0).Scale(0.3, 0.3, 0.3), 
         new Coub().Translate(-3.0, 0.5, -5.0).Scale(0.3, 0.3, 0.3),
         new Coub().Translate(3.5, 0.5, -4.0).Scale(0.3, 0.3, 0.3),  // spot light     
@@ -127,7 +124,7 @@ export class Scene
     {
         
         let renderAssets : any [] = []
-        //renderAssets.push(...this._dynamicObjects.map(item => item.GetRenderAssets(this._renderMode)))
+        renderAssets.push(...this._dynamicObjects.map(item => item.GetRenderAssets()))
         renderAssets.push(...this._staticObjects.map(item => item.GetRenderAssets()))
         renderAssets.push(...this._animateObjects.map(item => item.GetRenderAssets()))
 
