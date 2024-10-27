@@ -153,27 +153,46 @@ export const FRAGMENT_SHADER_SOURCE =  `
     uniform SpotLight spotLight;
     uniform Fog fog;
 
+    float GetDiffCoeff(vec3 lightDirection, vec3 normal);
+    float GetSpecCoeff(vec3 lightDirection, vec3 normal, vec4 objectPosition, vec3 cameraPosition);
+    float GetAttenuation(float constant, float linear, float quadratic, vec3 lightPosition, vec4 objectPosition);
+
+    vec3 GetAmbient(float ambientStrength, vec3 color);
+    vec3 GetDiffuse(float diffuseStrength, float diffCoeff, vec3 color);
+    vec3 GetSpecular(float specularStrength, float specCoeff, vec3 color);
+
     vec3 CalcPointLight(PointLight light, vec3 objectNormal, vec4 objectPosition, vec3 cameraPosition)
     {
         vec3 normal = normalize(objectNormal);
         vec3 lightDirection = normalize(light.position - objectPosition.xyz);
         
-        float diff = max(dot(normal, lightDirection), 0.0);
-        
-        vec3 viewDir = normalize(cameraPosition - objectPosition.xyz);
-        vec3 reflectDir = reflect(-lightDirection, normal);
-        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
-        
-        float distance = length(light.position - objectPosition.xyz);
-        float attenuation = 1.0 / (light.constant * distance + light.linear * distance + light.quadratic * (distance * distance) );
+        float diff = GetDiffCoeff(lightDirection, normal);
+        float spec = GetSpecCoeff(lightDirection, normal, objectPosition, cameraPosition);
+        float attenuation = GetAttenuation(light.constant, light.linear, light.quadratic, light.position, objectPosition);
 
-        vec3 ambient = light.ambientStrength * light.color;
-        vec3 diffuse = light.diffuseStrength * diff * light.color;
-        vec3 specular = light.specularStrength * spec * light.color; 
+        vec3 ambient = GetAmbient(light.ambientStrength, light.color) * attenuation;
+        vec3 diffuse = GetDiffuse(light.diffuseStrength, diff, light.color) * attenuation;
+        vec3 specular = GetSpecular(light.specularStrength, spec, light.color) * attenuation; 
+        
+        return ambient + diffuse + specular;
+    }
 
-        ambient *= attenuation;
-        diffuse *= attenuation;
-        specular *= attenuation;
+    vec3 CalcSpotLight(SpotLight light, vec3 objectNormal, vec4 objectPosition, vec3 cameraPosition)
+    {   
+        vec3 normal = normalize(objectNormal);
+        vec3 lightDirection = normalize(light.position - objectPosition.xyz);
+        
+        float diff = GetDiffCoeff(lightDirection, normal);
+        float spec = GetSpecCoeff(lightDirection, normal, objectPosition, cameraPosition);
+        float attenuation = GetAttenuation(light.constant, light.linear, light.quadratic, light.position, objectPosition);
+        
+        float theta = dot(lightDirection, normalize(light.direction));
+        float epsilon = light.cosOfCutoff - light.cosOfOuterCutoff;
+        float intensity = clamp((theta - light.cosOfOuterCutoff) / epsilon, 0.0, 1.0);
+        
+        vec3 ambient = GetAmbient(light.ambientStrength, light.color) * attenuation * intensity;
+        vec3 diffuse = GetDiffuse(light.diffuseStrength, diff, light.color) * attenuation * intensity;
+        vec3 specular = GetSpecular(light.specularStrength, spec, light.color) * attenuation * intensity;
         
         return ambient + diffuse + specular;
     }
@@ -183,48 +202,58 @@ export const FRAGMENT_SHADER_SOURCE =  `
         vec3 normal = normalize(objectNormal);
         vec3 lightDirection = normalize(light.direction);
         
-        float diff = max(dot(normal, lightDirection), 0.0);
+        float diff = GetDiffCoeff(lightDirection, normal);
+        float spec = GetSpecCoeff(lightDirection, normal, objectPosition, cameraPosition);
         
-        vec3 viewDir = normalize(cameraPosition - objectPosition.xyz);
-        vec3 reflectDir = reflect(-lightDirection, normal);
-        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
-        
-        vec3 ambient = light.ambientStrength * light.color;
-        vec3 diffuse = light.diffuseStrength * diff * light.color;
-        vec3 specular = light.specularStrength * spec * light.color; 
+        vec3 ambient = GetAmbient(light.ambientStrength, light.color);
+        vec3 diffuse = GetDiffuse(light.diffuseStrength, diff, light.color);
+        vec3 specular = GetSpecular(light.specularStrength, spec, light.color); 
         
         return ambient + diffuse + specular;
     }
 
-    vec3 CalcSpotLight(SpotLight light, vec3 objectNormal, vec4 objectPosition, vec3 cameraPosition)
-    {   
-        vec3 normal = normalize(objectNormal);
-        vec3 lightDirection = normalize(light.position - objectPosition.xyz);
-        float diff = max(dot(normal, lightDirection), 0.0);
-        
-        vec3 viewDir = normalize(cameraPosition - objectPosition.xyz);
-        vec3 reflectDir = reflect(-lightDirection, normal);
-        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
-        
-        float distance = length(light.position - objectPosition.xyz);
-        float attenuation = 1.0 / (light.constant * distance + light.linear * distance + light.quadratic * distance * distance);
-
-        vec3 ambient = light.ambientStrength * light.color;
-        vec3 diffuse = light.diffuseStrength * diff * light.color;
-        vec3 specular = light.specularStrength * spec * light.color;
-        
-        float theta = dot(lightDirection, normalize(light.direction));
-        float epsilon = light.cosOfCutoff - light.cosOfOuterCutoff;
-        float intensity = clamp((theta - light.cosOfOuterCutoff) / epsilon, 0.0, 1.0);
-        
-
-        ambient *= attenuation * intensity;
-        diffuse *= attenuation * intensity;
-        specular *= attenuation * intensity;
-        
-        return ambient + diffuse + specular;
+    vec3 GetAmbient(float ambientStrength, vec3 color)
+    {
+        return ambientStrength * color;
     }
 
+    vec3 GetDiffuse(float diffuseStrength, float diffCoeff, vec3 color)
+    {
+        return diffuseStrength * diffCoeff * color;
+    }
+
+    vec3 GetSpecular(float specularStrength, float specCoeff, vec3 color)
+    {
+        return specularStrength * specCoeff * color;
+    }
+
+    float GetDiffCoeff(vec3 lightDirection, vec3 normal)
+    {
+        return max(dot(normal, lightDirection), 0.0);        
+    }
+
+    float GetSpecCoeff(vec3 lightDirection, vec3 normal, vec4 objectPosition, vec3 cameraPosition)
+    {
+        vec3 viewDirection = normalize(cameraPosition - objectPosition.xyz);
+        vec3 reflectDirection = reflect(-lightDirection, normal);
+        
+        float spec = pow(max(dot(viewDirection, reflectDirection), 0.0), 32.0);
+       
+        return spec;        
+    }
+
+    float GetAttenuation(float constant, float linear, float quadratic, vec3 lightPosition, vec4 objectPosition)
+    {
+        float distance = length(lightPosition - objectPosition.xyz);
+        
+        vec3 constants = vec3(constant, linear, quadratic);
+        vec3 distances = vec3(distance, distance, distance * distance);
+        
+        float attenuation = 1.0 / dot(constants, distances);
+
+        return attenuation;
+    }
+    
     float CalcFogFactor(Fog fog, float objDistance)
     {
         float fogFactor = 0.0;
@@ -262,8 +291,10 @@ export const FRAGMENT_SHADER_SOURCE =  `
             color += CalcPointLight(pointLights[i], objectNormal, objectPosition, cameraPosition);
         }
 
+
         color += CalcSpotLight(spotLight, objectNormal, objectPosition, cameraPosition);
         color += CalcDirectionalLight(directionalLight, objectNormal, objectPosition, cameraPosition);
+        
         color *= objectColor.xyz;
 
         if(fog.isEnabled > 0)
