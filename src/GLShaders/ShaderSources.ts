@@ -17,7 +17,7 @@ export const VERTEX_SHADER_SOURCE_COMMON = `
 
         objectColor = color;
         objectPosition = vec4(position * ModelMatrix);
-        objectNormal = vec3(normal * mat3(ModelMatrix));
+        objectNormal = (vec4(normal, 0) * ModelMatrix).xyz;
     }
 `;
 
@@ -45,7 +45,7 @@ export const VERTEX_SHADER_SOURCE_SPHERE = `
         gl_Position = resultPosition * ModelViewProjection;
         
         objectPosition = resultPosition * ModelMatrix;
-        objectNormal = normal  * mat3(ModelMatrix);
+        objectNormal = (vec4(normal, 0) * ModelMatrix).xyz;
         objectColor = color;
     }
 `;
@@ -76,7 +76,7 @@ export const VERTEX_SHADER_SOURCE_CYLINDER = `
         gl_Position = totalPosition * ModelViewProjection;
         
         objectPosition = totalPosition * ModelMatrix;
-        objectNormal = normal  * mat3(ResultBone) * mat3(ModelMatrix);
+        objectNormal = (vec4(normal, 0)  * ResultBone * ModelMatrix).xyz;
         objectColor = color;
     }
 `;
@@ -249,7 +249,7 @@ export const FRAGMENT_SHADER_SOURCE =  `
         vec3 constants = vec3(constant, linear, quadratic);
         vec3 distances = vec3(distance, distance, distance * distance);
         
-        float attenuation = 1.0 / dot(constants, distances);
+        float attenuation = 1.0 / (dot(constants, distances) + 1.0); // +1 that not zero divide
 
         return attenuation;
     }
@@ -261,7 +261,7 @@ export const FRAGMENT_SHADER_SOURCE =  `
         if(fog.mode == 0)
         {  
             float fogLength = fog.end - fog.start;
-            fogFactor = (fog.end - objDistance) / fogLength;
+            fogFactor = (fog.end - objDistance) / (fogLength + 1.0);
         }
 
         if(fog.mode == 1) 
