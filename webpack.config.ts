@@ -26,6 +26,9 @@ const config: Configuration = {
       }
     ],
   },
+  optimization: {
+    minimize: false
+ },
   resolve: {
     extensions: [".ts", ".js"],
   },
