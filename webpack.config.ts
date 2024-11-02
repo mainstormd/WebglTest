@@ -23,6 +23,11 @@ const config: Configuration = {
           test: /\.(ts)?$/,
           exclude: /node_modules/,
           use: "ts-loader",
+      },
+      {
+          test: /\.(vert|frag)?$/,
+          exclude: /node_modules/,
+          type: "asset/source"
       }
     ],
   },

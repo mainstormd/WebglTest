@@ -1,12 +1,14 @@
 import { DefaultBuffer } from "../GLBuffers/DefaultBuffer";
 import { IndexBuffer } from "../GLBuffers/IndexBuffer";
 import { ShaderProgram } from "../GLShaders/ShaderProgram";
-import { FRAGMENT_SHADER_NOLIGHT_SOURCE, FRAGMENT_SHADER_SOURCE, VERTEX_SHADER_SOURCE_CYLINDER } from "../GLShaders/ShaderSources";
 import { degToRad, m3 } from "../Math/math";
 import { ColorBufferHelper } from "../Utils/ColorBufferHelper";
 import { CylinderAttribureAndUniformSetter } from "../Utils/CylinderAttribureAndUniformSetter";
 import { glContext } from "../Utils/GLUtilities";
 import { ObjectsEnum } from "./ObjectEnum";
+import NoLightSourse from "../GLShaders/Sourses/NoLightSourse.frag"
+import CylinderSourse from "../GLShaders/Sourses/CylinderSourse.vert"
+import LightAndFogSourse from "../GLShaders/Sourses/LightAndFogSourse.frag"
 
 class vec3
 {
@@ -46,7 +48,7 @@ export class Cylinder{
     private _weights : number [] = []
     private _normals : number [] = [] 
 
-    private _shaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_CYLINDER, FRAGMENT_SHADER_SOURCE)
+    private _shaderProgram = new ShaderProgram(CylinderSourse, LightAndFogSourse)
     public assetSetter = new CylinderAttribureAndUniformSetter(this._shaderProgram.program)
 
     constructor()
@@ -198,7 +200,7 @@ export class Cylinder{
       };
     }
 
-    private _wireframeShaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_CYLINDER, FRAGMENT_SHADER_NOLIGHT_SOURCE)
+    private _wireframeShaderProgram = new ShaderProgram(CylinderSourse, NoLightSourse)
     private _wireframeAssetSetter = new CylinderAttribureAndUniformSetter(this._wireframeShaderProgram.program)
 
     public GetWireframeRenderAssets() 
@@ -234,7 +236,7 @@ export class Cylinder{
       };
     }
 
-    private _normalesShaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_CYLINDER, FRAGMENT_SHADER_NOLIGHT_SOURCE) 
+    private _normalesShaderProgram = new ShaderProgram(CylinderSourse, NoLightSourse) 
     private _normalesAssetSetter = new CylinderAttribureAndUniformSetter(this._normalesShaderProgram.program)
 
     public GetNormalsRenderAssets()

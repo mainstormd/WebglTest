@@ -1,7 +1,6 @@
 import { IndexBuffer } from "../GLBuffers/IndexBuffer";
 import { glContext } from "../Utils/GLUtilities"; 
 import { IndexBufferHelper } from "../Utils/IndexBufferHelper";
-import { FRAGMENT_SHADER_NOLIGHT_SOURCE, FRAGMENT_SHADER_SOURCE, VERTEX_SHADER_SOURCE_LINE_NORMAL, VERTEX_SHADER_SOURCE_SPHERE } from "../GLShaders/ShaderSources";
 import { ShaderProgram } from "../GLShaders/ShaderProgram";
 import { ObjectsEnum } from "./ObjectEnum";
 import { degToRad, m3 } from "../Math/math";
@@ -9,6 +8,10 @@ import { ColorBufferHelper } from "../Utils/ColorBufferHelper";
 import { DefaultBuffer } from "../GLBuffers/DefaultBuffer";
 import { CommonAttribureAndUniformSetter } from "../Utils/CommonAttribureAndUniformSetter";
 import { SphereAttribureAndUniformSetter } from "../Utils/SphereAttribureAndUniformSetter";
+import NoLightSourse from "../GLShaders/Sourses/NoLightSourse.frag"
+import LineNormalSourse from "../GLShaders/Sourses/LineNormalSourse.vert"
+import SphereSourse from "../GLShaders/Sourses/SphereSourse.vert"
+import LightAndFogSourse from "../GLShaders/Sourses/LightAndFogSourse.frag"
 
 export class Sphere{
     private _radius : number
@@ -24,7 +27,7 @@ export class Sphere{
       0, 0, 0,   1
     ]
 
-    private _shaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_SPHERE, FRAGMENT_SHADER_SOURCE)
+    private _shaderProgram = new ShaderProgram(SphereSourse, LightAndFogSourse)
     public assetSetter = new SphereAttribureAndUniformSetter(this._shaderProgram.program)
 
     constructor(degreeOfTessellation : number = 3, radius : number = 3)
@@ -82,7 +85,7 @@ export class Sphere{
         };
     }
 
-    private _wireframeShaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_SPHERE, FRAGMENT_SHADER_NOLIGHT_SOURCE)
+    private _wireframeShaderProgram = new ShaderProgram(SphereSourse, NoLightSourse)
     private _wireframeAssetSetter = new SphereAttribureAndUniformSetter(this._wireframeShaderProgram.program)
 
     public GetWireframeRenderAssets() 
@@ -134,7 +137,7 @@ export class Sphere{
         };
     }
 
-    private _normalesShaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_LINE_NORMAL, FRAGMENT_SHADER_NOLIGHT_SOURCE) 
+    private _normalesShaderProgram = new ShaderProgram(LineNormalSourse, NoLightSourse) 
     private _normalesAssetSetter = new CommonAttribureAndUniformSetter(this._normalesShaderProgram.program)
 
     public GetNormalsRenderAssets()

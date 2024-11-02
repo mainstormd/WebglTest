@@ -10,6 +10,10 @@ import { ColorBufferHelper } from "../Utils/ColorBufferHelper";
 import { m3 } from "../Math/math";
 import { CommonAttribureAndUniformSetter } from "../Utils/CommonAttribureAndUniformSetter";
 import { PhongAttribureAndUniformSetter } from "../Utils/PhongAttribureAndUniformSetter";
+import NoLightSourse from "../GLShaders/Sourses/NoLightSourse.frag"
+import LineNormalSourse from "../GLShaders/Sourses/LineNormalSourse.vert"
+import CommonSourse from "../GLShaders/Sourses/CommonSourse.vert"
+import LightAndFogSourse from "../GLShaders/Sourses/LightAndFogSourse.frag"
 
 export class Coub{
     private _isGradientColor : boolean = false
@@ -133,7 +137,7 @@ export class Coub{
 
     private _defaultColor = this.GetDefaultColor();  
    
-    private _shaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_COMMON,FRAGMENT_SHADER_SOURCE);
+    private _shaderProgram = new ShaderProgram(CommonSourse, LightAndFogSourse);
     public assetSetter = new PhongAttribureAndUniformSetter(this._shaderProgram.program)
 
     public GetRenderAssets()
@@ -160,7 +164,7 @@ export class Coub{
         };
     }
 
-    private _wireframeShaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_COMMON, FRAGMENT_SHADER_NOLIGHT_SOURCE)
+    private _wireframeShaderProgram = new ShaderProgram(CommonSourse, NoLightSourse)
     private _wireframeAssetSetter = new CommonAttribureAndUniformSetter(this._wireframeShaderProgram.program)
 
     public GetWireframeRenderAssets()
@@ -187,7 +191,7 @@ export class Coub{
         };
     }
 
-    private _normalesShaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_LINE_NORMAL, FRAGMENT_SHADER_NOLIGHT_SOURCE) 
+    private _normalesShaderProgram = new ShaderProgram(LineNormalSourse, NoLightSourse) 
     private _normalesAssetSetter = new CommonAttribureAndUniformSetter(this._normalesShaderProgram.program)
 
     public GetNormalsRenderAssets()

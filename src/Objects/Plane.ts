@@ -3,12 +3,15 @@ import { glContext } from "../Utils/GLUtilities";
 import { ColorBufferHelper } from "../Utils/ColorBufferHelper";
 import { IndexBufferHelper } from "../Utils/IndexBufferHelper";
 import { ShaderProgram } from "../GLShaders/ShaderProgram";
-import { FRAGMENT_SHADER_NOLIGHT_SOURCE, FRAGMENT_SHADER_SOURCE, VERTEX_SHADER_SOURCE_COMMON, VERTEX_SHADER_SOURCE_LINE_NORMAL } from "../GLShaders/ShaderSources";
 import { m3 } from "../Math/math";
 import { ObjectsEnum } from "./ObjectEnum";
 import { DefaultBuffer } from "../GLBuffers/DefaultBuffer";
 import { CommonAttribureAndUniformSetter } from "../Utils/CommonAttribureAndUniformSetter";
 import { PhongAttribureAndUniformSetter } from "../Utils/PhongAttribureAndUniformSetter";
+import NoLightSourse from "../GLShaders/Sourses/NoLightSourse.frag"
+import LineNormalSourse from "../GLShaders/Sourses/LineNormalSourse.vert"
+import CommonSourse from "../GLShaders/Sourses/CommonSourse.vert"
+import LightAndFogSourse from "../GLShaders/Sourses/LightAndFogSourse.frag"
 
 export class Plane{
 
@@ -32,7 +35,7 @@ export class Plane{
       0,  1,   0
   ]
 
-  private _shaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_COMMON,FRAGMENT_SHADER_SOURCE)
+  private _shaderProgram = new ShaderProgram(CommonSourse,LightAndFogSourse)
   private _assetSetter = new PhongAttribureAndUniformSetter(this._shaderProgram.program)
 
   public GetRenderAssets() 
@@ -61,7 +64,7 @@ export class Plane{
       };
   }
 
-  private _wireframeShaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_COMMON, FRAGMENT_SHADER_NOLIGHT_SOURCE)
+  private _wireframeShaderProgram = new ShaderProgram(CommonSourse, NoLightSourse)
   private _wireframeAssetSetter = new CommonAttribureAndUniformSetter(this._wireframeShaderProgram.program)
 
   public GetWireframeRenderAssets() 
@@ -91,7 +94,7 @@ export class Plane{
       };
   }
 
-  private _normalesShaderProgram = new ShaderProgram(VERTEX_SHADER_SOURCE_LINE_NORMAL, FRAGMENT_SHADER_NOLIGHT_SOURCE) 
+  private _normalesShaderProgram = new ShaderProgram(LineNormalSourse, NoLightSourse) 
   private _normalesAssetSetter = new CommonAttribureAndUniformSetter(this._normalesShaderProgram.program)
   
   public GetNormalsRenderAssets()
