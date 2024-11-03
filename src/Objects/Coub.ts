@@ -4,7 +4,6 @@ import { glContext } from "../Utils/GLUtilities";
 import { TransfomationsManager } from "../TransfomationsManager";
 import { IndexBufferHelper } from "../Utils/IndexBufferHelper";
 import { ShaderProgram } from "../GLShaders/ShaderProgram";
-import { FRAGMENT_SHADER_NOLIGHT_SOURCE, FRAGMENT_SHADER_SOURCE, VERTEX_SHADER_SOURCE_COMMON, VERTEX_SHADER_SOURCE_LINE_NORMAL } from "../GLShaders/ShaderSources";
 import { ObjectsEnum } from "./ObjectEnum";
 import { ColorBufferHelper } from "../Utils/ColorBufferHelper";
 import { m3 } from "../Math/math";

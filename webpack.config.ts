@@ -28,7 +28,12 @@ const config: Configuration = {
           test: /\.(vert|frag)?$/,
           exclude: /node_modules/,
           type: "asset/source"
-      }
+      },
+      {
+        test: /\.(obj)?$/,
+        exclude: /node_modules/,
+        type: "asset/source"
+    },
     ],
   },
   optimization: {

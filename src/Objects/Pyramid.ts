@@ -1,10 +1,11 @@
 import { DefaultBuffer } from "../GLBuffers/DefaultBuffer";
 import { IndexBuffer } from "../GLBuffers/IndexBuffer";
 import { ShaderProgram } from "../GLShaders/ShaderProgram";
-import { FRAGMENT_SHADER_SOURCE, VERTEX_SHADER_SOURCE_COMMON } from "../GLShaders/ShaderSources";
 import { m3 } from "../Math/math";
 import { glContext } from "../Utils/GLUtilities";
 import { ObjectsEnum } from "./ObjectEnum";
+import CommonSourse from "../GLShaders/Sourses/CommonSourse.vert"
+import LightAndFogSourse from "../GLShaders/Sourses/LightAndFogSourse.frag"
 
 export class Pyramid{
 
@@ -61,7 +62,7 @@ export class Pyramid{
         let count = indexes.length
  
         return {
-          shaderProgram: new ShaderProgram(VERTEX_SHADER_SOURCE_COMMON,FRAGMENT_SHADER_SOURCE),
+          shaderProgram: new ShaderProgram(CommonSourse,LightAndFogSourse),
           attributes: {
             position: new DefaultBuffer(positions).buffer,
             color: new DefaultBuffer(colors).buffer,
