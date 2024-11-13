@@ -1,9 +1,9 @@
 import { EventManager } from "./EventSystem/EventManager";
-import { glContext } from "./Utils/GLUtilities";
 import { Coub } from "./Objects/Coub";
 import { Plane } from "./Objects/Plane";
 import { Sphere } from "./Objects/Sphere";
 import { Cylinder } from "./Objects/Cylinder";
+import { TexturedImage } from "./Objects/TexturedImage";
 
 export enum RenderMode {
     NoFog = 'noFog',
@@ -56,6 +56,7 @@ export class Scene
 
     private _dynamicObjects : Coub [] = []
     private _animateObjects = [new Cylinder(), new Sphere(3,0.5)]
+    private _texturedObjects = [new TexturedImage()]
 
     constructor(eventBus: EventManager)
     {
@@ -124,6 +125,12 @@ export class Scene
     {
         
         let renderAssets : any [] = []
+
+        if(this._texturedObjects.every(item => item.isReadyToRender))
+        {
+            renderAssets.push(...this._texturedObjects.map(item => item.GetRenderAssets()))
+        }
+
         renderAssets.push(...this._dynamicObjects.map(item => item.GetRenderAssets()))
         renderAssets.push(...this._staticObjects.map(item => item.GetRenderAssets()))
         renderAssets.push(...this._animateObjects.map(item => item.GetRenderAssets()))

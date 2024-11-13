@@ -20,20 +20,25 @@ const config: Configuration = {
         },
       },
       {
-          test: /\.(ts)?$/,
-          exclude: /node_modules/,
-          use: "ts-loader",
+        test: /\.(ts)?$/,
+        exclude: /node_modules/,
+        use: "ts-loader",
       },
       {
-          test: /\.(vert|frag)?$/,
-          exclude: /node_modules/,
-          type: "asset/source"
+        test: /\.(png|jpg)?$/,
+        exclude: /node_modules/,
+        type: "asset/inline"
+      },
+      {
+        test: /\.(vert|frag)?$/,
+        exclude: /node_modules/,
+        type: "asset/source"
       },
       {
         test: /\.(obj)?$/,
         exclude: /node_modules/,
         type: "asset/source"
-    },
+      }
     ],
   },
   optimization: {
