@@ -3,13 +3,14 @@ import { IndexBuffer } from "../GLBuffers/IndexBuffer";
 import { glContext } from "../Utils/GLUtilities"; 
 import { ShaderProgram } from "../GLShaders/ShaderProgram";
 import { ObjectsEnum } from "./ObjectEnum";
-import TextureSourseVert from "../GLShaders/Sourses/TextureSourseVert.vert"
-import TextureSourseFrag from "../GLShaders/Sourses/TextureSourseFrag.frag"
 import { m3 } from "../Math/math";
 import { TextureImageAttribureAndUniformSetter } from "../Utils/TextureImageAttribureAndUniformSetter";
+import TextureSourseVert from "../GLShaders/Sourses/TextureSourseVert.vert"
+import TextureSourseFrag from "../GLShaders/Sourses/TextureSourseFrag.frag"
 import { GLTexture } from "../GLBuffers/GLTexture";
 import { ImageCreator } from "../Utils/ImageCreator";
 import BoxImage from "../../resourses/Box/texture.jpg"
+import DebugImage from "../../resourses/debug_texture.jpg"
 
 export class TexturedImage{
 
@@ -37,13 +38,13 @@ export class TexturedImage{
        1,    0, //D
        0,    1, //A
        1,    1  //B
-   ];
+    ];
       
    
     private _shaderProgram = new ShaderProgram(TextureSourseVert, TextureSourseFrag)
     public assetSetter = new TextureImageAttribureAndUniformSetter(this._shaderProgram.program)
     
-    private _imageLoader = new ImageCreator(BoxImage)
+    private _imageLoader = new ImageCreator(DebugImage)
     private _texture : WebGLTexture | null = null
     
     public GetRenderAssets()
@@ -56,7 +57,7 @@ export class TexturedImage{
         {
             this._texture = new GLTexture(this._imageLoader.img).texture
         }
-
+        
         return {
           shaderProgram: this._shaderProgram,
           attributes: {

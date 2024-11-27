@@ -19,7 +19,7 @@ export class Camera{
         if(cameraPosition == null)
             cameraPosition = [0, 0, -30]
 
-        this.InitCameraVectors(cameraPosition,targetCoordinate,up)
+        this.InitCameraVectors(cameraPosition, targetCoordinate, up)
         this.CalculateCameraMatrix()
     }
 
@@ -44,11 +44,14 @@ export class Camera{
                               targetCoordinate : any = [0, 0, 0], 
                               up               : any = [0, 1, 0])
     {
-        this._cameraPosition = cameraPosition  
-
-        this._cameraDirection = m3.normalize(m3.subtractVectors(cameraPosition, targetCoordinate))
-        this._cameraRight= m3.normalize(m3.cross(up, this._cameraDirection))
-        this._cameraUp = m3.normalize(m3.cross(this._cameraDirection, this._cameraRight))
+        const direction = m3.normalize(m3.subtractVectors(cameraPosition, targetCoordinate))
+        const right = m3.normalize(m3.cross(up, direction))
+        const cameraUp = m3.normalize(m3.cross(direction, right))
+    
+        this._cameraPosition = cameraPosition
+        this._cameraDirection = direction
+        this._cameraRight = right
+        this._cameraUp = cameraUp
     }
 
 

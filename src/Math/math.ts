@@ -104,8 +104,10 @@ export let m3 = {
       
       return resultMatrix;
     },
-  
+    
+    // a minus b
     subtractVectors: function (a : any, b : any) {
+      
       return [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
     },
   
@@ -138,6 +140,7 @@ export let m3 = {
     }, 
   
     cross: function (a : any, b : any) {
+      //cross a on b 
       return [a[1] * b[2] - a[2] * b[1],
               a[2] * b[0] - a[0] * b[2],
               a[0] * b[1] - a[1] * b[0]];

@@ -29,7 +29,7 @@ export class GLTexture{
         this._texture = glContext.createTexture()
 
         glContext.bindTexture(glContext.TEXTURE_2D, this._texture)
-      
+        
         glContext.texParameteri(glContext.TEXTURE_2D, glContext.TEXTURE_MIN_FILTER, glContext.LINEAR)
         glContext.texParameteri(glContext.TEXTURE_2D, glContext.TEXTURE_WRAP_S, glContext.CLAMP_TO_EDGE)
         glContext.texParameteri(glContext.TEXTURE_2D, glContext.TEXTURE_WRAP_T, glContext.CLAMP_TO_EDGE)

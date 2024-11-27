@@ -28,7 +28,7 @@ export class TextureImageAttribureAndUniformSetter{
     {
         glContext.uniformMatrix4fv(this._matrixLocation, false, ModelViewProjectionMatrix);
         
-        const { position, positionInTexture, indices } = attributes
+        const { position, positionInTexture, indices, texture } = attributes
 
         glContext.bindBuffer(glContext.ARRAY_BUFFER, position);
         glContext.vertexAttribPointer(this._positionAttributeLocation, 3, glContext.FLOAT, false, 0, 0);
@@ -38,6 +38,7 @@ export class TextureImageAttribureAndUniformSetter{
         glContext.vertexAttribPointer(this._positionInTextureAttribute, 2, glContext.FLOAT, false, 0, 0);
         glContext.enableVertexAttribArray(this._positionInTextureAttribute);
 
+        glContext.bindTexture(glContext.TEXTURE_2D, texture)
         glContext.uniform1i(this.textureLocation, 0);
 
         glContext.bindBuffer(glContext.ELEMENT_ARRAY_BUFFER, indices)  

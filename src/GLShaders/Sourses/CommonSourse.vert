@@ -1,3 +1,4 @@
+//by default in attribute can do w = 1 if we pass 3 dimensional vector
 attribute vec4 position; 
 attribute vec4 color;
 attribute vec3 normal;
