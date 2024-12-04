@@ -71,7 +71,7 @@ export class Render{
         
         AttributeAndUniformSetter.SetPointLightUniforms(
           { 
-            position: [0.0, 0.1, 2.0],
+            position: [3.5, 2.5, 1.0],
             color:  [1.0, 1.0, 1.0], 
             ambientStrength:  0.1, 
             diffuseStrength:  1.0, 

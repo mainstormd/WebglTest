@@ -21,13 +21,13 @@ export class TexturedImage{
     */
 
     private  _positions = [
-      10,  0.001, -10, // D
-     -10,  0.001, -10, // C
-     -10,  0.001,  10, // A
+       0,  0,   0, // D
+       0,  0,   2, // C
+       0,  2,   2, // A
 
-      10,  0.001, -10, // D
-     -10,  0.001,  10, // A
-      10,  0.001,  10  // B
+       0,  0,   0, // D
+       0,  2,   2, // A
+       0,  2,   0  // B
     ];
 
     private  _positionInTexture = [
@@ -66,7 +66,7 @@ export class TexturedImage{
             texture: this._texture,
             indices: new IndexBuffer(indexes).buffer,
           },
-          modelMatrix: m3.IdentityMatrix(),
+          modelMatrix: m3.translation(5,0,0),
           assetSetter: this.assetSetter,
           countVertex: count,
           renderMode: glContext.TRIANGLES,

@@ -51,8 +51,8 @@ export class Scene
         new Coub().Translate(2.0, 0.5, -16.0),
         new Coub().Translate(2.0, 0.5, -16.0),
 
-        new Coub().Translate(0.0, 0.5, 2.0).Scale(0.3, 0.3, 0.3), 
-        new Coub().Translate(-3.0, 0.5, -5.0).Scale(0.3, 0.3, 0.3),
+        new Coub().Translate(3.5, 1.0, 1.0).Scale(0.3, 0.3, 0.3), // image light
+        new Coub().Translate(-3.0, 0.5, -5.0).Scale(0.3, 0.3, 0.3), //coubs light
         new Coub().Translate(3.5, 0.5, -4.0).Scale(0.3, 0.3, 0.3),  // spot light     
     ]
 
