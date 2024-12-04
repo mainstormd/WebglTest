@@ -29,8 +29,17 @@ export class GLTexture{
         this._texture = glContext.createTexture()
 
         glContext.bindTexture(glContext.TEXTURE_2D, this._texture)
-        
+
+       // glContext.pixelStorei(glContext.UNPACK_FLIP_Y_WEBGL, true);
+
+        /*
+            NEAREST - озволяет семплеру взять из текстуры цвет того текселя, центр которого находится ближе всего к точке, с которой семплер берет цветовые значения
+            LINEAR -  средневзвешенное значение соседних четырех пикселей, центры которых находятся ближе всего к точке, с которой семплер берет цветовые значения
+            TEXTURE_MIN_FILTER - рендеринг, если размеры поверхности объекта меньше размеров текстуры
+            TEXTURE_MAG_FILTER - рендеринг, если размеры поверхности объекта больше размеров текстуры
+        */  
         glContext.texParameteri(glContext.TEXTURE_2D, glContext.TEXTURE_MIN_FILTER, glContext.LINEAR)
+        glContext.texParameteri(glContext.TEXTURE_2D, glContext.TEXTURE_MAG_FILTER , glContext.LINEAR)
         glContext.texParameteri(glContext.TEXTURE_2D, glContext.TEXTURE_WRAP_S, glContext.CLAMP_TO_EDGE)
         glContext.texParameteri(glContext.TEXTURE_2D, glContext.TEXTURE_WRAP_T, glContext.CLAMP_TO_EDGE)
 
