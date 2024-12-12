@@ -20,7 +20,7 @@ export class TexturedSphere {
 
     private _modelMatrix: number[] = [
         1, 0, 0,   0, 
-        0, 1, 0, 5.5, 
+        0, 1, 0,   10, 
         0, 0, 1,   0, 
         0, 0, 0,   1
     ]
@@ -50,19 +50,11 @@ export class TexturedSphere {
 
     public GetRenderAssets() 
     {       
-        let opacity = 0.5
-
-        const faceColors = [
-            [1.0,  0.0,  0.0,  opacity],    // Back face: red /
-            [0.0,  1.0,  0.0,  opacity],    // Top face: green /
-            [1.0,  1.0,  0.0,  opacity]    // Bottom face: blue
-        ]
-        
         const indexes = Array.from(Array(this._positions.length).keys())
         
         let count = indexes.length
 
-         
+  
         if(this._texture == null)
         {
             this._texture = new GLTexture(this._imageLoader.img).texture
@@ -71,12 +63,12 @@ export class TexturedSphere {
         return {
             shaderProgram: this._shaderProgram,
             assetSetter: this.assetSetter,
-            modelMatrix: this._modelMatrix,
+            modelMatrix: m3.translation(0,10,0),
             attributes: {
                 position: new DefaultBuffer(this._positions).buffer,
-                indices: new IndexBuffer(indexes).buffer,
                 positionInTexture: new DefaultBuffer(this._positionInTexture).buffer,
                 texture: this._texture,
+                indices: new IndexBuffer(indexes).buffer
             },
             countVertex: count,
             renderMode : glContext.TRIANGLES,
@@ -216,7 +208,9 @@ export class TexturedSphere {
             this._positions[ i * 3 + 2 ]
           ])
 
-          let u = 0.5 + Math.atan2(unitVector[2], unitVector[0]) / (2 * Math.PI)
+          let lengthXZ = Math.sqrt(unitVector[0] * unitVector[0] + unitVector[2] * unitVector[2])
+          
+          let u = 0.5 + Math.atan2(unitVector[0] / lengthXZ, unitVector[2] / lengthXZ) / (2 * Math.PI)
           let v = 0.5 + Math.asin(unitVector[1]) / Math.PI
 
           if( ( i >  countOfVectors * 7 / 8 ) && u === 1)
