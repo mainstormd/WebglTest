@@ -25,7 +25,7 @@ export class TexturedImage{
        0,  0,   2, // C
        0,  2,   2, // A
 
-       0,  0,   0, // D
+       0,  0,   0, // D     
        0,  2,   2, // A
        0,  2,   0  // B
     ];
@@ -60,17 +60,17 @@ export class TexturedImage{
         
         return {
           shaderProgram: this._shaderProgram,
+          assetSetter: this.assetSetter,
+          modelMatrix: m3.translation(5,0,0),
           attributes: {
             position: new DefaultBuffer(this._positions).buffer,
             positionInTexture: new DefaultBuffer(this._positionInTexture).buffer,
             texture: this._texture,
             indices: new IndexBuffer(indexes).buffer,
           },
-          modelMatrix: m3.translation(5,0,0),
-          assetSetter: this.assetSetter,
           countVertex: count,
           renderMode: glContext.TRIANGLES,
-          type: ObjectsEnum.Common, 
+          type: ObjectsEnum.Test, 
         };
     }
 
