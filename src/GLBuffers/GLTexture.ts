@@ -30,7 +30,7 @@ export class GLTexture{
 
         glContext.bindTexture(glContext.TEXTURE_2D, this._texture)
 
-       // glContext.pixelStorei(glContext.UNPACK_FLIP_Y_WEBGL, true);
+        glContext.pixelStorei(glContext.UNPACK_FLIP_Y_WEBGL, true);
 
         /*
             NEAREST - озволяет семплеру взять из текстуры цвет того текселя, центр которого находится ближе всего к точке, с которой семплер берет цветовые значения
