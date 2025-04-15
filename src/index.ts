@@ -9,6 +9,7 @@ window.render = new Render()
 
 window.onload = function ()
 {
+    // coordinates to see  on texture [3,1.1,1],[5,1.1,1]
     let camera = new Camera([0, 10, -10])
     let eventManager = new EventManager()
   

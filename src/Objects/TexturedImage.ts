@@ -7,9 +7,8 @@ import { m3 } from "../Math/math";
 import { TextureImageAttribureAndUniformSetter } from "../Utils/TextureImageAttribureAndUniformSetter";
 import TextureSourseVert from "../GLShaders/Sourses/TextureSourseVert.vert"
 import TextureSourseFrag from "../GLShaders/Sourses/TextureSourseFrag.frag"
-import { GLTexture } from "../GLBuffers/GLTexture";
-import { ImageCreator } from "../Utils/ImageCreator";
-import BoxImage from "../../resourses/Box/texture.jpg"
+import { GLTexture } from "../GLBuffers/GLTexture"
+import { ImageCreator } from "../Utils/ImageCreator"
 import DebugImage from "../../resourses/debug_texture.jpg"
 
 export class TexturedImage{
@@ -31,13 +30,13 @@ export class TexturedImage{
     ];
 
     private  _positionInTexture = [
-       1,    0, //D
-       0,    0, //C
-       0,    1, //A
+       0,    0, //D
+       1,    0, //C
+       1,    1, //A
 
-       1,    0, //D
-       0,    1, //A
-       1,    1  //B
+       0,    0, //D
+       1,    1, //A
+       0,    1  //B
     ];
       
    
