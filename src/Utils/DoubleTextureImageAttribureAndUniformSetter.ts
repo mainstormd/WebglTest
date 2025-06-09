@@ -40,11 +40,10 @@ export class DoubleTextureImageAttribureAndUniformSetter{
         glContext.enableVertexAttribArray(this._positionInTextureAttribute);
 
         glContext.uniform1i(this.textureLocation0, 0);
-        glContext.uniform1i(this.textureLocation1, 1);
-        
         glContext.activeTexture(glContext.TEXTURE0);
         glContext.bindTexture(glContext.TEXTURE_2D, texture0);
         
+        glContext.uniform1i(this.textureLocation1, 1);
         glContext.activeTexture(glContext.TEXTURE1);
         glContext.bindTexture(glContext.TEXTURE_2D, texture1)
         
