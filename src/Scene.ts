@@ -6,6 +6,7 @@ import { Cylinder } from "./Objects/Cylinder";
 import { TexturedImage } from "./Objects/TexturedImage";
 import { TexturedSphere } from "./Objects/TexturedSphere";
 import { SohoTexturedSphere } from "./Objects/SohoTexturedSphere";
+import { DoubleTexturedImage } from "./Objects/DoubleTexturedImage";
 
 export enum RenderMode {
     NoFog = 'noFog',
@@ -58,7 +59,7 @@ export class Scene
 
     private _dynamicObjects : Coub [] = []
     private _animateObjects = [new Cylinder(), new Sphere(3,0.5)]
-    private _texturedObjects = [new TexturedImage(), new TexturedSphere()]
+    private _texturedObjects = [new TexturedImage(), new TexturedSphere(), new DoubleTexturedImage()]
 
     constructor(eventBus: EventManager)
     {
