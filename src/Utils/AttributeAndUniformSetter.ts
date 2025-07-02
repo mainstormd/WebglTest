@@ -81,6 +81,36 @@ export default class AttributeAndUniformSetter
         glContext.bindBuffer(glContext.ELEMENT_ARRAY_BUFFER, indices)  
     }
 
+    static SetEffectsUnifoms(effects, shaderProgram): void
+    {
+        if(effects.fog)
+        {
+            this.SetFogUniforms(effects.fog.uniforms, shaderProgram)
+        }
+        
+        if(effects.directionalLight)
+        {
+            this.SetDirectionalLightUniforms(effects.directionalLight.uniforms, shaderProgram)
+        }
+
+        if(effects.spotLight)
+        {
+            this.SetSpotLightUniforms(effects.spotLight.uniforms, shaderProgram)
+        }
+
+        if(effects.pointLigts && effects.pointLigts.length !== 0)
+        {
+            let countPointLightsUniform = glContext.getUniformLocation(shaderProgram, "countPointLights");
+            glContext.uniform1i(countPointLightsUniform, effects.pointLigts.length);   
+
+            effects.pointLigts.forEach(
+                (pointLigt, index) => {
+                    this.SetPointLightUniforms(pointLigt.uniforms, index, shaderProgram);
+                }
+            );
+        }
+    }
+
     static SetPointLightUniforms(uniforms, pointNumberInArray, shaderProgram) : void
     { 
         const { 

@@ -20,7 +20,7 @@ export class Render{
         }
     }
 
-    public DrawScence(camera : Camera, sceneObjects: any = [], isFogEnabled : boolean) : void
+    public DrawScence(camera : Camera, sceneObjects: any = [], effects: any) : void
     {
       glContext.clear(glContext.COLOR_BUFFER_BIT | glContext.DEPTH_BUFFER_BIT);
       glContext.disable(glContext.CULL_FACE);
@@ -68,64 +68,8 @@ export class Render{
 
         let countPointLightsUniform = glContext.getUniformLocation(shaderProgram.program, "countPointLights");
         glContext.uniform1i(countPointLightsUniform, 2);
-        
-        AttributeAndUniformSetter.SetPointLightUniforms(
-          { 
-            position: [3.5, 2.5, 1.0],
-            color:  [1.0, 1.0, 1.0], 
-            ambientStrength:  0.1, 
-            diffuseStrength:  1.0, 
-            specularStrength: 0.5, 
-            constant: 1.0, 
-            linear: 0.0014, 
-            quadratic:  0.000007
-        }, 0, shaderProgram.program)
-        
-        AttributeAndUniformSetter.SetPointLightUniforms(
-          { 
-            position: [-3.0, 0.5, -5.0],
-            color:  [1.0, 1.0, 1.0], 
-            ambientStrength:  0.1, 
-            diffuseStrength:  1.0, 
-            specularStrength: 0.5, 
-            constant: 1.0, 
-            linear: 0.0014, 
-            quadratic:  0.000007
-          }, 1, shaderProgram.program)
 
-        AttributeAndUniformSetter.SetDirectionalLightUniforms(
-          { 
-            color:  [1.0, 1.0, 1.0], 
-            direction: [1.0, 0.3, 0.5],
-            ambientStrength:  0.1, 
-            diffuseStrength:  1.0, 
-            specularStrength: 0.5, 
-          }, shaderProgram.program)
-
-        AttributeAndUniformSetter.SetSpotLightUniforms(
-          { 
-            color:  [1.0, 1.0, 1.0], 
-            position: [3.5, 0.5, -4.0],
-            direction: m3.subtractVectors([3.5, 0.5, -4.0],  [0, 0.5, -4]),
-            ambientStrength:  0.1, 
-            diffuseStrength:  1.0, 
-            specularStrength: 0.5, 
-            constant: 1.0, 
-            linear: 0.0014, 
-            quadratic:  0.000007,
-            cosOfCutoff: Math.cos(degToRad(12.5)),
-            cosOfOuterCutoff: Math.cos(degToRad(27))
-          }, shaderProgram.program)
-
-        AttributeAndUniformSetter.SetFogUniforms(
-          { 
-            color: [0.5, 0.5, 0.5],
-            start: 0.1, // параметр работает только для 0 мода
-            end: 10.0, // параметр работает только для 0 мода
-            density: 0.35, // параметр работают только для 1 и 2 мода, для него управлять расстояния нельзя
-            mode: 0, // 
-            isEnabled: isFogEnabled
-          }, shaderProgram.program)
+        AttributeAndUniformSetter.SetEffectsUnifoms(effects, shaderProgram.program)
 
         const offset = 0;
           

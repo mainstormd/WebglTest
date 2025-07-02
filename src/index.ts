@@ -40,7 +40,7 @@ function animate(time)
         previous = now
         scene.Update(time)
         window.cameraController.Update()
-        render.DrawScence(currentCamera, scene.GetRenderAssets(), scene.IsFogEnabled) 
+        render.DrawScence(currentCamera, scene.GetRenderAssets(), scene.effects) 
     }
    
     //if(times !== 300)

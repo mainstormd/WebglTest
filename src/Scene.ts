@@ -7,6 +7,11 @@ import { TexturedImage } from "./Objects/TexturedImage";
 import { TexturedSphere } from "./Objects/TexturedSphere";
 import { SohoTexturedSphere } from "./Objects/SohoTexturedSphere";
 import { DoubleTexturedImage } from "./Objects/DoubleTexturedImage";
+import Fog from "./Effects/Fog";
+import DirectionalLight from "./Effects/LightsSource/DirectionalLight";
+import SpotLight from "./Effects/LightsSource/SpotLight";
+import { degToRad, m3 } from "./Math/math";
+import PointLight from "./Effects/LightsSource/PointLight";
 
 export enum RenderMode {
     NoFog = 'noFog',
@@ -61,6 +66,63 @@ export class Scene
     private _animateObjects = [new Cylinder(), new Sphere(3,0.5)]
     private _texturedObjects = [new TexturedImage(), new TexturedSphere(), new DoubleTexturedImage()]
 
+    private _effects = {   
+        fog: new Fog({
+            color: [0.5, 0.5, 0.5],
+            start: 0.1, // параметр работает только для 0 мода
+            end: 10.0, // параметр работает только для 0 мода
+            density: 0.35, // параметр работают только для 1 и 2 мода, для него управлять расстояния нельзя
+            mode: 0, // 
+            isEnabled: this.IsFogEnabled
+          }),
+
+        directionalLight: new DirectionalLight({ 
+            color:  [1.0, 1.0, 1.0], 
+            direction: [1.0, 0.3, 0.5],
+            ambientStrength:  0.1, 
+            diffuseStrength:  1.0, 
+            specularStrength: 0.5, 
+        }),
+
+        spotLight: new SpotLight({ 
+            color:  [1.0, 1.0, 1.0], 
+            position: [3.5, 0.5, -4.0],
+            direction: m3.subtractVectors([3.5, 0.5, -4.0],  [0, 0.5, -4]),
+            ambientStrength:  0.1, 
+            diffuseStrength:  1.0, 
+            specularStrength: 0.5, 
+            constant: 1.0, 
+            linear: 0.0014, 
+            quadratic:  0.000007,
+            cosOfCutoff: Math.cos(degToRad(12.5)),
+            cosOfOuterCutoff: Math.cos(degToRad(27))
+        }),
+
+        pointLigts: [
+            new PointLight({ 
+                position: [3.5, 2.5, 1.0],
+                color:  [1.0, 1.0, 1.0], 
+                ambientStrength:  0.1, 
+                diffuseStrength:  1.0, 
+                specularStrength: 0.5, 
+                constant: 1.0, 
+                linear: 0.0014, 
+                quadratic:  0.000007
+            }),
+            new PointLight({ 
+                position: [-3.0, 0.5, -5.0],
+                color:  [1.0, 1.0, 1.0], 
+                ambientStrength:  0.1, 
+                diffuseStrength:  1.0, 
+                specularStrength: 0.5, 
+                constant: 1.0, 
+                linear: 0.0014, 
+                quadratic:  0.000007
+            })
+        ]
+    }
+
+
     constructor(eventBus: EventManager)
     {
        this._eventBus = eventBus
@@ -75,25 +137,25 @@ export class Scene
             if(this._renderMode === RenderMode.NoFog)
             {
                 this._renderMode = RenderMode.SolidWireframe
-                return
+                return this.effects.fog.isEnabled = this.IsFogEnabled
             }
 
             if(this._renderMode === RenderMode.SolidWireframe)
             {
                 this._renderMode = RenderMode.Normales
-                return
+                return this.effects.fog.isEnabled = this.IsFogEnabled
             }
             
             if(this._renderMode === RenderMode.Normales)
             {
                 this._renderMode = RenderMode.Default
-                return
+                return this.effects.fog.isEnabled = this.IsFogEnabled
             }
 
             if(this._renderMode === RenderMode.Default)
             {
                 this._renderMode = RenderMode.NoFog
-                return
+                return this.effects.fog.isEnabled = this.IsFogEnabled
             }
         }
     }
@@ -126,7 +188,6 @@ export class Scene
 
     public GetRenderAssets()
     {
-        
         let renderAssets : any [] = []
 
         if(this._texturedObjects.every(item => item.isReadyToRender))
@@ -156,6 +217,11 @@ export class Scene
     public get IsFogEnabled() : boolean
     {
         return this._renderMode !== RenderMode.NoFog
+    }
+
+    public get effects()
+    {
+        return this._effects
     }
 
 }
