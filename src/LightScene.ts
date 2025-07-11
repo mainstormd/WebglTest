@@ -20,7 +20,7 @@ export enum RenderMode {
     Default = 'default'
 }
 
-export class Scene
+export class LightScene
 {
     private _eventBus: EventManager 
     private _renderMode : RenderMode = RenderMode.Default

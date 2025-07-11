@@ -3,7 +3,9 @@ import { CameraController } from "./CameraController"
 import { Render } from "./Render"
 import { EventManager } from "./EventSystem/EventManager"
 import InputSystem from "./InputSystem"
-import { Scene } from "./Scene"
+import { BumpScene } from "./BumpScene"
+import { LightScene } from "./LightScene"
+
 
 window.render = new Render()
 
@@ -17,7 +19,7 @@ window.onload = function ()
     new InputSystem(canvas, eventManager)
     
     window.cameraController = new CameraController(camera, eventManager)
-    window.scene = new Scene(eventManager)
+    window.scene = new BumpScene(eventManager)
     //start animation
     requestAnimationFrame(animate)
 }

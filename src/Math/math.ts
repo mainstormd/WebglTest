@@ -106,9 +106,12 @@ export let m3 = {
     },
     
     // a minus b
-    subtractVectors: function (a : any, b : any) {
-      
+    subtractVectors: function (a : any, b : any) : [number, number, number] {
       return [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+    },
+
+    subtractVectors2d: function (a : any, b : any) {
+      return [a[0] - b[0], a[1] - b[1]];
     },
   
     additionVectors: function(a: any, b: any){

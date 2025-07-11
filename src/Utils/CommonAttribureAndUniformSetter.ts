@@ -7,7 +7,6 @@ export class CommonAttribureAndUniformSetter{
     private _modelMatrixLocation : WebGLUniformLocation | null;
     private _cameraPosition : WebGLUniformLocation | null;
     
- 
     private _positionAttributeLocation :GLint;
     private _vertexColorAttribute : GLint;
 
@@ -19,6 +18,8 @@ export class CommonAttribureAndUniformSetter{
         
         this._positionAttributeLocation = glContext.getAttribLocation(shaderProgram, "position");
         this._vertexColorAttribute = glContext.getAttribLocation(shaderProgram, "color");
+
+        // а можно ли по getAttribLocation понять есть ли такой атрибут в шейдере????
     }
 
     public Set(attributes, _, ModelViewProjectionMatrix, ModelMatrix, camera : Camera) : void
@@ -33,9 +34,12 @@ export class CommonAttribureAndUniformSetter{
         glContext.vertexAttribPointer(this._positionAttributeLocation, 3, glContext.FLOAT, false, 0, 0);
         glContext.enableVertexAttribArray(this._positionAttributeLocation);
 
-        glContext.bindBuffer(glContext.ARRAY_BUFFER, color);
-        glContext.vertexAttribPointer(this._vertexColorAttribute, 4, glContext.FLOAT, false, 0, 0);
-        glContext.enableVertexAttribArray(this._vertexColorAttribute);
+        if(color != null)
+        {    
+           glContext.bindBuffer(glContext.ARRAY_BUFFER, color);
+           glContext.vertexAttribPointer(this._vertexColorAttribute, 4, glContext.FLOAT, false, 0, 0);
+           glContext.enableVertexAttribArray(this._vertexColorAttribute);
+        }
 
         glContext.bindBuffer(glContext.ELEMENT_ARRAY_BUFFER, indices)  
     }
