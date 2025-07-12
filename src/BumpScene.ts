@@ -28,7 +28,7 @@ export class BumpScene
 
     private _staticObjects = [
          new Plane(), 
-       // new Coub().Translate(7.5, 1.5, 1.0).Scale(0.3, 0.3, 0.3), // image light
+         new Coub().Translate(7.5, 1.5, 1.0).Scale(0.3, 0.3, 0.3), // image light
     ]
 
     private _texturedObjects = [new PlaneBumpMapping()]
@@ -36,7 +36,7 @@ export class BumpScene
     private _effects = {   
         pointLigts: [
             new PointLight({ 
-                position: [17.5, 1.5, 1.0],
+                position: [7.5, 1.5, 1.0],
                 color:  [1.0, 1.0, 1.0], 
                 ambientStrength:  0.1, 
                 diffuseStrength:  1.0, 
