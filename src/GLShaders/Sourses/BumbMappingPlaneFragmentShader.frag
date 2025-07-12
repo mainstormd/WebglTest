@@ -22,6 +22,7 @@ varying lowp vec4 objectPosition;
 varying highp mat3 TBN;
 varying lowp vec2 textureCoordinate;
 
+uniform sampler2D textureHeightMapObject;
 uniform sampler2D textureNormalMapObject;
 uniform sampler2D textureObject;
 
@@ -95,17 +96,33 @@ float GetAttenuation(float constant, float linear, float quadratic, vec3 lightPo
 
     return attenuation;
 }
-    
+
+vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir)
+{ 
+    float height_scale = 0.1;
+    float height =  texture2D(textureHeightMapObject, texCoords).r;    
+    vec2 p = viewDir.xy / viewDir.z * (height * height_scale);
+    return texCoords - p;    
+}
+
+
 void main() {
 
     vec3 color = vec3(0, 0, 0);
-    
+
     vec4 tangentPosition = vec4(TBN * objectPosition.xyz,objectPosition.w); 
     vec3 tangentCamera = TBN * cameraPosition;
 
-    vec3 normalTexture = normalize(2.0 * texture2D(textureNormalMapObject, textureCoordinate).rgb - 1.0);
+    vec2 bumpedCoordinate = ParallaxMapping(textureCoordinate, normalize(tangentCamera - tangentPosition.xyz));
 
-    //vec3 tangentNormal = TBN * normalTexture; // на нормаль можно умноджать только матрицы вида inverse(transpose(m)), в нашем случае ничего не меняется т.к  inverse можно заменить на transpose ведь матрица ортогональная
+    vec3 normalTexture = normalize(2.0 * texture2D(textureNormalMapObject, bumpedCoordinate).rgb - 1.0);
+
+    /*
+    на нормаль можно умноджать только матрицы вида inverse(transpose(m)), 
+    в нашем случае ничего не меняется т.к  inverse можно заменить на transpose ведь матрица ортогональная
+    а вот в прошлых алгоритмах расчета освещения могли забыть этот момент
+    */ 
+    //vec3 tangentNormal = TBN * normalTexture; 
     
     for(int i = 0; i < MAX_POINT_LIGHTS; i++)
     {
@@ -122,7 +139,7 @@ void main() {
         color += CalcPointLight(pointLight, normalTexture, tangentPosition, tangentCamera);
     }
     
-    color *= texture2D(textureObject, textureCoordinate).rgb;
+    color *= texture2D(textureObject, bumpedCoordinate).rgb;
 
     gl_FragColor = vec4(color, 1);
 } 

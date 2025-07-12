@@ -10,6 +10,7 @@ export class PlaneBumpPhongAttribureAndUniformSetter extends CommonAttribureAndU
 
     private _textureObject : WebGLUniformLocation | null;
     private _textureNormalMapObject : WebGLUniformLocation | null;
+    private _textureHeightMapObject : WebGLUniformLocation | null;
     private _positionInTextureAttribute : GLint;
 
 
@@ -23,13 +24,22 @@ export class PlaneBumpPhongAttribureAndUniformSetter extends CommonAttribureAndU
         this._positionInTextureAttribute = glContext.getAttribLocation(shaderProgram, "positionInTexture");
         this._textureObject = glContext.getUniformLocation(shaderProgram, "textureObject");
         this._textureNormalMapObject = glContext.getUniformLocation(shaderProgram, "textureNormalMapObject");
+        this._textureHeightMapObject = glContext.getUniformLocation(shaderProgram, "textureHeightMapObject");
     }
 
     public Set(attributes: any, uniforms: any, ModelViewProjectionMatrix: any, ModelMatrix: any, camera: Camera): void 
     {
         super.Set(attributes, uniforms, ModelViewProjectionMatrix, ModelMatrix, camera)
 
-        const { normals, tangents, biTangents, positionInTexture, textureObject, textureNormalMapObject } = attributes
+        const { 
+            normals, 
+            tangents, 
+            biTangents, 
+            positionInTexture, 
+            textureObject, 
+            textureNormalMapObject,
+            textureHeightMapObject
+         } = attributes
 
         glContext.bindBuffer(glContext.ARRAY_BUFFER, positionInTexture);
         glContext.vertexAttribPointer(this._positionInTextureAttribute, 2, glContext.FLOAT, false, 0, 0);
@@ -58,6 +68,10 @@ export class PlaneBumpPhongAttribureAndUniformSetter extends CommonAttribureAndU
         glContext.uniform1i(this._textureObject, 1);
         glContext.activeTexture(glContext.TEXTURE1);
         glContext.bindTexture(glContext.TEXTURE_2D, textureObject)
+
+        glContext.uniform1i(this._textureHeightMapObject, 2);
+        glContext.activeTexture(glContext.TEXTURE2);
+        glContext.bindTexture(glContext.TEXTURE_2D, textureHeightMapObject)
         
     }
 }

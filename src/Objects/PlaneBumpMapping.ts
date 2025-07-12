@@ -51,8 +51,11 @@ export class PlaneBumpMapping{
     private _shaderProgram = new ShaderProgram(BumbMappingPlaneVertexShader, BumbMappingPlaneFragmentShader)
     public assetSetter = new PlaneBumpPhongAttribureAndUniformSetter(this._shaderProgram.program)
     
-    private _imageLoaderPlaneHeightMap= new ImageCreator(Brick2NormaltMap)
+    private _imageLoaderPlaneNormalMap= new ImageCreator(Brick2NormaltMap)
+    private _imageLoaderPlaneHeightMap= new ImageCreator(Brick2DisplacementMap)
     private _imageLoaderPlaneImage = new ImageCreator(Brick2Wall)
+
+    private _texturePlaneNormalMap : WebGLTexture | null = null
     private _texturePlaneHeightMap : WebGLTexture | null = null
     private _texturePlane: WebGLTexture | null = null
 
@@ -109,8 +112,9 @@ export class PlaneBumpMapping{
        
         let count = indexes.length
         
-        if(this._texturePlaneHeightMap == null && this._texturePlane == null )
+        if(this._texturePlaneHeightMap == null && this._texturePlane == null && this._texturePlaneNormalMap == null)
         {
+            this._texturePlaneNormalMap = new GLTexture(this._imageLoaderPlaneNormalMap.img).texture
             this._texturePlaneHeightMap = new GLTexture(this._imageLoaderPlaneHeightMap.img).texture
             this._texturePlane = new GLTexture(this._imageLoaderPlaneImage.img).texture
         }
@@ -118,7 +122,7 @@ export class PlaneBumpMapping{
         return {
           shaderProgram: this._shaderProgram,
           assetSetter: this.assetSetter, //TODO не забыть написать свой сеттер
-          modelMatrix: m3.MultiplyMatrix(m3.translation(8,0,0), m3.zRotation(degToRad(-75))),
+          modelMatrix: m3.translation(9,0,0),//m3.MultiplyMatrix(m3.translation(8,0,0), m3.zRotation(degToRad(-75))),
           attributes: {
             position: new DefaultBuffer(this._positions).buffer,
             tangents:  new DefaultBuffer(this._tangents).buffer,
@@ -126,7 +130,8 @@ export class PlaneBumpMapping{
             normals: new DefaultBuffer(this._normals).buffer,
             positionInTexture: new DefaultBuffer(this._positionInTexture).buffer,
             textureObject: this._texturePlane,
-            textureNormalMapObject: this._texturePlaneHeightMap,
+            textureNormalMapObject: this._texturePlaneNormalMap,
+            textureHeightMapObject: this._texturePlaneHeightMap,
             indices: new IndexBuffer(indexes).buffer,
           },
           countVertex: count,
@@ -137,6 +142,6 @@ export class PlaneBumpMapping{
 
     get isReadyToRender() : boolean
     {
-      return this._imageLoaderPlaneHeightMap.isLoaded && this._imageLoaderPlaneImage.isLoaded
+      return this._imageLoaderPlaneHeightMap.isLoaded && this._imageLoaderPlaneImage.isLoaded && this._imageLoaderPlaneNormalMap.isLoaded
     }
 }
