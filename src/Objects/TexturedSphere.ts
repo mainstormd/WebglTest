@@ -10,6 +10,11 @@ import { ImageCreator } from "../Utils/ImageCreator";
 import EarthImage from "../../resourses/debug_texture.jpg"
 import { TextureImageAttribureAndUniformSetter } from "../Utils/TextureImageAttribureAndUniformSetter";
 import { ShaderProgram } from "../GLShaders/ShaderProgram"
+import { SphereAttribureAndUniformSetter } from "../Utils/SphereAttribureAndUniformSetter"
+import LineNormalSourse from "../GLShaders/Sourses/LineNormalSourse.vert"
+import NoLightSourse from "../GLShaders/Sourses/NoLightSourse.frag"
+import { IndexBufferHelper } from "../Utils/IndexBufferHelper"
+import { CommonAttribureAndUniformSetter } from "../Utils/CommonAttribureAndUniformSetter"
 
 export class TexturedSphere {
     private _radius: number
@@ -42,7 +47,7 @@ export class TexturedSphere {
         //  .slice(9*16 * 3,9*16 * 4)
         // d1.concat(d2)//.slice(9,27)
 
-        this._positions = this.ComputePositions() 
+        this._positions = this.ComputePositions()
 
         this._positionInTexture = this.ComputePositionInTexture()
 
@@ -207,26 +212,36 @@ export class TexturedSphere {
             this._positions[ i * 3 + 1 ], 
             this._positions[ i * 3 + 2 ]
           ])
-
-          let lengthXZ = Math.sqrt(unitVector[0] * unitVector[0] + unitVector[2] * unitVector[2])
           
-          let u = 0.5 + Math.atan2(unitVector[0] / lengthXZ, unitVector[2] / lengthXZ) / (2 * Math.PI)
+          let u = 0.5 + Math.atan2(unitVector[0], unitVector[2]) / (2 * Math.PI)
           let v = 0.5 + Math.asin(unitVector[1]) / Math.PI
 
-          if( ( i >  countOfVectors * 7 / 8 ) && u === 1)
+          if( ( i >=  countOfVectors * 7 / 8 ) && u === 1)
           {
             u = 0.0
           }
 
-          if( ( i < countOfVectors / 2 )  && (i >  countOfVectors * 3 / 8 ) && u === 1)
+          if( ( i <= countOfVectors / 2 )  && (i >=  countOfVectors * 3 / 8 ) && u === 1)
           {
             u = 0.0
           }
-          
 
           positionInTexture.push(u, v)
       }
       
+      
+      // let posLog: any = [] 
+      // for( let i = 0; i <  positionInTexture.length / 2 ; i++ )
+      // {
+      //   posLog.push({
+      //     u:positionInTexture[i * 2],v:positionInTexture[i * 2 + 1],
+      //     x:this._positions[ i * 3 ], 
+      //     y:this._positions[ i * 3 + 1 ], 
+      //     z:this._positions[ i * 3 + 2 ]
+      //   })
+      // }
+      // console.log(posLog)
+      // debugger
       return positionInTexture
     }
 
@@ -234,4 +249,52 @@ export class TexturedSphere {
     {
       return this._imageLoader.isLoaded
     }
+
+    private _wireframeShaderProgram = new ShaderProgram(LineNormalSourse, NoLightSourse)
+    private _wireframeAssetSetter = new CommonAttribureAndUniformSetter(this._wireframeShaderProgram.program)
+
+    public GetWireframeRenderAssets() 
+    {       
+        const faceColors = [0.0,  1.0,  0.0,  1] // green
+          
+        let colors : any = [];
+        
+        for (let j = 0; j < this._positions.length / 3; ++j ) {
+          colors = colors.concat(faceColors)
+        }
+
+        const indexes = Array.from(Array(this._positions.length).keys())
+
+        const inputIndexes = this.GetIdexesForLinesRenderMode(indexes) 
+        
+        let count = inputIndexes.length
+ 
+        return {
+          shaderProgram: this._wireframeShaderProgram,
+          assetSetter: this._wireframeAssetSetter,
+          modelMatrix: m3.translation(0,10,0),//m3.IdentityMatrix(),
+          attributes: {
+             position: new DefaultBuffer(this._positions).buffer,
+             color: new DefaultBuffer(colors).buffer,
+             indices: new IndexBuffer(inputIndexes).buffer,
+          },
+          countVertex: count,
+          renderMode : glContext.LINES,
+          type: ObjectsEnum.Common
+        };
+    }
+
+    public GetIdexesForLinesRenderMode(oldIndexes : number[])
+    {
+      let indexes : number [] = []   
+      let countVertexInTriangle = 3
+      for(let i = 0; i < oldIndexes.length / countVertexInTriangle; i++)
+      {
+        indexes.push(...IndexBufferHelper.GetIdexesForRenderModeLines([oldIndexes[i * 3], oldIndexes[i * 3 + 1], oldIndexes[i * 3 + 2]]))
+      }  
+
+      return indexes
+    }
+
+    
 }

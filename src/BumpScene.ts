@@ -1,16 +1,8 @@
 import { EventManager } from "./EventSystem/EventManager";
 import { Coub } from "./Objects/Coub";
 import { Plane } from "./Objects/Plane";
-import { Sphere } from "./Objects/Sphere";
-import { Cylinder } from "./Objects/Cylinder";
 import { TexturedImage } from "./Objects/TexturedImage";
 import { TexturedSphere } from "./Objects/TexturedSphere";
-import { SohoTexturedSphere } from "./Objects/SohoTexturedSphere";
-import { DoubleTexturedImage } from "./Objects/DoubleTexturedImage";
-import Fog from "./Effects/Fog";
-import DirectionalLight from "./Effects/LightsSource/DirectionalLight";
-import SpotLight from "./Effects/LightsSource/SpotLight";
-import { degToRad, m3 } from "./Math/math";
 import PointLight from "./Effects/LightsSource/PointLight";
 import { PlaneBumpMapping } from "./Objects/PlaneBumpMapping";
 
@@ -31,7 +23,7 @@ export class BumpScene
          new Coub().Translate(7.5, 1.5, 1.0).Scale(0.3, 0.3, 0.3), // image light
     ]
 
-    private _texturedObjects = [new PlaneBumpMapping()]
+    private _texturedObjects = [new PlaneBumpMapping(), new TexturedSphere(3)]
 
     private _effects = {   
         pointLigts: [
@@ -86,6 +78,7 @@ export class BumpScene
         
     }
 
+    
     public GetRenderAssets()
     {
         let renderAssets : any [] = []
@@ -96,6 +89,10 @@ export class BumpScene
         }
 
          renderAssets.push(...this._staticObjects.map(item => item.GetRenderAssets()))
+         
+         //@ts-ignore
+         //TODO delete after debugging
+         renderAssets.push(this._texturedObjects[1].GetWireframeRenderAssets())
 
         // if(this._renderMode === RenderMode.SolidWireframe)
         // {
