@@ -5,6 +5,7 @@ import { TexturedImage } from "./Objects/TexturedImage";
 import { TexturedSphere } from "./Objects/TexturedSphere";
 import PointLight from "./Effects/LightsSource/PointLight";
 import { PlaneBumpMapping } from "./Objects/PlaneBumpMapping";
+import { BumpedTexturedSphere } from "./Objects/BumpedTexturedSphere";
 
 export enum RenderMode {
     NoFog = 'noFog',
@@ -21,9 +22,10 @@ export class BumpScene
     private _staticObjects = [
          new Plane(), 
          new Coub().Translate(7.5, 1.5, 1.0).Scale(0.3, 0.3, 0.3), // image light
+         new Coub().Translate(3.5, 13, 1.0).Scale(0.3, 0.3, 0.3), // image light
     ]
 
-    private _texturedObjects = [new PlaneBumpMapping(), new TexturedSphere(3)]
+    private _texturedObjects = [new PlaneBumpMapping(), new BumpedTexturedSphere(4)]
 
     private _effects = {   
         pointLigts: [
@@ -31,6 +33,16 @@ export class BumpScene
                 position: [7.5, 1.5, 1.0],
                 color:  [1.0, 1.0, 1.0], 
                 ambientStrength:  0.1, 
+                diffuseStrength:  1.0, 
+                specularStrength: 0.5, 
+                constant: 1.0, 
+                linear: 0.0014, 
+                quadratic:  0.000007
+            }),
+            new PointLight({ 
+                position: [3.5, 13, 1.0],
+                color:  [1.0, 1.0, 1.0], 
+                ambientStrength:  0.5, 
                 diffuseStrength:  1.0, 
                 specularStrength: 0.5, 
                 constant: 1.0, 
@@ -92,7 +104,7 @@ export class BumpScene
          
          //@ts-ignore
          //TODO delete after debugging
-         renderAssets.push(this._texturedObjects[1].GetWireframeRenderAssets())
+         //renderAssets.push(this._texturedObjects[1].GetWireframeRenderAssets())
 
         // if(this._renderMode === RenderMode.SolidWireframe)
         // {
