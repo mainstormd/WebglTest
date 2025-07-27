@@ -46,6 +46,7 @@ export class TexturedSphere {
         //  let d2 = p.slice(36 * 6,36*7).slice(3*3*2,3*3*3)
         //  .slice(9*16 * 3,9*16 * 4)
         // d1.concat(d2)//.slice(9,27)
+        //.slice(0, this.ComputePositions().length / 2)//.slice(36 * (32 + 16), 36 * 64)  //36*4)
 
         this._positions = this.ComputePositions()
 
@@ -216,6 +217,7 @@ export class TexturedSphere {
           let u = 0.5 + Math.atan2(unitVector[0], unitVector[2]) / (2 * Math.PI)
           let v = 0.5 + Math.asin(unitVector[1]) / Math.PI
 
+          //  === fix bugs seam at sphere  ===
           if( ( i >=  countOfVectors * 7 / 8 ) && u === 1)
           {
             u = 0.0
@@ -228,20 +230,21 @@ export class TexturedSphere {
 
           positionInTexture.push(u, v)
       }
+
+      //fix artefacts on poles
+      for(let i = 0; i < countOfVectors ; i++)
+      {
+         let u = positionInTexture[i * 2]  
+         let v = positionInTexture[i * 2 + 1] 
+        
+         if(u === 0.5 && (v === 1 || v === 0))
+         {
+            let prevU = positionInTexture[ (i - 1) * 2]  
+            let nextU = positionInTexture[ (i + 1) * 2]  
+            positionInTexture[i * 2] = prevU + (nextU - prevU) / 2
+         }
+      }
       
-      
-      // let posLog: any = [] 
-      // for( let i = 0; i <  positionInTexture.length / 2 ; i++ )
-      // {
-      //   posLog.push({
-      //     u:positionInTexture[i * 2],v:positionInTexture[i * 2 + 1],
-      //     x:this._positions[ i * 3 ], 
-      //     y:this._positions[ i * 3 + 1 ], 
-      //     z:this._positions[ i * 3 + 2 ]
-      //   })
-      // }
-      // console.log(posLog)
-      // debugger
       return positionInTexture
     }
 
