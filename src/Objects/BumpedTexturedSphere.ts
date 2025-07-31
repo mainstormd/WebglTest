@@ -127,6 +127,9 @@ export class BumpedTexturedSphere {
                 textureHeightMapObject: this._textureHeightMap,
                 indices: new IndexBuffer(indexes).buffer
             },
+            uniforms:{
+              heightScale: 0.01
+            },
             countVertex: count,
             renderMode : glContext.TRIANGLES,
             type: ObjectsEnum.Sphere

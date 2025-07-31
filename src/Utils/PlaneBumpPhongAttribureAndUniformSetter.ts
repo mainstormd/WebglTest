@@ -13,6 +13,8 @@ export class PlaneBumpPhongAttribureAndUniformSetter extends CommonAttribureAndU
     private _textureHeightMapObject : WebGLUniformLocation | null;
     private _positionInTextureAttribute : GLint;
 
+    private _heightScaleUniformLocation : WebGLUniformLocation | null;
+
 
     constructor(shaderProgram : WebGLProgram)
     {
@@ -25,6 +27,7 @@ export class PlaneBumpPhongAttribureAndUniformSetter extends CommonAttribureAndU
         this._textureObject = glContext.getUniformLocation(shaderProgram, "textureObject");
         this._textureNormalMapObject = glContext.getUniformLocation(shaderProgram, "textureNormalMapObject");
         this._textureHeightMapObject = glContext.getUniformLocation(shaderProgram, "textureHeightMapObject");
+        this._heightScaleUniformLocation = glContext.getUniformLocation(shaderProgram, "heightScale");
     }
 
     public Set(attributes: any, uniforms: any, ModelViewProjectionMatrix: any, ModelMatrix: any, camera: Camera): void 
@@ -39,7 +42,13 @@ export class PlaneBumpPhongAttribureAndUniformSetter extends CommonAttribureAndU
             textureObject, 
             textureNormalMapObject,
             textureHeightMapObject
-         } = attributes
+        } = attributes
+
+        const {
+            heightScale
+        } = uniforms
+
+        glContext.uniform1f(this._heightScaleUniformLocation, heightScale)
 
         glContext.bindBuffer(glContext.ARRAY_BUFFER, positionInTexture);
         glContext.vertexAttribPointer(this._positionInTextureAttribute, 2, glContext.FLOAT, false, 0, 0);

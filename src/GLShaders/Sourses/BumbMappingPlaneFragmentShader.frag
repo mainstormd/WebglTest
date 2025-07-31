@@ -21,6 +21,7 @@ struct PointLight{
 varying lowp vec4 objectPosition;
 varying highp mat3 TBN;
 varying lowp vec2 textureCoordinate;
+uniform float heightScale;
 
 uniform sampler2D textureHeightMapObject;
 uniform sampler2D textureNormalMapObject;
@@ -99,10 +100,9 @@ float GetAttenuation(float constant, float linear, float quadratic, vec3 lightPo
 
 vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir)
 { 
-    float height_scale = 0.1;
     float height =  texture2D(textureHeightMapObject, texCoords).r;    
-    vec2 p = viewDir.xy / viewDir.z * (height * height_scale);
-    return texCoords - p;    
+    vec2 p = viewDir.xy / viewDir.z * (height * heightScale);
+    return texCoords - p;  
 }
 
 
@@ -115,6 +115,11 @@ void main() {
 
     vec2 bumpedCoordinate = ParallaxMapping(textureCoordinate, normalize(tangentCamera - tangentPosition.xyz));
 
+    if(bumpedCoordinate.x > 1.0 || bumpedCoordinate.y > 1.0 || bumpedCoordinate.x < 0.0 || bumpedCoordinate.y < 0.0)
+    {
+        discard;
+    }
+     
     vec3 normalTexture = normalize(2.0 * texture2D(textureNormalMapObject, bumpedCoordinate).rgb - 1.0);
 
     /*

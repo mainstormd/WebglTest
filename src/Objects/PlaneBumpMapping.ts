@@ -134,6 +134,9 @@ export class PlaneBumpMapping{
             textureHeightMapObject: this._texturePlaneHeightMap,
             indices: new IndexBuffer(indexes).buffer,
           },
+          uniforms:{
+              heightScale: 0.1
+          },
           countVertex: count,
           renderMode: glContext.TRIANGLES,
           type: ObjectsEnum.Test, 
